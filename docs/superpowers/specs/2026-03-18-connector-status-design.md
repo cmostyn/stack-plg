@@ -10,7 +10,7 @@ A dedicated page showing the live status, capabilities, and last-fetch stats for
 
 ## Problem
 
-There is no way to see at a glance which connectors are working, when they last ran, or what data they provide. This matters for debugging, onboarding, and understanding what the dashboard is built on.
+There is no way to see at a glance which connectors are working, when they last ran, or what data they provide.
 
 ## Solution
 
@@ -22,77 +22,73 @@ A new `connectors.html` page (nav: "Connectors") showing one card per connector.
 
 ## Connectors
 
-| Connector | Status | Fetch script |
-|-----------|--------|--------------|
-| HubSpot | Active | `fetch-hubspot.js` |
-| Pylon | Active | `fetch-pylon.js` |
-| PostHog | Active | `fetch-posthog.js` |
-| Fireflies | Active | `fetch-fireflies.js` (new) |
-| Google Drive | Active | `fetch-googledrive.js` (new) |
-| Gmail | Not configured | — |
+| Connector | Status | Fetch script | Account ID env var | API key env var |
+|-----------|--------|--------------|-------------------|-----------------|
+| HubSpot | Active | `fetch-hubspot.js` | `STACKONE_HUBSPOT_ACCOUNT_ID` | `STACKONE_API_KEY` |
+| Pylon | Active | `fetch-pylon.js` | `STACKONE_PYLON_ACCOUNT_ID` | `STACKONE_PYLON_API_KEY` |
+| PostHog | Active | `fetch-posthog.js` | `STACKONE_POSTHOG_ACCOUNT_ID` | `STACKONE_API_KEY` |
+| Fireflies | Active | `fetch-fireflies.js` (new) | `STACKONE_FIREFLIES_ACCOUNT_ID` | `STACKONE_API_KEY` |
+| Google Drive | Active | `fetch-googledrive.js` (new) | `STACKONE_GOOGLEDRIVE_ACCOUNT_ID` | `STACKONE_API_KEY` |
+| Gmail | Not configured | — | — | — |
+
+Pylon uses a separate `STACKONE_PYLON_API_KEY`; all others share `STACKONE_API_KEY`.
 
 ## Data Flow
 
-Each fetch script writes its result into `site/data/connectors.json` on success or failure. The connectors page reads this file at load time. No server required — status is as-of last fetch run.
+Each fetch script writes its result to its own status file: `site/data/status-{connector}.json`. This avoids any race condition from concurrent runs — no shared file is written. The connectors page fetches all six files individually at load time.
 
-### `connectors.json` schema
+### Per-connector status file schema
 
+**Success:**
 ```json
-{
-  "hubspot": {
-    "status": "ok",
-    "last_fetch": "2026-03-18T14:00:00Z",
-    "records": 55
-  },
-  "pylon": {
-    "status": "ok",
-    "last_fetch": "2026-03-18T14:01:00Z",
-    "records": 55,
-    "open_tickets": 12
-  },
-  "posthog": {
-    "status": "ok",
-    "last_fetch": "2026-03-18T14:03:00Z",
-    "records": 48
-  },
-  "fireflies": {
-    "status": "ok",
-    "last_fetch": "2026-03-18T14:05:00Z",
-    "records": 32
-  },
-  "googledrive": {
-    "status": "ok",
-    "last_fetch": "2026-03-18T14:06:00Z",
-    "records": 140
-  },
-  "gmail": {
-    "status": "not_configured"
-  }
-}
+{ "status": "ok", "last_fetch": "2026-03-18T14:00:00Z", "records": 55 }
 ```
 
-`status` values: `ok` | `error` | `not_configured`
-On error, an `error` string field is included with the message.
+**Success with extra stats (Pylon only):**
+```json
+{ "status": "ok", "last_fetch": "2026-03-18T14:01:00Z", "records": 55, "open_tickets": 12 }
+```
+- `records` = account count; `open_tickets` = sum of `open_tickets_live` across all accounts.
 
-Each fetch script reads the current `connectors.json`, updates its own key, and writes it back. This way a single script run doesn't wipe other connectors' entries.
+**Error:**
+```json
+{ "status": "error", "last_fetch": "2026-03-18T14:00:00Z", "error": "HTTP 401 Unauthorized" }
+```
+- `last_fetch` is always written (time of the attempt); `records` is absent on error.
+
+**Not configured (static, committed to repo):**
+```json
+{ "status": "not_configured" }
+```
+
+### Files
+```
+site/data/status-hubspot.json
+site/data/status-pylon.json
+site/data/status-posthog.json
+site/data/status-fireflies.json
+site/data/status-googledrive.json
+site/data/status-gmail.json       ← static, never written by a script
+```
+
+All `status-*.json` files except `status-gmail.json` are gitignored (generated). `status-gmail.json` is committed as `{ "status": "not_configured" }`.
+
+### Existing script changes
+Existing scripts (`fetch-hubspot.js`, `fetch-pylon.js`, `fetch-posthog.js`) continue writing their primary output files (`hubspot.json`, `pylon.json`, `posthog.json`) unchanged — `build.js` and `dashboard.html` are not affected. They additionally write their `status-{connector}.json` file on success or error.
 
 ## New Fetch Scripts
 
 ### `fetch-fireflies.js`
-- Env var: `STACKONE_FIREFLIES_ACCOUNT_ID`
-- RPC action: `fireflies_list_transcripts` (last 30 days)
-- Stat: transcript count
+- Env: `STACKONE_API_KEY`, `STACKONE_FIREFLIES_ACCOUNT_ID`
+- RPC action: `fireflies_list_transcripts` with `fromDate` = 30 days ago
+- Stat: `records` = transcript count returned
 
 ### `fetch-googledrive.js`
-- Env var: `STACKONE_GOOGLEDRIVE_ACCOUNT_ID`
+- Env: `STACKONE_API_KEY`, `STACKONE_GOOGLEDRIVE_ACCOUNT_ID`
 - RPC action: `googledrive_list_files`
-- Stat: file count
-
-Both follow the same RPC pattern as existing scripts (StackOne API, Basic auth, `x-account-id` header).
+- Stat: `records` = file count returned
 
 ## Connector Card Design
-
-Follows existing `stat-card` / `digest-card` patterns from `style.css`.
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -107,17 +103,76 @@ Follows existing `stat-card` / `digest-card` patterns from `style.css`.
 └──────────────────────────────────────────────┘
 ```
 
-- Status pill uses StackOne semantic colors: green (`--so-green-dark`) / red (`--so-red-dark`) / grey (`--so-text-tag`)
-- Stat chips: tag-style, `--so-foreground` background, `--so-font-tag` font
-- Not-configured cards: muted border (`--so-neutral-10`), greyed text, no stat chips
-- Account IDs never shown in the UI — internal config only
+- Status pill: green (`--so-green-dark`) / red (`--so-red-dark`) / grey (`--so-text-tag`)
+- Stat chips: tag-style pill, `--so-foreground` bg, `--so-font-tag` font
+- Not-configured cards: `--so-neutral-5` bg, muted border, no stat chips, no last-fetch line
+- Account IDs never shown in UI — internal config only
+
+### Connector icons
+
+Inline SVG monograms in a 32×32 rounded square. Brand accent color per connector:
+
+| Connector | Icon bg | Letter |
+|-----------|---------|--------|
+| HubSpot | `#FF7A59` (HubSpot orange) | H |
+| Pylon | `#4D4EBA` (StackOne purple) | P |
+| PostHog | `#F54E00` (PostHog orange) | P |
+| Fireflies | `#EB4646` (Fireflies red) | F |
+| Google Drive | `#4285F4` (Google blue) | G |
+| Gmail | `--so-neutral-15` (muted, not configured) | M |
+
+White letter on coloured square. Not-configured connectors use muted grey icon.
+
+### Static descriptions
+
+| Connector | Description |
+|-----------|-------------|
+| HubSpot | Companies, deal pipelines, customer tiers, and custom properties for all PLG accounts. |
+| Pylon | Support tickets, open issues, and account-level activity across all PLG customers. |
+| PostHog | Product usage events, active users, pageviews, and API request volume per org. |
+| Fireflies | Meeting transcripts and call recordings from customer and team meetings. |
+| Google Drive | Files and documents in the connected Google Drive. |
+| Gmail | Inbound and outbound email threads, labels, and contact history. |
+
+### Stat chips per connector
+
+| Connector | Chips shown |
+|-----------|-------------|
+| HubSpot | `{n} companies` |
+| Pylon | `{n} accounts` · `{n} open tickets` |
+| PostHog | `{n} orgs tracked` |
+| Fireflies | `{n} transcripts (30d)` |
+| Google Drive | `{n} files` |
+| Gmail | — (not configured) |
+
+## Fallback: connectors.json not yet fetched
+
+If a `status-{connector}.json` file fails to load (404 — first deploy, script not yet run), that connector card shows status as `not_configured` with label "Not yet fetched" instead of "Not configured". The page must not error if any file is missing.
 
 ## Page Layout
 
 - Grid: 3 columns (≥1100px), 2 columns (≥680px), 1 column (mobile)
-- Header/nav identical to `dashboard.html` with "Connectors" as active nav item
-- Heading: "Data connectors" (Stack Sans Text, 32px)
+- Header/nav identical to `dashboard.html`; "Connectors" is the active nav item
+- Nav order: PLG Motion · Connectors · Support Digests
+- Heading: "Data connectors" (Stack Sans Text, 32px, `--so-text-header`)
 - Subheading: "Status and capabilities of each data source powering this dashboard."
+
+### Updated nav HTML (all pages)
+```html
+<nav class="site-nav">
+  <a href="dashboard.html" class="site-nav-link">PLG Motion</a>
+  <a href="connectors.html" class="site-nav-link">Connectors</a>
+  <a href="index.html" class="site-nav-link">Support Digests</a>
+</nav>
+```
+Each page adds `site-nav-link--active` to its own link.
+
+## `.env.example` additions
+
+```
+STACKONE_FIREFLIES_ACCOUNT_ID=
+STACKONE_GOOGLEDRIVE_ACCOUNT_ID=
+```
 
 ## Files Changed
 
@@ -125,13 +180,15 @@ Follows existing `stat-card` / `digest-card` patterns from `style.css`.
 |------|--------|
 | `site/connectors.html` | New page |
 | `site/style.css` | Add connector card styles |
-| `site/data/connectors.json` | New data file (committed as empty shell) |
-| `scripts/fetch-fireflies.js` | New fetch script |
-| `scripts/fetch-googledrive.js` | New fetch script |
-| `scripts/fetch-hubspot.js` | Write status to connectors.json |
-| `scripts/fetch-pylon.js` | Write status to connectors.json |
-| `scripts/fetch-posthog.js` | Write status to connectors.json |
+| `site/data/status-gmail.json` | New static file: `{"status":"not_configured"}` |
+| `site/data/status-*.json` | Generated by scripts (gitignored) |
+| `scripts/fetch-fireflies.js` | New script |
+| `scripts/fetch-googledrive.js` | New script |
+| `scripts/fetch-hubspot.js` | Also write `status-hubspot.json` |
+| `scripts/fetch-pylon.js` | Also write `status-pylon.json` |
+| `scripts/fetch-posthog.js` | Also write `status-posthog.json` |
 | `site/index.html` | Add Connectors nav link |
 | `site/dashboard.html` | Add Connectors nav link |
 | `site/manifest.json` | Add connectors page entry |
-| `.env.example` | Add new account ID vars |
+| `.env.example` | Add two new account ID vars |
+| `.gitignore` | Ignore `site/data/status-*.json` except `status-gmail.json` |
