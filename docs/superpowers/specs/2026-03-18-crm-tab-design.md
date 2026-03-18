@@ -16,7 +16,7 @@ data sources not yet connected.
 | `site/crm.html` | New page |
 | `scripts/fetch-hubspot.js` | Extended to fetch primary contact per company |
 | `site/style.css` | New table, search, and placeholder styles |
-| `site/dashboard.html` | CRM nav link added to `.site-nav` |
+| `site/dashboard.html` | CRM nav link added to `.site-nav` (hardcoded class, matching existing pattern) |
 | `site/index.html` | CRM nav link added to `.site-nav` (Support Digests page shares the same header pattern) |
 
 ---
@@ -28,13 +28,17 @@ data sources not yet connected.
 The existing fetch script already pulls all companies filtered by
 `type = "Customer - PLG"`. It will be extended to:
 
-1. After fetching all companies, batch-fetch associated contact IDs per company
-   using the HubSpot associations API. Requests must be chunked at ≤100 IDs
-   to respect HubSpot batch API limits.
-2. Batch-read those contacts for `firstname`, `lastname`, `email`, and
-   `createdate`. Chunk at ≤100 IDs here too.
+1. Batch-fetch associated contact IDs per company via
+   `POST /crm/v3/associations/companies/contacts/batch/read`. No association
+   label filter — fetch all contacts. Chunk company IDs at ≤100 per request.
+   Cap at 100 contact IDs per company before the contact read step (first 100
+   returned; edge case only at current scale).
+2. Batch-read those contacts via `POST /crm/v3/objects/contacts/batch/read`
+   for properties `firstname`, `lastname`, `email`, `createdate`. Chunk at
+   ≤100 contact IDs per request.
 3. Pick the single contact with the most recent `createdate` contact property
-   (not the association date) per company.
+   (not the association date) per company. This surfaces the most recently
+   signed-up user, as intended.
 4. Add a `contact` field to each company object:
 
 ```json
@@ -59,7 +63,7 @@ If a company has no associated contacts, `contact` is `null`.
 | # | Column | Source | Status |
 |---|---|---|---|
 | 1 | Name | HubSpot | Live — links to `hubspot_url` |
-| 2 | Primary contact | HubSpot | Live — most recent signup by `createdate` |
+| 2 | Primary contact | HubSpot | Live — most recent by contact `createdate` |
 | 3 | Pylon | Pylon | Placeholder |
 | 4 | Connected integrations | PostHog | Placeholder |
 | 5 | API requests | PostHog | Placeholder |
@@ -74,31 +78,42 @@ If a company has no associated contacts, `contact` is `null`.
 
 ### Page shell
 Same header and nav as `dashboard.html`. Nav gains a third link: CRM.
-Active state applied to the CRM link when on `crm.html`.
+Active state is hardcoded in the HTML markup on each page (matching the
+existing `site-nav-link--active` pattern in `dashboard.html`).
 
 ### Search
 - Text input above the table, full width on mobile, ~300px on desktop
 - Placeholder: "Search customers…"
 - Filters rows in real time across: company name, domain, contact name, contact email
-- Row count label updates alongside ("28 of 55 customers")
+- When no filter is active, label reads: `"55 customers"`
+- When a filter is active, label reads: `"12 of 55 customers"`
 
 ### Table
 - Full-width, one row per customer
 - Default sort: company name A→Z
 - Sortable columns: Name, Primary contact
-  - Click header to sort asc; click again for desc; third click resets to default
-  - Active sort column shows ↑ (asc) or ↓ (desc) arrow in the header
+  - Click → asc; click again → desc; third click resets to global default
+    (company name A→Z) regardless of which column was clicked
+  - Active sort column shows ↑ (asc) or ↓ (desc) in the header
   - Primary contact sorts alphabetically by lastname then firstname
-- Placeholder cells: grey dash `—` using the native `title` attribute for
-  "Coming soon" tooltip on hover
-- Name cell: company name as `<a>` linking to `hubspot_url` (already present
-  in hubspot.json), `target="_blank" rel="noopener"`
-- Contact cell: "First Last · email@domain.com", or `—` if `contact` is null
-- Defensive rendering: if `company.name` is missing, show the `hubspot_id`;
-  if `company.contact` is malformed, treat it as null
+  - Null contacts sort last in both asc and desc directions
+- Placeholder cells: grey dash `—` with `title="Coming soon"` native tooltip
+- Name cell: `<a href="{hubspot_url}" target="_blank" rel="noopener">` —
+  `hubspot_url` is already present in `hubspot.json`
+- Contact cell: "First Last · email@domain.com", or `—` if contact is null
+- Defensive rendering: if `company.name` is missing, show `hubspot_id`;
+  if `company.contact` is malformed, treat as null
+
+### Data loading
+- Fetch path: `./data/hubspot.json` (relative to `site/crm.html`, consistent
+  with the site root convention used across other pages)
+- On load error: replace the table wrapper with
+  `<p class="crm-error">Customer data couldn't be loaded. Try refreshing the page.</p>`
 
 ### Row count
-Label above the table: "55 customers" (or "12 of 55 customers" when filtered).
+Label above the table. Format:
+- No filter active: `"N customers"`
+- Filter active: `"N of M customers"`
 
 ---
 
@@ -114,16 +129,16 @@ New classes added to `style.css`:
 - `.crm-table th[aria-sort]` — active sort indicator
 - `.crm-table td` — body font, 14px
 - `.crm-placeholder` — grey `—` for placeholder cells
+- `.crm-error` — inline error message style
 
 ---
 
 ## Behaviour
 
-- Data loaded from `site/data/hubspot.json` via `fetch()` at page load
+- Data loaded from `./data/hubspot.json` via `fetch()` at page load
 - Search and sort are pure client-side JS, no server involvement
 - Placeholder cells are static HTML — no API calls at runtime
-- If `hubspot.json` fails to load, show an inline error message in place of
-  the table
+- Load error: inline `<p class="crm-error">` replaces the table
 
 ---
 
