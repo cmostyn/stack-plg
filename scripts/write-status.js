@@ -13,7 +13,7 @@ function writeStatus(connector, status, extra = {}) {
   };
 
   const filePath = path.join(STATUS_DIR, `status-${connector}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(statusData, null, 2));
+  fs.writeFileSync(filePath, JSON.stringify(statusData, null, 2) + '\n');
 
   console.log(`[${connector}] Status written: ${status}`);
 }
