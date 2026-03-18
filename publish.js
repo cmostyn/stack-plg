@@ -12,7 +12,7 @@ const chokidar = require('chokidar');
 
 const OUTPUTS_DIR = path.join(process.env.HOME, 'Documents/Claude/outputs');
 const SITE_DIR    = path.join(__dirname, 'site');
-const MANIFEST    = path.join(__dirname, 'manifest.json');
+const MANIFEST    = path.join(SITE_DIR, 'manifest.json');
 const TEMPLATE    = path.join(__dirname, 'templates/report.html');
 const FILE_RE     = /^plg-support-digest-(\d{4}-\d{2}-\d{2})\.html$/;
 
