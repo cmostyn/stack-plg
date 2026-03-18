@@ -512,7 +512,7 @@ a:hover {
 .connectors-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 @media (max-width: 1100px) {
@@ -528,110 +528,128 @@ a:hover {
   border: 1px solid var(--so-neutral-10);
   border-radius: var(--so-radius-lg);
   box-shadow: var(--so-shadow-card);
-  padding: 20px;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+}
+
+.connector-card--muted {
+  background: var(--so-foreground);
+  border-color: var(--so-neutral-10);
+  box-shadow: none;
 }
 
 .connector-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.connector-card-title-group {
+.connector-card-identity {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
+  gap: 10px;
 }
 
-.connector-card-icon {
-  width: 28px;
-  height: 28px;
-  background: var(--so-foreground);
+.connector-icon {
+  width: 32px;
+  height: 32px;
   border-radius: var(--so-radius);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
   flex-shrink: 0;
+  letter-spacing: 0;
 }
 
-.connector-card-icon svg {
-  width: 14px;
-  height: 14px;
+.connector-icon--muted {
+  background: var(--so-neutral-15) !important;
   color: var(--so-text-tag);
 }
 
-.connector-card-title {
+.connector-name {
   font-family: var(--so-font-heading);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
-  color: var(--so-text-header);
   letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--so-text-header);
 }
 
-.connector-card-status {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+.connector-card--muted .connector-name {
+  color: var(--so-text-tag);
+}
+
+.connector-status {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: white;
+  gap: 5px;
+  font-family: var(--so-font-tag);
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--so-radius-xl);
+  white-space: nowrap;
 }
 
-.connector-card-status--ok {
-  background: var(--so-green-dark);
+.connector-status--ok {
+  background: rgba(4, 123, 67, 0.08);
+  color: var(--so-green-dark);
 }
 
-.connector-card-status--error {
-  background: var(--so-red-dark);
+.connector-status--error {
+  background: rgba(196, 62, 62, 0.08);
+  color: var(--so-red-dark);
 }
 
-.connector-card-status--not_configured {
-  background: var(--so-neutral-30);
-}
-
-.connector-card-status--pending {
-  background: var(--so-blue-dark);
-}
-
-.connector-card-description {
-  font-size: 13px;
+.connector-status--not_configured,
+.connector-status--pending {
+  background: var(--so-foreground);
   color: var(--so-text-tag);
-  line-height: 1.4;
 }
 
-.connector-card-chips {
+.connector-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connector-status--ok .connector-status-dot           { background: var(--so-green-dark); }
+.connector-status--error .connector-status-dot         { background: var(--so-red-dark); }
+.connector-status--not_configured .connector-status-dot,
+.connector-status--pending .connector-status-dot        { background: var(--so-neutral-30); }
+
+.connector-description {
+  font-size: 14px;
+  color: var(--so-text-tag);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.connector-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 16px;
 }
 
 .connector-chip {
   background: var(--so-foreground);
-  border: 1px solid var(--so-neutral-15);
-  border-radius: var(--so-radius-sm);
-  padding: 4px 8px;
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-xl);
+  padding: 3px 10px;
   font-family: var(--so-font-tag);
   font-size: 12px;
-  color: var(--so-text-tag);
+  color: var(--so-text-body);
 }
 
-.connector-card-last-fetch {
-  padding-top: 8px;
-  border-top: 1px solid var(--so-neutral-10);
+.connector-last-fetch {
   font-family: var(--so-font-tag);
   font-size: 12px;
-  color: var(--so-text-tag);
+  color: var(--so-neutral-40);
+  margin-top: auto;
 }
