@@ -16,8 +16,8 @@ data sources not yet connected.
 | `site/crm.html` | New page |
 | `scripts/fetch-hubspot.js` | Extended to fetch primary contact per company |
 | `site/style.css` | New table, search, and placeholder styles |
-| `site/dashboard.html` | Nav link added |
-| `site/index.html` | Nav link added |
+| `site/dashboard.html` | CRM nav link added to `.site-nav` |
+| `site/index.html` | CRM nav link added to `.site-nav` (Support Digests page shares the same header pattern) |
 
 ---
 
@@ -29,10 +29,12 @@ The existing fetch script already pulls all companies filtered by
 `type = "Customer - PLG"`. It will be extended to:
 
 1. After fetching all companies, batch-fetch associated contact IDs per company
-   using the HubSpot associations API.
+   using the HubSpot associations API. Requests must be chunked at ≤100 IDs
+   to respect HubSpot batch API limits.
 2. Batch-read those contacts for `firstname`, `lastname`, `email`, and
-   `createdate`.
-3. Pick the single contact with the most recent `createdate` per company.
+   `createdate`. Chunk at ≤100 IDs here too.
+3. Pick the single contact with the most recent `createdate` contact property
+   (not the association date) per company.
 4. Add a `contact` field to each company object:
 
 ```json
@@ -84,11 +86,16 @@ Active state applied to the CRM link when on `crm.html`.
 - Full-width, one row per customer
 - Default sort: company name A→Z
 - Sortable columns: Name, Primary contact
-  - Click header to sort asc; click again for desc
-  - Active sort column shows ↑ or ↓ indicator
-- Placeholder cells: grey dash `—`, tooltip on hover: "Coming soon"
-- Name cell: company name as `<a>` linking to HubSpot, opens in new tab
-- Contact cell: "First Last · email@domain.com", or `—` if no contact
+  - Click header to sort asc; click again for desc; third click resets to default
+  - Active sort column shows ↑ (asc) or ↓ (desc) arrow in the header
+  - Primary contact sorts alphabetically by lastname then firstname
+- Placeholder cells: grey dash `—` using the native `title` attribute for
+  "Coming soon" tooltip on hover
+- Name cell: company name as `<a>` linking to `hubspot_url` (already present
+  in hubspot.json), `target="_blank" rel="noopener"`
+- Contact cell: "First Last · email@domain.com", or `—` if `contact` is null
+- Defensive rendering: if `company.name` is missing, show the `hubspot_id`;
+  if `company.contact` is malformed, treat it as null
 
 ### Row count
 Label above the table: "55 customers" (or "12 of 55 customers" when filtered).
