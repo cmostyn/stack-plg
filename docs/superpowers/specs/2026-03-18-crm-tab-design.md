@@ -16,8 +16,8 @@ data sources not yet connected.
 | `site/crm.html` | New page |
 | `scripts/fetch-hubspot.js` | Extended to fetch primary contact per company |
 | `site/style.css` | New table, search, and placeholder styles |
-| `site/dashboard.html` | CRM nav link added to `.site-nav` (hardcoded class, matching existing pattern) |
-| `site/index.html` | CRM nav link added to `.site-nav` (Support Digests page shares the same header pattern) |
+| `site/dashboard.html` | CRM nav link added to `.site-nav` (hardcoded class) |
+| `site/index.html` | CRM nav link added to `.site-nav` (same change as dashboard.html) |
 
 ---
 
@@ -31,15 +31,15 @@ The existing fetch script already pulls all companies filtered by
 1. Batch-fetch associated contact IDs per company via
    `POST /crm/v3/associations/companies/contacts/batch/read`. No association
    label filter — fetch all contacts. Chunk company IDs at ≤100 per request.
-   Cap at 100 contact IDs per company before the contact read step (first 100
-   returned; edge case only at current scale).
-2. Batch-read those contacts via `POST /crm/v3/objects/contacts/batch/read`
+   Cap at 100 contact IDs per company (first 100 returned; edge case only).
+2. Collect all contact IDs across all companies, deduplicate, then rechunk
+   at ≤100 before the next step.
+3. Batch-read those contacts via `POST /crm/v3/objects/contacts/batch/read`
    for properties `firstname`, `lastname`, `email`, `createdate`. Chunk at
    ≤100 contact IDs per request.
-3. Pick the single contact with the most recent `createdate` contact property
-   (not the association date) per company. This surfaces the most recently
-   signed-up user, as intended.
-4. Add a `contact` field to each company object:
+4. For each company, pick the contact with the most recent `createdate`
+   property. Tiebreak: lowest contact ID (lexicographic).
+5. Add a `contact` field to each company object:
 
 ```json
 {
@@ -78,42 +78,40 @@ If a company has no associated contacts, `contact` is `null`.
 
 ### Page shell
 Same header and nav as `dashboard.html`. Nav gains a third link: CRM.
-Active state is hardcoded in the HTML markup on each page (matching the
-existing `site-nav-link--active` pattern in `dashboard.html`).
+Active class (`site-nav-link--active`) is hardcoded in the HTML of each page,
+matching the existing pattern.
 
 ### Search
-- Text input above the table, full width on mobile, ~300px on desktop
+- Text input above the table, ~300px on desktop, full-width on mobile
 - Placeholder: "Search customers…"
 - Filters rows in real time across: company name, domain, contact name, contact email
-- When no filter is active, label reads: `"55 customers"`
-- When a filter is active, label reads: `"12 of 55 customers"`
+- Label format:
+  - No filter active: `"N customers"`
+  - Filter active: `"N of M customers"`
 
 ### Table
-- Full-width, one row per customer
+- Full-width inside an `overflow-x: auto` wrapper (handles narrow viewports)
 - Default sort: company name A→Z
-- Sortable columns: Name, Primary contact
-  - Click → asc; click again → desc; third click resets to global default
-    (company name A→Z) regardless of which column was clicked
-  - Active sort column shows ↑ (asc) or ↓ (desc) in the header
-  - Primary contact sorts alphabetically by lastname then firstname
-  - Null contacts sort last in both asc and desc directions
-- Placeholder cells: grey dash `—` with `title="Coming soon"` native tooltip
-- Name cell: `<a href="{hubspot_url}" target="_blank" rel="noopener">` —
-  `hubspot_url` is already present in `hubspot.json`
+- Sortable columns: Name (sorts by company name), Primary contact (sorts by
+  lastname then firstname)
+- Sort cycle: click → ascending; click again → descending; third click →
+  reset to global default (company name A→Z, Name column `aria-sort` restored)
+- Active sort column carries `aria-sort="ascending"` or `aria-sort="descending"`
+  on the `<th>`. Unsorted columns carry no `aria-sort` attribute.
+- Sort indicators rendered via CSS only:
+  `th[aria-sort="ascending"]::after { content: " ↑"; }`
+  `th[aria-sort="descending"]::after { content: " ↓"; }`
+- Null contacts sort last in both ascending and descending directions
+- Placeholder cells: `<td class="crm-placeholder" title="Coming soon">—</td>`
+- Name cell: `<a href="{hubspot_url}" target="_blank" rel="noopener">{name}</a>`
 - Contact cell: "First Last · email@domain.com", or `—` if contact is null
-- Defensive rendering: if `company.name` is missing, show `hubspot_id`;
-  if `company.contact` is malformed, treat as null
+- Defensive rendering: if `company.name` is missing, display `hubspot_id`;
+  if `company.contact` is malformed or not an object, treat as null
 
 ### Data loading
-- Fetch path: `./data/hubspot.json` (relative to `site/crm.html`, consistent
-  with the site root convention used across other pages)
+- Fetch path: `./data/hubspot.json` (relative, consistent with site root)
 - On load error: replace the table wrapper with
   `<p class="crm-error">Customer data couldn't be loaded. Try refreshing the page.</p>`
-
-### Row count
-Label above the table. Format:
-- No filter active: `"N customers"`
-- Filter active: `"N of M customers"`
 
 ---
 
@@ -121,15 +119,16 @@ Label above the table. Format:
 
 New classes added to `style.css`:
 
-- `.crm-toolbar` — flex row, search input + row count
-- `.crm-search` — styled text input matching card border/radius tokens
-- `.crm-count` — small tag-font row count label
-- `.crm-table` — full-width table, border-collapse
-- `.crm-table th` — sortable header, cursor pointer, tag font
-- `.crm-table th[aria-sort]` — active sort indicator
-- `.crm-table td` — body font, 14px
-- `.crm-placeholder` — grey `—` for placeholder cells
-- `.crm-error` — inline error message style
+- `.crm-toolbar` — flex row containing search input and row count
+- `.crm-search` — text input styled with card border/radius tokens
+- `.crm-count` — tag-font row count label
+- `.crm-table-wrap` — `overflow-x: auto` wrapper around the table
+- `.crm-table` — full-width table, `border-collapse: collapse`
+- `.crm-table th` — sortable header: `cursor: pointer`, tag font, no user-select
+- `.crm-table th[aria-sort]` — visual indicator via `::after` pseudo-element
+- `.crm-table td` — body font, 14px, vertical padding
+- `.crm-placeholder` — grey colour (`var(--so-neutral-40)`) for `—` cells
+- `.crm-error` — inline error message, body font, muted colour
 
 ---
 
@@ -138,7 +137,7 @@ New classes added to `style.css`:
 - Data loaded from `./data/hubspot.json` via `fetch()` at page load
 - Search and sort are pure client-side JS, no server involvement
 - Placeholder cells are static HTML — no API calls at runtime
-- Load error: inline `<p class="crm-error">` replaces the table
+- Load error: `<p class="crm-error">` replaces the table wrapper
 
 ---
 
