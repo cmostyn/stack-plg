@@ -50,7 +50,9 @@
             <th>Last call (Fireflies)</th>
           </tr>
         </thead>
-        <tbody id="crm-tbody"></tbody>
+        <tbody id="crm-tbody">
+          <tr><td colspan="9" class="crm-placeholder" style="text-align:center;padding:32px">Loading…</td></tr>
+        </tbody>
       </table>
     </div>
 
@@ -77,6 +79,14 @@
         .replace(/"/g, '&quot;');
     }
 
+    function safeHref(url) {
+      if (!url) return '#';
+      try {
+        const u = new URL(url, location.href);
+        return (u.protocol === 'https:' || u.protocol === 'http:') ? escHtml(url) : '#';
+      } catch { return '#'; }
+    }
+
     function isContactObj(c) {
       return c !== null && typeof c === 'object' && !Array.isArray(c);
     }
@@ -87,19 +97,19 @@
       const parts = c.name.trim().split(/\s+/);
       const last  = parts.at(-1) ?? '';
       const first = parts.slice(0, -1).join(' ');
-      return (last + ' ' + first).toLowerCase();
+      return (last + (first ? ' ' + first : '')).toLowerCase();
     }
 
     function renderRow(company) {
       const displayName = company.name ?? company.hubspot_id;
-      const href        = escHtml(company.hubspot_url ?? '#');
+      const href        = safeHref(company.hubspot_url);
       const nameCell    = `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(displayName)}</a></td>`;
 
       const c = isContactObj(company.contact) ? company.contact : null;
       const contactCell = c
         ? `<td>
             <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
-            <div class="crm-contact-email">${escHtml(c.email ?? '')}</div>
+            ${c.email ? `<div class="crm-contact-email">${escHtml(c.email)}</div>` : ''}
            </td>`
         : `<td class="crm-placeholder">—</td>`;
 
@@ -145,6 +155,11 @@
     // --- Sort ---
 
     function setSort(key) {
+      // Reset the other column's click count when switching columns
+      if (key !== sortKey) {
+        clickCounts[sortKey] = 0;
+      }
+
       clickCounts[key] = (clickCounts[key] ?? 0) + 1;
       const click = clickCounts[key];
 
