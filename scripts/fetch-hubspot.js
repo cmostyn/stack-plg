@@ -87,7 +87,7 @@ async function fetchContacts(contactIds) {
   // Returns Map<contactId, { name, email, createdate, _id }>
   // Uses search with OR filter groups (one per ID) — HubSpot supports up to 300 filter groups
   const result = new Map();
-  // HubSpot limits filterGroups to a small number per request; use 5 per call to stay safe
+  // HubSpot search API allows max 5 filterGroups per request (each is an OR branch for one contact ID)
   const CHUNK = 5;
 
   for (let i = 0; i < contactIds.length; i += CHUNK) {
@@ -100,6 +100,8 @@ async function fetchContacts(contactIds) {
       limit: 100,
     });
 
+    // Each filterGroup matches exactly one contact by hs_object_id, so results
+    // will never exceed CHUNK rows — no pagination needed.
     const contacts = data?.result?.results ?? data?.results ?? [];
     for (const c of contacts) {
       result.set(c.id, {
