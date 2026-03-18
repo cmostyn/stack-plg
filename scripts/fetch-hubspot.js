@@ -18,7 +18,9 @@ if (!API_KEY || !ACCOUNT_ID) {
 const AUTH = 'Basic ' + Buffer.from(API_KEY + ':').toString('base64');
 const PROPERTIES = ['name', 'domain', 'type', 'org_id', 'notes', 'tier', 'welcome_email_sent'];
 
-async function rpc(action, body) {
+async function rpc(action, body, pathParams) {
+  const payload = { action, body };
+  if (pathParams) payload.path = pathParams;
   const res = await fetch('https://api.stackone.com/actions/rpc', {
     method: 'POST',
     headers: {
@@ -26,7 +28,7 @@ async function rpc(action, body) {
       'x-account-id': ACCOUNT_ID,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, body }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error(`RPC ${action} failed: ${res.status} ${await res.text()}`);
   return res.json();
@@ -56,25 +58,108 @@ async function fetchAllPLGCompanies() {
   return companies;
 }
 
+async function fetchContactIdsForCompanies(companies) {
+  // Returns Map<companyId, contactId[]>
+  const result = new Map();
+  const CHUNK = 100;
+
+  for (let i = 0; i < companies.length; i += CHUNK) {
+    const chunk = companies.slice(i, i + CHUNK);
+    const inputs = chunk.map(c => ({ id: c.hubspot_id }));
+
+    const data = await rpc(
+      'hubspot_batch_read_associations',
+      { inputs },
+      { fromObjectType: 'companies', toObjectType: 'contacts' },
+    );
+
+    const results = data?.result?.results ?? data?.results ?? [];
+    for (const item of results) {
+      const ids = (item.to ?? []).map(t => String(t.toObjectId ?? t.id));
+      result.set(item.from.id, ids);
+    }
+  }
+
+  return result;
+}
+
+async function fetchContacts(contactIds) {
+  // Returns Map<contactId, { name, email, createdate, _id }>
+  // Uses search with OR filter groups (one per ID) — HubSpot supports up to 300 filter groups
+  const result = new Map();
+  // HubSpot limits filterGroups to a small number per request; use 5 per call to stay safe
+  const CHUNK = 5;
+
+  for (let i = 0; i < contactIds.length; i += CHUNK) {
+    const chunk = contactIds.slice(i, i + CHUNK);
+    const data = await rpc('hubspot_search_contacts', {
+      filterGroups: chunk.map(id => ({
+        filters: [{ propertyName: 'hs_object_id', operator: 'EQ', value: id }],
+      })),
+      properties: ['firstname', 'lastname', 'email', 'createdate'],
+      limit: 100,
+    });
+
+    const contacts = data?.result?.results ?? data?.results ?? [];
+    for (const c of contacts) {
+      result.set(c.id, {
+        name:       [c.properties.firstname, c.properties.lastname].filter(Boolean).join(' ') || null,
+        email:      c.properties.email ?? null,
+        createdate: c.properties.createdate ?? null,
+        _id:        c.id,
+      });
+    }
+  }
+
+  return result;
+}
+
+function pickPrimaryContact(contactIds, contactMap) {
+  const contacts = contactIds.map(id => contactMap.get(id)).filter(Boolean);
+  if (contacts.length === 0) return null;
+
+  contacts.sort((a, b) => {
+    const da = a.createdate ? new Date(a.createdate).getTime() : 0;
+    const db = b.createdate ? new Date(b.createdate).getTime() : 0;
+    if (db !== da) return db - da;                               // most recent first
+    return parseInt(a._id, 10) - parseInt(b._id, 10);           // tiebreak: lowest numeric ID
+  });
+
+  const { name, email } = contacts[0];
+  return (name || email) ? { name, email } : null;
+}
+
 async function main() {
   console.log('[hubspot] Fetching PLG companies...');
   const raw = await fetchAllPLGCompanies();
   console.log(`[hubspot] Found ${raw.length} companies`);
 
   const companies = raw.map(c => ({
-    hubspot_id:        c.id,
-    name:              c.properties.name ?? null,
-    domain:            c.properties.domain ?? null,
-    org_id:            c.properties.org_id ?? null,
-    tier:              c.properties.tier ?? null,
-    notes:             c.properties.notes ?? null,
+    hubspot_id:         c.id,
+    name:               c.properties.name ?? null,
+    domain:             c.properties.domain ?? null,
+    org_id:             c.properties.org_id ?? null,
+    tier:               c.properties.tier ?? null,
+    notes:              c.properties.notes ?? null,
     welcome_email_sent: c.properties.welcome_email_sent === 'true',
-    type:              c.properties.type ?? null,
-    hubspot_url:       c.url ?? null,
-    updated_at:        c.updatedAt ?? null,
+    type:               c.properties.type ?? null,
+    hubspot_url:        c.url ?? null,
+    updated_at:         c.updatedAt ?? null,
+    contact:            null,
   }));
 
-  // Sort alphabetically by name
+  console.log('[hubspot] Fetching contact associations...');
+  const assocMap = await fetchContactIdsForCompanies(companies);
+
+  const allContactIds = [...new Set([...assocMap.values()].flat())];
+  console.log(`[hubspot] Fetching ${allContactIds.length} unique contacts...`);
+  const contactMap = await fetchContacts(allContactIds);
+
+  for (const company of companies) {
+    const ids = assocMap.get(company.hubspot_id) ?? [];
+    company.contact = pickPrimaryContact(ids, contactMap);
+  }
+
   companies.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
