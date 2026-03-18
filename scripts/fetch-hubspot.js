@@ -5,6 +5,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const fs   = require('fs');
 const path = require('path');
+const { writeStatus } = require('./write-status');
 
 const API_KEY    = process.env.STACKONE_API_KEY;
 const ACCOUNT_ID = process.env.STACKONE_HUBSPOT_ACCOUNT_ID;
@@ -167,6 +168,11 @@ async function main() {
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(companies, null, 2) + '\n');
   console.log(`[hubspot] Written to ${OUT_FILE}`);
+  writeStatus('hubspot', 'ok', { records: companies.length });
 }
 
-main().catch(e => { console.error('[hubspot]', e.message); process.exit(1); });
+main().catch(e => {
+  console.error('[hubspot]', e.message);
+  writeStatus('hubspot', 'error', { error: e.message });
+  process.exit(1);
+});
