@@ -65,17 +65,17 @@ If a company has no associated contacts, `contact` is `null`.
 All column headers are always visible with their real labels. Only the data
 cells are placeholders (`—`) for columns whose data source is not yet connected.
 
-| # | Header label | Source | Data status |
-|---|---|---|---|
-| 1 | Name | HubSpot | Live — links to `hubspot_url` |
-| 2 | Primary contact | HubSpot | Live — most recent by contact `createdate` |
-| 3 | Pylon | Pylon | Data placeholder (`—`) |
-| 4 | Connected integrations | PostHog | Data placeholder (`—`) |
-| 5 | API requests | PostHog | Data placeholder (`—`) |
-| 6 | Tickets (total) | Pylon | Data placeholder (`—`) |
-| 7 | Open tickets | Pylon | Data placeholder (`—`) |
-| 8 | Open CS actions | Custom (future) | Data placeholder (`—`) |
-| 9 | Most recent call | Fireflies | Data placeholder (`—`) |
+| # | Header label | Data status |
+|---|---|---|
+| 1 | Name | Live — links to `hubspot_url` |
+| 2 | Primary contact (HubSpot) | Live — most recent by contact `createdate` |
+| 3 | Account (Pylon) | Data placeholder (`—`) |
+| 4 | Connected integrations (PostHog) | Data placeholder (`—`) |
+| 5 | API requests (PostHog) | Data placeholder (`—`) |
+| 6 | Tickets total (Pylon) | Data placeholder (`—`) |
+| 7 | Open tickets (Pylon) | Data placeholder (`—`) |
+| 8 | Open CS actions | Data placeholder (`—`) |
+| 9 | Last call (Fireflies) | Data placeholder (`—`) |
 
 ---
 
