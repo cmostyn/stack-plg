@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM — StackOne CS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="index.html" class="site-logo">
+        <span class="logo-dot"></span>
+        CS Analytics
+      </a>
+      <nav class="site-nav">
+        <a href="dashboard.html" class="site-nav-link">PLG Motion</a>
+        <a href="crm.html" class="site-nav-link site-nav-link--active">CRM</a>
+        <a href="index.html" class="site-nav-link">Support Digests</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <div class="crm-toolbar">
+      <input
+        id="crm-search"
+        class="crm-search"
+        type="search"
+        placeholder="Search customers…"
+        autocomplete="off"
+      >
+      <span id="crm-count" class="crm-count"></span>
+    </div>
+
+    <div id="crm-table-wrap" class="crm-table-wrap">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th id="th-name" aria-sort="ascending">Name</th>
+            <th id="th-contact">Primary contact (HubSpot)</th>
+            <th>Account (Pylon)</th>
+            <th>Connected integrations (PostHog)</th>
+            <th>API requests (PostHog)</th>
+            <th>Tickets total (Pylon)</th>
+            <th>Open tickets (Pylon)</th>
+            <th>Open CS actions</th>
+            <th>Last call (Fireflies)</th>
+          </tr>
+        </thead>
+        <tbody id="crm-tbody"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script>
+    // --- Constants ---
+    const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
+    const PLACEHOLDER_COLS = 7; // columns 3–9
+
+    // --- State ---
+    let allRows  = [];
+    let sortKey  = 'name';  // 'name' | 'contact'
+    let sortDir  = 'asc';   // 'asc' | 'desc'
+    let clickCounts = { name: 1, contact: 0 }; // name starts at 1 (already asc)
+
+    // --- Helpers ---
+
+    function escHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function isContactObj(c) {
+      return c !== null && typeof c === 'object' && !Array.isArray(c);
+    }
+
+    function contactSortValue(company) {
+      const c = isContactObj(company.contact) ? company.contact : null;
+      if (!c || !c.name) return '\uffff'; // nulls sort last
+      const parts = c.name.trim().split(/\s+/);
+      const last  = parts.at(-1) ?? '';
+      const first = parts.slice(0, -1).join(' ');
+      return (last + ' ' + first).toLowerCase();
+    }
+
+    function renderRow(company) {
+      const displayName = company.name ?? company.hubspot_id;
+      const href        = escHtml(company.hubspot_url ?? '#');
+      const nameCell    = `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(displayName)}</a></td>`;
+
+      const c = isContactObj(company.contact) ? company.contact : null;
+      const contactCell = c
+        ? `<td>
+            <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
+            <div class="crm-contact-email">${escHtml(c.email ?? '')}</div>
+           </td>`
+        : `<td class="crm-placeholder">—</td>`;
+
+      return `<tr>${nameCell}${contactCell}${PLACEHOLDER_CELL.repeat(PLACEHOLDER_COLS)}</tr>`;
+    }
+
+    function searchMatch(company, query) {
+      const q = query.toLowerCase();
+      const c = isContactObj(company.contact) ? company.contact : null;
+      return (
+        (company.name   ?? '').toLowerCase().includes(q) ||
+        (company.domain ?? '').toLowerCase().includes(q) ||
+        (c?.name  ?? '').toLowerCase().includes(q) ||
+        (c?.email ?? '').toLowerCase().includes(q)
+      );
+    }
+
+    function sortedRows(rows) {
+      return [...rows].sort((a, b) => {
+        const dir = sortDir === 'asc' ? 1 : -1;
+        if (sortKey === 'contact') {
+          return dir * contactSortValue(a).localeCompare(contactSortValue(b));
+        }
+        return dir * (a.name ?? '').localeCompare(b.name ?? '');
+      });
+    }
+
+    // --- Render ---
+
+    function render() {
+      const query    = document.getElementById('crm-search').value.trim();
+      const filtered = query ? allRows.filter(c => searchMatch(c, query)) : allRows;
+      const display  = sortedRows(filtered);
+
+      document.getElementById('crm-tbody').innerHTML = display.map(renderRow).join('');
+
+      const total = allRows.length;
+      const shown = display.length;
+      document.getElementById('crm-count').textContent =
+        query ? `${shown} of ${total} customers` : `${total} customers`;
+    }
+
+    // --- Sort ---
+
+    function setSort(key) {
+      clickCounts[key] = (clickCounts[key] ?? 0) + 1;
+      const click = clickCounts[key];
+
+      if (click % 3 === 1) {
+        sortKey = key; sortDir = 'asc';
+      } else if (click % 3 === 2) {
+        sortKey = key; sortDir = 'desc';
+      } else {
+        // Third click: reset to global default (name A→Z)
+        sortKey = 'name'; sortDir = 'asc';
+        clickCounts = { name: 1, contact: 0 };
+      }
+
+      // Update aria-sort on sortable headers
+      const thName    = document.getElementById('th-name');
+      const thContact = document.getElementById('th-contact');
+      thName.removeAttribute('aria-sort');
+      thContact.removeAttribute('aria-sort');
+      const activeEl = sortKey === 'contact' ? thContact : thName;
+      activeEl.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+
+      render();
+    }
+
+    // --- Init ---
+
+    fetch('./data/hubspot.json')
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => {
+        allRows = data;
+        render();
+      })
+      .catch(() => {
+        document.getElementById('crm-table-wrap').outerHTML =
+          '<p class="crm-error">Customer data couldn\'t be loaded. Try refreshing the page.</p>';
+      });
+
+    document.getElementById('crm-search').addEventListener('input', render);
+    document.getElementById('th-name').addEventListener('click', () => setSort('name'));
+    document.getElementById('th-contact').addEventListener('click', () => setSort('contact'));
+  </script>
+
+</body>
+</html>
