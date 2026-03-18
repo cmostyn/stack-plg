@@ -473,3 +473,34 @@ a:hover {
   margin: 0 -20px;
   width: calc(100% + 40px);
 }
+
+/* ============================================================
+   Site Nav
+   ============================================================ */
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.site-nav-link {
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: var(--so-radius);
+  transition: background 0.12s, color 0.12s;
+}
+
+.site-nav-link:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-header);
+  text-decoration: none;
+}
+
+.site-nav-link--active {
+  background: var(--so-foreground);
+  color: var(--so-text-header);
+}
