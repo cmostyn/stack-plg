@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLG Support Digests — StackOne CS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="/" class="site-logo">
+        <span class="logo-dot"></span>
+        CS Analytics
+      </a>
+      <span class="site-header-meta">StackOne Customer Success</span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <h1 class="page-heading">PLG Support Digests</h1>
+    <p class="page-subheading">Weekly support analysis, published every Tuesday.</p>
+
+    <div class="digest-list" id="digest-list">
+      <!-- Populated by manifest.json -->
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <p class="empty-state-heading">No digests yet</p>
+      <p class="empty-state-body">The first digest will appear here after Claude Cowork runs on Tuesday.</p>
+    </div>
+  </main>
+
+  <script>
+    const list = document.getElementById('digest-list');
+    const empty = document.getElementById('empty-state');
+
+    fetch('manifest.json')
+      .then(r => r.json())
+      .then(digests => {
+        if (!digests.length) {
+          empty.style.display = 'block';
+          return;
+        }
+
+        // Most recent first
+        const sorted = digests.slice().sort((a, b) => b.date.localeCompare(a.date));
+
+        sorted.forEach(d => {
+          const card = document.createElement('a');
+          card.className = 'digest-card';
+          card.href = `reports/${d.date}/`;
+          card.innerHTML = `
+            <div class="digest-card-left">
+              <div class="digest-card-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <rect x="2" y="1" width="10" height="13" rx="1.5"/>
+                  <line x1="4.5" y1="5" x2="9.5" y2="5"/>
+                  <line x1="4.5" y1="7.5" x2="9.5" y2="7.5"/>
+                  <line x1="4.5" y1="10" x2="7.5" y2="10"/>
+                </svg>
+              </div>
+              <div>
+                <div class="digest-card-title">${d.title}</div>
+                <div class="digest-card-date">${formatDate(d.date)}</div>
+              </div>
+            </div>
+            <svg class="digest-card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 3l5 5-5 5"/>
+            </svg>
+          `;
+          list.appendChild(card);
+        });
+      })
+      .catch(() => {
+        empty.style.display = 'block';
+      });
+
+    function formatDate(iso) {
+      // iso = "2026-03-18"
+      const [y, m, d] = iso.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+  </script>
+
+</body>
+</html>

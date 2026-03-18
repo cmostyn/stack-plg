@@ -1,0 +1,13 @@
+{
+  "name": "cs-analytics",
+  "version": "1.0.0",
+  "description": "PLG support digest site for StackOne CS",
+  "scripts": {
+    "publish": "node publish.js --once",
+    "watch": "node publish.js --watch"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "dotenv": "^16.4.5"
+  }
+}

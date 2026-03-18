@@ -1,0 +1,6 @@
+.env
+node_modules/
+package-lock.json
+
+# Raw digest outputs — never commit source files
+/Users/mostyn/Documents/Claude/outputs/

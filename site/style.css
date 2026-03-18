@@ -1,0 +1,369 @@
+/* ============================================================
+   StackOne Design Tokens
+   Source: stackone-branding SKILL.md + stackone-web-design-guidelines SKILL.md
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap');
+
+/* Stack Sans Text and Px Grotesk are self-hosted.
+   Drop woff2 files into site/fonts/ and uncomment:
+
+@font-face {
+  font-family: "Stack Sans Text";
+  src: url("fonts/StackSansText-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Px Grotesk";
+  src: url("fonts/PxGrotesk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+:root {
+  /* Brand */
+  --so-primary: #00AF66;
+  --so-green-dark: #047B43;
+  --so-green-light: #76D6AE;
+
+  /* Extended */
+  --so-purple-dark: #4D4EBA;
+  --so-purple-light: #B6B8FF;
+  --so-orange-dark: #96580A;
+  --so-orange-light: #CEA36C;
+  --so-blue-dark: #0C58AE;
+  --so-blue-light: #92B2FF;
+  --so-red-dark: #C43E3E;
+  --so-red-light: #FC6E6E;
+
+  /* Text */
+  --so-text-header: #222121;
+  --so-text-body: #4C4B4B;
+  --so-text-tag: #7A7A7A;
+
+  /* Warm Neutrals */
+  --so-neutral-40: #A19F9E;
+  --so-neutral-30: #B6B4B3;
+  --so-neutral-20: #CBC9C7;
+  --so-neutral-15: #D5D4D2;
+  --so-neutral-10: #E0DEDC;
+  --so-neutral-5: #EBE9E7;
+
+  /* Surfaces */
+  --so-foreground: #F4F2F0;
+  --so-background: #FEFEFD;
+  --so-white: #FFFFFF;
+
+  /* Typography */
+  --so-font-heading: "Stack Sans Text", system-ui, sans-serif;
+  --so-font-body: "Geist", system-ui, sans-serif;
+  --so-font-tag: "Px Grotesk", Arial, sans-serif;
+  --so-font-code: "SF Mono", ui-monospace, monospace;
+
+  /* Shadows */
+  --so-shadow-card: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+  --so-shadow-button: 0px 1px 0px 0px rgba(0, 0, 0, 0.15);
+
+  /* Radius */
+  --so-radius-sm: 4px;
+  --so-radius: 8px;
+  --so-radius-lg: 12px;
+  --so-radius-xl: 20px;
+}
+
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--so-font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--so-text-body);
+  background-color: var(--so-background);
+}
+
+a {
+  color: var(--so-green-dark);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+.container {
+  max-width: 1400px;
+  padding: 0 2rem;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Site Header
+   ============================================================ */
+
+.site-header {
+  border-bottom: 1px solid var(--so-neutral-10);
+  background: var(--so-white);
+  padding: 0 2rem;
+}
+
+.site-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--so-font-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--so-text-header);
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.site-logo:hover {
+  text-decoration: none;
+  color: var(--so-text-header);
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--so-primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.site-header-meta {
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+}
+
+/* ============================================================
+   Page Content
+   ============================================================ */
+
+.page-main {
+  padding: 48px 2rem 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-heading {
+  font-family: var(--so-font-heading);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -2px;
+  color: var(--so-text-header);
+  margin-bottom: 8px;
+}
+
+.page-subheading {
+  font-size: 16px;
+  color: var(--so-text-tag);
+  margin-bottom: 40px;
+}
+
+/* ============================================================
+   Digest Cards (Index Page)
+   ============================================================ */
+
+.digest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.digest-card {
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.digest-card:hover {
+  border-color: var(--so-neutral-20);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+}
+
+.digest-card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.digest-card-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--so-foreground);
+  border-radius: var(--so-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.digest-card-icon svg {
+  width: 16px;
+  height: 16px;
+  color: var(--so-text-tag);
+}
+
+.digest-card-title {
+  font-family: var(--so-font-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--so-text-header);
+  letter-spacing: -0.5px;
+  margin-bottom: 2px;
+}
+
+.digest-card-date {
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+}
+
+.digest-card-arrow {
+  color: var(--so-neutral-30);
+  flex-shrink: 0;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.digest-card:hover .digest-card-arrow {
+  color: var(--so-green-dark);
+  transform: translateX(2px);
+}
+
+/* ============================================================
+   Empty State
+   ============================================================ */
+
+.empty-state {
+  padding: 64px 0;
+  text-align: center;
+  color: var(--so-text-tag);
+}
+
+.empty-state-heading {
+  font-family: var(--so-font-heading);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  color: var(--so-text-header);
+  margin-bottom: 8px;
+}
+
+.empty-state-body {
+  font-size: 15px;
+  color: var(--so-text-tag);
+}
+
+/* ============================================================
+   Report Page (branded wrapper around digest iframe)
+   ============================================================ */
+
+.report-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.report-bar {
+  background: var(--so-white);
+  border-bottom: 1px solid var(--so-neutral-10);
+  padding: 0 2rem;
+  flex-shrink: 0;
+}
+
+.report-bar-inner {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.back-link:hover {
+  color: var(--so-green-dark);
+  text-decoration: none;
+}
+
+.report-bar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--so-neutral-15);
+  flex-shrink: 0;
+}
+
+.report-bar-title {
+  font-family: var(--so-font-heading);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--so-text-header);
+  letter-spacing: -0.5px;
+}
+
+.report-bar-date {
+  margin-left: auto;
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+}
+
+.report-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  display: block;
+}
