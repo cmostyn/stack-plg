@@ -31,14 +31,16 @@ The existing fetch script already pulls all companies filtered by
 1. Batch-fetch associated contact IDs per company via
    `POST /crm/v3/associations/companies/contacts/batch/read`. No association
    label filter — fetch all contacts. Chunk company IDs at ≤100 per request.
-   Cap at 100 contact IDs per company (first 100 returned; edge case only).
+   Each input object in the request body must include `"limit": 100` to cap
+   contacts returned per company.
 2. Collect all contact IDs across all companies, deduplicate, then rechunk
    at ≤100 before the next step.
 3. Batch-read those contacts via `POST /crm/v3/objects/contacts/batch/read`
    for properties `firstname`, `lastname`, `email`, `createdate`. Chunk at
    ≤100 contact IDs per request.
 4. For each company, pick the contact with the most recent `createdate`
-   property. Tiebreak: lowest contact ID (lexicographic).
+   property. Tiebreak: lowest contact ID parsed as an integer (not
+   lexicographic — HubSpot IDs are numeric strings).
 5. Add a `contact` field to each company object:
 
 ```json
@@ -84,7 +86,8 @@ matching the existing pattern.
 ### Search
 - Text input above the table, ~300px on desktop, full-width on mobile
 - Placeholder: "Search customers…"
-- Filters rows in real time across: company name, domain, contact name, contact email
+- Filters rows in real time across: company name, domain (already present in
+  `hubspot.json` from the existing company fetch), contact name, contact email
 - Label format:
   - No filter active: `"N customers"`
   - Filter active: `"N of M customers"`
