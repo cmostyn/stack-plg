@@ -5,6 +5,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const fs   = require('fs');
 const path = require('path');
+const { writeStatus } = require('./write-status');
 
 const API_KEY    = process.env.STACKONE_PYLON_API_KEY;
 const ACCOUNT_ID = process.env.STACKONE_PYLON_ACCOUNT_ID;
@@ -121,6 +122,12 @@ async function main() {
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(output, null, 2) + '\n');
   console.log(`[pylon] Written to ${OUT_FILE}`);
+  const totalOpen = output.reduce((n, a) => n + (a.open_tickets_live ?? 0), 0);
+  writeStatus('pylon', 'ok', { records: output.length, open_tickets: totalOpen });
 }
 
-main().catch(e => { console.error('[pylon]', e.message); process.exit(1); });
+main().catch(e => {
+  console.error('[pylon]', e.message);
+  writeStatus('pylon', 'error', { error: e.message });
+  process.exit(1);
+});

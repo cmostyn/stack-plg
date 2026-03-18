@@ -5,6 +5,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const fs   = require('fs');
 const path = require('path');
+const { writeStatus } = require('./write-status');
 
 const API_KEY    = process.env.STACKONE_API_KEY;
 const ACCOUNT_ID = process.env.STACKONE_POSTHOG_ACCOUNT_ID;
@@ -114,6 +115,11 @@ async function main() {
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(output, null, 2) + '\n');
   console.log(`[posthog] Written to ${OUT_FILE}`);
+  writeStatus('posthog', 'ok', { records: output.length });
 }
 
-main().catch(e => { console.error('[posthog]', e.message); process.exit(1); });
+main().catch(e => {
+  console.error('[posthog]', e.message);
+  writeStatus('posthog', 'error', { error: e.message });
+  process.exit(1);
+});
