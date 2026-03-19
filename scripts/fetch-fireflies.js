@@ -38,7 +38,7 @@ async function main() {
     query: {},
   });
 
-  const transcripts = data?.data?.transcripts ?? data?.result?.transcripts ?? [];
+  const transcripts = data?.data ?? [];
   console.log(`[fireflies] Found ${transcripts.length} transcripts`);
 
   writeStatus('fireflies', 'ok', { records: transcripts.length });
