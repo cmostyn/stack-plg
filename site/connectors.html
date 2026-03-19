@@ -136,16 +136,21 @@
       try {
         const res = await fetch(`data/status-${id}.json`);
         if (!res.ok) return { status: 'pending' };
-        return res.json();
-      } catch {
+        return await res.json();
+      } catch (e) {
         return { status: 'pending' };
       }
     }
 
     async function init() {
       const grid = document.getElementById('connectors-grid');
-      const statuses = await Promise.all(CONNECTORS.map(c => loadStatus(c.id)));
-      grid.innerHTML = CONNECTORS.map((c, i) => renderCard(c, statuses[i])).join('');
+      try {
+        const statuses = await Promise.all(CONNECTORS.map(c => loadStatus(c.id)));
+        grid.innerHTML = CONNECTORS.map((c, i) => renderCard(c, statuses[i])).join('');
+      } catch (e) {
+        console.error('Connector status load failed:', e);
+        grid.innerHTML = CONNECTORS.map(c => renderCard(c, { status: 'pending' })).join('');
+      }
     }
 
     init();
