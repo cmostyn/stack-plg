@@ -27,23 +27,27 @@
   <main class="page-main">
 
     <div class="crm-toolbar">
-      <input
-        id="crm-search"
-        class="crm-search"
-        type="search"
-        placeholder="Search customers…"
-        autocomplete="off"
-      >
-      <select id="crm-type-filter" class="crm-type-filter">
-        <option value="">All types</option>
-        <option value="Customer - PLG">PLG</option>
-        <option value="Customer - SLG">SLG</option>
-        <option value="Customer">Customer</option>
-      </select>
-      <span id="crm-count" class="crm-count"></span>
-      <div class="crm-layout-actions">
-        <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
-        <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
+      <div class="crm-toolbar-left">
+        <div class="crm-search-wrap">
+          <svg class="crm-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6.5" cy="6.5" r="4"/>
+            <line x1="9.5" y1="9.5" x2="13.5" y2="13.5"/>
+          </svg>
+          <input id="crm-search" class="crm-search" type="search" placeholder="Search customers…" autocomplete="off">
+        </div>
+        <div class="crm-type-pills" id="crm-type-pills">
+          <button class="crm-pill crm-pill--active" data-type="">All</button>
+          <button class="crm-pill" data-type="Customer - PLG">PLG</button>
+          <button class="crm-pill" data-type="Customer - SLG">SLG</button>
+          <button class="crm-pill" data-type="Customer">Cust</button>
+        </div>
+      </div>
+      <div class="crm-toolbar-right">
+        <span id="crm-count" class="crm-count"></span>
+        <div class="crm-layout-actions">
+          <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
+          <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -59,10 +63,13 @@
 
   </main>
 
+  <div id="card-overlay" class="card-overlay"></div>
+  <div id="inline-add-popover" class="inline-add-popover"></div>
+
   <script>
     // --- Constants ---
     const WORKER_URL = 'https://stack-plg-actions.charlie-9e7.workers.dev';
-    const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
+    const PLACEHOLDER_CELL = '<td></td>';
 
     const DEFAULT_COL_ORDER = [
       'name', 'contact', 'notes', 'last_contact',
@@ -112,10 +119,25 @@
 
     const CELLS = {
       name: company => {
-        const display = company.name ?? company.hubspot_id;
-        const href    = safeHref(company.hubspot_url);
-        const badge   = typeBadge(company.type);
-        return `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}</td>`;
+        const display    = company.name ?? company.hubspot_id;
+        const href       = safeHref(company.hubspot_url);
+        const hid        = escHtml(String(company.hubspot_id ?? ''));
+        const badge      = typeBadge(company.type);
+        const avatar     = avatarHtml(company.name);
+        const c          = isContactObj(company.contact) ? company.contact : null;
+        const mailtoHref = c?.email ? `mailto:${c.email}` : null;
+        const pylonEntry = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+        const pylonHref  = pylonEntry ? escHtml(`https://app.usepylon.com/accounts/${pylonEntry.pylon_account_id}`) : null;
+        const quickLinks = [
+          href !== '#' ? `<a href="${href}" class="crm-row-action" target="_blank" rel="noopener" title="Open in HubSpot"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M1 6h14"/><path d="M6 2v4"/><path d="M10 2v4"/></svg></a>` : '',
+          mailtoHref    ? `<a href="${mailtoHref}" class="crm-row-action" title="Send email"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 4l7 5 7-5"/></svg></a>` : '',
+          pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
+        ].filter(Boolean).join('');
+        return `<td class="crm-name-cell">
+          ${avatar}<button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+          <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
+          <div class="crm-row-actions">${quickLinks}</div>
+        </td>`;
       },
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
@@ -149,23 +171,41 @@
         const pylonUrl = `https://app.usepylon.com/accounts/${py.pylon_account_id}`;
         return `<td><a href="${escHtml(pylonUrl)}" target="_blank" rel="noopener">${escHtml(py.name)}</a></td>`;
       },
-      integrations: () => PLACEHOLDER_CELL,
+      integrations: company => {
+        const ph = posthogMap.get(normName(company.name));
+        return ph != null
+          ? `<td class="crm-num">${ph.linked_accounts.toLocaleString()}</td>`
+          : PLACEHOLDER_CELL;
+      },
       clicks: company => {
         const ph = posthogMap.get(normName(company.name));
         return ph != null
-          ? `<td>${ph.click_interactions.toLocaleString()}</td>`
+          ? `<td class="crm-num">${ph.click_interactions.toLocaleString()}</td>`
           : PLACEHOLDER_CELL;
       },
       api_requests:  () => PLACEHOLDER_CELL,
       tickets_total: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td>${py.issues_last_30d.total}</td>` : PLACEHOLDER_CELL;
+        return py ? `<td class="crm-num">${py.issues_last_30d.total}</td>` : PLACEHOLDER_CELL;
       },
       open_tickets: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td>${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
+        return py ? `<td class="crm-num">${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
       },
-      cs_actions: () => PLACEHOLDER_CELL,
+      cs_actions: company => {
+        const actions = actionsMap.get(String(company.hubspot_id ?? '')) ?? [];
+        const open    = actions.filter(a => !a.done);
+        const pills   = open.slice(0, 2).map(a =>
+          `<span class="action-pill ${escHtml(a.priority)}">${escHtml(a.name)}</span>`
+        ).join('');
+        const hid = escHtml(String(company.hubspot_id ?? ''));
+        return `<td>
+          <div class="actions-cell">
+            ${pills}
+            <button class="add-action-btn" data-hubspot-id="${hid}">+ Add</button>
+          </div>
+        </td>`;
+      },
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
@@ -175,10 +215,14 @@
     };
 
     // --- State ---
-    let allRows      = [];
-    let posthogMap   = new Map();
-    let firefliesMap = new Map();
-    let pylonMap     = new Map();
+    let allRows             = [];
+    let posthogMap          = new Map();
+    let firefliesMap        = new Map();  // domain → most-recent call (for Last call column)
+    let firefliesActionsMap = new Map();  // domain → all calls sorted desc (for card)
+    let pylonMap            = new Map();  // hubspot_id → pylon account
+    let actionsMap          = new Map();  // hubspot_id (string) → action[]
+    let openCardId          = null;       // hubspot_id of the open card, or null
+    let typeFilter = '';
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
@@ -210,6 +254,16 @@
 
     function normName(s) {
       return (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function avatarHtml(name) {
+      const letter = (name ?? '?')[0].toUpperCase();
+      const COLORS = [
+        ['#EFF6FF', '#1D4ED8'], ['#F0FDF4', '#15803D'], ['#FFF7ED', '#C2410C'],
+        ['#FAF5FF', '#7C3AED'], ['#FFF1F2', '#BE123C'], ['#F0FDFA', '#0F766E'],
+      ];
+      const [bg, fg] = COLORS[((name ?? '').charCodeAt(0) || 0) % COLORS.length];
+      return `<span class="crm-avatar" style="background:${bg};color:${fg}">${escHtml(letter)}</span>`;
     }
 
     function typeBadge(type) {
@@ -257,10 +311,12 @@
 
     function loadFrozenCols() {
       try {
-        const parsed = JSON.parse(localStorage.getItem('plg_crm_frozen') ?? '[]');
-        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : []);
+        const raw = localStorage.getItem('plg_crm_frozen');
+        if (raw === null) return new Set(['name']); // first visit: freeze name by default
+        const parsed = JSON.parse(raw);
+        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : ['name']);
       } catch {
-        return new Set();
+        return new Set(['name']);
       }
     }
 
@@ -295,7 +351,7 @@
         const w = colWidths[col] ?? DEFAULT_COL_WIDTHS[col];
         if (frozen) {
           const th = thead.querySelector(`th[data-col="${col}"]`);
-          if (th) { th.style.position = 'sticky'; th.style.left = offset + 'px'; th.style.zIndex = '3'; }
+          if (th) { th.style.position = 'sticky'; th.style.left = offset + 'px'; th.style.zIndex = '5'; }
           tbody.querySelectorAll('tr').forEach(row => {
             const td = row.cells[colIdx];
             if (td) { td.style.position = 'sticky'; td.style.left = offset + 'px'; td.style.zIndex = '1'; td.classList.add('crm-td--frozen'); }
@@ -367,15 +423,248 @@
       });
     }
 
+    // --- Card modal ---
+
+    function renderCardLeft(company, c, gmailUrl, calls) {
+      const rel = relativeTime(company.last_contact);
+      const abs = company.last_contact
+        ? new Date(company.last_contact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : null;
+
+      const ffHtml = calls.length === 0
+        ? '<p class="ff-empty">No calls on record.</p>'
+        : calls.map(call => {
+            const callDate = new Date(call.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const items = call.action_items ?? [];
+            const itemsHtml = items.length === 0
+              ? '<div class="ff-empty">No action items.</div>'
+              : items.map(item => `<div class="ff-action"><span class="ff-dot"></span>${escHtml(item)}</div>`).join('');
+            return `<div class="ff-item">
+              <div class="ff-call">${escHtml(call.title)} · ${escHtml(callDate)}</div>
+              ${itemsHtml}
+            </div>`;
+          }).join('');
+
+      return `
+        <div class="card-section-label">Customer details</div>
+        ${c ? `
+          <div class="field-row">
+            <div class="field-label">Primary contact</div>
+            <div class="field-value">${escHtml(c.name ?? '')}</div>
+            ${gmailUrl
+              ? `<div class="field-email"><a href="${escHtml(gmailUrl)}" target="_blank" rel="noopener">${escHtml(c.email)}</a></div>`
+              : ''}
+          </div>
+        ` : ''}
+        ${rel ? `
+          <div class="field-row">
+            <div class="field-label">Last contact</div>
+            <div class="field-date-rel">${escHtml(rel)}</div>
+            <div class="field-date-abs">${escHtml(abs ?? '')}</div>
+          </div>
+        ` : ''}
+        ${company.notes ? `
+          <div class="field-row">
+            <div class="field-label">Notes</div>
+            <div class="field-notes">${escHtml(company.notes)}</div>
+          </div>
+        ` : ''}
+        <div class="section-divider"></div>
+        <div class="card-section-label">Fireflies actions</div>
+        ${ffHtml}
+      `;
+    }
+
+    function renderCardRight(actions) {
+      const open = actions.filter(a => !a.done);
+      const done = actions.filter(a =>  a.done);
+      const all  = [...open, ...done];
+
+      const listHtml = all.length === 0
+        ? '<p class="ff-empty">No actions yet — add one above.</p>'
+        : all.map(action => `
+            <div class="action-item">
+              <button class="action-check ${action.done ? 'done' : ''}" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}"></button>
+              <div class="action-name ${action.done ? 'done' : ''}">${escHtml(action.name)}</div>
+              <span class="priority-badge priority-${escHtml(action.priority)}">${escHtml(action.priority.charAt(0).toUpperCase() + action.priority.slice(1))}</span>
+              <button class="action-delete" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}" aria-label="Delete">✕</button>
+            </div>
+          `).join('');
+
+      return `
+        <div class="actions-header">
+          <div class="card-section-label" style="margin-bottom:0">CS actions</div>
+          <button class="add-btn" id="card-add-btn">＋ Add</button>
+        </div>
+        <div id="card-add-form" class="card-add-form" style="display:none">
+          <input type="text" id="card-action-name" class="card-action-input" placeholder="Action name…" maxlength="200">
+          <select id="card-action-priority" class="card-action-select">
+            <option value="high">High</option>
+            <option value="med" selected>Med</option>
+            <option value="low">Low</option>
+          </select>
+          <button class="card-action-save" id="card-action-save">Add</button>
+          <button class="card-action-cancel" id="card-action-cancel">Cancel</button>
+        </div>
+        ${listHtml}
+      `;
+    }
+
+    function rerenderCardActions() {
+      const right = document.querySelector('.card-modal-right');
+      if (!right || !openCardId) return;
+      const actions = actionsMap.get(openCardId) ?? [];
+      right.innerHTML = renderCardRight(actions);
+    }
+
+    function closeInlinePopover() {
+      const p = document.getElementById('inline-add-popover');
+      if (!p) return;
+      p.classList.remove('inline-add-popover--open');
+      p.innerHTML = '';
+      delete p.dataset.hubspotId;
+    }
+
+    function openInlinePopover(btn) {
+      closeInlinePopover();
+      closeCard();
+      const hid  = btn.dataset.hubspotId;
+      const rect = btn.getBoundingClientRect();
+      const p    = document.getElementById('inline-add-popover');
+      p.innerHTML = `
+        <input type="text" class="inline-action-name" placeholder="Action name…" maxlength="200">
+        <select class="inline-action-priority">
+          <option value="high">High</option>
+          <option value="med" selected>Med</option>
+          <option value="low">Low</option>
+        </select>
+        <button class="inline-action-save">Add</button>
+      `;
+      p.dataset.hubspotId = hid;
+      p.style.top  = `${rect.bottom + window.scrollY + 4}px`;
+      p.style.left = `${rect.left  + window.scrollX}px`;
+      p.classList.add('inline-add-popover--open');
+      p.querySelector('.inline-action-name')?.focus();
+    }
+
+    function openCard(company) {
+      closeInlinePopover();
+      const c       = isContactObj(company.contact) ? company.contact : null;
+      const gmailUrl = c?.email
+        ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`
+        : null;
+      const calls   = firefliesActionsMap.get(company.domain) ?? [];
+      const actions = actionsMap.get(String(company.hubspot_id ?? '')) ?? [];
+
+      openCardId = String(company.hubspot_id ?? '');
+
+      const overlay = document.getElementById('card-overlay');
+      overlay.innerHTML = `
+        <div class="card-modal" id="card-modal">
+          <div class="card-modal-header">
+            <div>
+              <div class="card-modal-company">${escHtml(company.name ?? company.hubspot_id)}</div>
+              <div class="card-modal-domain">${escHtml(company.domain ?? '')}${
+                company.hubspot_url
+                  ? ` · <a href="${safeHref(company.hubspot_url)}" target="_blank" rel="noopener" class="card-hs-link">HubSpot ↗</a>`
+                  : ''
+              }</div>
+            </div>
+            <button class="card-modal-close" id="card-close">×</button>
+          </div>
+          <div class="card-modal-body">
+            <div class="card-modal-left">${renderCardLeft(company, c, gmailUrl, calls)}</div>
+            <div class="card-modal-right">${renderCardRight(actions)}</div>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('card-overlay--open');
+      document.addEventListener('keydown', handleCardKeydown);
+    }
+
+    function closeCard() {
+      const overlay = document.getElementById('card-overlay');
+      overlay.classList.remove('card-overlay--open');
+      overlay.innerHTML = '';
+      openCardId = null;
+      document.removeEventListener('keydown', handleCardKeydown);
+    }
+
+    function handleCardKeydown(e) {
+      if (e.key === 'Escape') closeCard();
+    }
+
+    // --- Action CRUD ---
+
+    async function createAction(hubspot_id, name, priority) {
+      try {
+        const res = await fetch(`${WORKER_URL}/actions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hubspot_id: String(hubspot_id), name, priority }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const action = await res.json();
+        const list = actionsMap.get(String(hubspot_id)) ?? [];
+        actionsMap.set(String(hubspot_id), [...list, action]);
+        return action;
+      } catch (e) {
+        console.error('[actions] create failed:', e);
+        return null;
+      }
+    }
+
+    async function toggleAction(id, hubspot_id, currentDone) {
+      try {
+        const res = await fetch(`${WORKER_URL}/actions/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: currentDone ? 0 : 1 }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const updated = await res.json();
+        const list = actionsMap.get(String(hubspot_id)) ?? [];
+        actionsMap.set(String(hubspot_id), list.map(a => a.id === id ? updated : a));
+        return updated;
+      } catch (e) {
+        console.error('[actions] toggle failed:', e);
+        return null;
+      }
+    }
+
+    async function deleteAction(id, hubspot_id) {
+      try {
+        const res = await fetch(`${WORKER_URL}/actions/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+        });
+        if (!res.ok && res.status !== 204) throw new Error(await res.text());
+        const list = actionsMap.get(String(hubspot_id)) ?? [];
+        actionsMap.set(String(hubspot_id), list.filter(a => a.id !== id));
+        return true;
+      } catch (e) {
+        console.error('[actions] delete failed:', e);
+        return false;
+      }
+    }
+
+    function showCardError(msg) {
+      const right = document.querySelector('.card-modal-right');
+      if (!right) return;
+      const err = document.createElement('div');
+      err.style.cssText = 'font-size:12px;color:#C43E3E;padding:4px 0;';
+      err.textContent = msg;
+      right.prepend(err);
+      setTimeout(() => err.remove(), 3000);
+    }
+
     // --- Render ---
 
     function render() {
       const table      = document.querySelector('.crm-table');
       const thead      = table.querySelector('thead');
       const tbody      = table.querySelector('tbody');
-      const query      = document.getElementById('crm-search').value.trim();
-      const typeFilter = document.getElementById('crm-type-filter').value;
-      const filtered   = allRows.filter(c =>
+      const query    = document.getElementById('crm-search').value.trim();
+      const filtered = allRows.filter(c =>
         (!query || searchMatch(c, query)) &&
         (!typeFilter || c.type === typeFilter)
       );
@@ -425,10 +714,36 @@
       fetch('./data/posthog.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/fireflies.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([hubspot, posthog, fireflies, pylon]) => {
-      posthogMap   = new Map(posthog.map(r => [normName(r.org_name), r]));
-      firefliesMap = new Map(fireflies.map(r => [r.domain, r]));
-      pylonMap     = new Map(pylon.map(r => [String(r.hubspot_id), r]));
+      fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog, fireflies, pylon, actions]) => {
+      posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
+      pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
+
+      // firefliesMap: domain → most-recent call (used by Last call column)
+      firefliesMap = new Map();
+      for (const entry of fireflies) {
+        if (!firefliesMap.has(entry.domain) || entry.date > firefliesMap.get(entry.domain).date) {
+          firefliesMap.set(entry.domain, entry);
+        }
+      }
+
+      // firefliesActionsMap: domain → all calls sorted most-recent first (used by card)
+      firefliesActionsMap = new Map();
+      for (const entry of fireflies) {
+        if (!firefliesActionsMap.has(entry.domain)) firefliesActionsMap.set(entry.domain, []);
+        firefliesActionsMap.get(entry.domain).push(entry);
+      }
+      for (const [, calls] of firefliesActionsMap) {
+        calls.sort((a, b) => b.date.localeCompare(a.date));
+      }
+
+      // actionsMap: hubspot_id (string) → action[]
+      actionsMap = new Map();
+      for (const action of actions) {
+        if (!actionsMap.has(action.hubspot_id)) actionsMap.set(action.hubspot_id, []);
+        actionsMap.get(action.hubspot_id).push(action);
+      }
+
       allRows = hubspot;
       render();
     }).catch(() => {
@@ -437,7 +752,16 @@
     });
 
     document.getElementById('crm-search').addEventListener('input', render);
-    document.getElementById('crm-type-filter').addEventListener('change', render);
+
+    document.getElementById('crm-type-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      typeFilter = pill.dataset.type;
+      document.querySelectorAll('#crm-type-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
+      render();
+    });
 
     // --- Save / Reset layout buttons ---
     document.getElementById('crm-save-layout').addEventListener('click', () => {
@@ -454,9 +778,9 @@
     });
 
     document.getElementById('crm-reset-layout').addEventListener('click', () => {
-      colOrder  = [...DEFAULT_COL_ORDER];
-      colWidths = { ...DEFAULT_COL_WIDTHS };
-      frozenCols.clear();
+      colOrder   = [...DEFAULT_COL_ORDER];
+      colWidths  = { ...DEFAULT_COL_WIDTHS };
+      frozenCols = new Set(['name']);
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
       localStorage.removeItem('plg_crm_frozen');
@@ -526,6 +850,129 @@
       localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
       render();
     });
+
+    // Card open: delegated click on ⊞ button
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const btn = e.target.closest('.card-open-btn');
+      if (!btn) return;
+      const hid = btn.dataset.hubspotId;
+      const company = allRows.find(r => String(r.hubspot_id ?? '') === hid);
+      if (company) openCard(company);
+    });
+
+    // Card close: click on overlay backdrop (outside the modal)
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('card-overlay')) closeCard();
+    });
+
+    // Card close: × button
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target.closest('#card-close')) closeCard();
+    });
+
+    // Card CRUD: add form, toggle, delete
+    document.getElementById('card-overlay').addEventListener('click', async e => {
+      // Show add form
+      if (e.target.closest('#card-add-btn')) {
+        const form = document.getElementById('card-add-form');
+        if (form) { form.style.display = 'flex'; document.getElementById('card-action-name')?.focus(); }
+        return;
+      }
+
+      // Cancel add form
+      if (e.target.closest('#card-action-cancel')) {
+        const form = document.getElementById('card-add-form');
+        if (form) form.style.display = 'none';
+        return;
+      }
+
+      // Save new action
+      if (e.target.closest('#card-action-save')) {
+        const name     = document.getElementById('card-action-name')?.value.trim();
+        const priority = document.getElementById('card-action-priority')?.value;
+        if (!name) { document.getElementById('card-action-name')?.focus(); return; }
+        const action = await createAction(openCardId, name, priority);
+        if (!action) { showCardError("Couldn't save — try again"); return; }
+        rerenderCardActions();
+        render();
+        return;
+      }
+
+      // Toggle done
+      const checkBtn = e.target.closest('.action-check');
+      if (checkBtn) {
+        const id       = checkBtn.dataset.actionId;
+        const hid      = checkBtn.dataset.hubspotId;
+        const actions  = actionsMap.get(hid) ?? [];
+        const existing = actions.find(a => a.id === id);
+        if (!existing) return;
+        const updated = await toggleAction(id, hid, existing.done);
+        if (!updated) { showCardError("Couldn't save — try again"); return; }
+        rerenderCardActions();
+        render();
+        return;
+      }
+
+      // Delete
+      const delBtn = e.target.closest('.action-delete');
+      if (delBtn) {
+        const id  = delBtn.dataset.actionId;
+        const hid = delBtn.dataset.hubspotId;
+        const ok  = await deleteAction(id, hid);
+        if (!ok) { showCardError("Couldn't delete — try again"); return; }
+        rerenderCardActions();
+        render();
+        return;
+      }
+    });
+
+    // Enter key in card add form
+    document.getElementById('card-overlay').addEventListener('keydown', async e => {
+      if (e.key !== 'Enter') return;
+      if (!e.target.closest('#card-add-form')) return;
+      e.preventDefault();
+      document.getElementById('card-action-save')?.click();
+    });
+
+    // Inline add: delegated click on + Add button in CS actions column
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const btn = e.target.closest('.add-action-btn');
+      if (!btn) return;
+      openInlinePopover(btn);
+    });
+
+    // Inline popover: save on button click
+    document.getElementById('inline-add-popover').addEventListener('click', async e => {
+      if (!e.target.closest('.inline-action-save')) return;
+      const p        = document.getElementById('inline-add-popover');
+      const hid      = p.dataset.hubspotId;
+      const name     = p.querySelector('.inline-action-name')?.value.trim();
+      const priority = p.querySelector('.inline-action-priority')?.value;
+      if (!name) { p.querySelector('.inline-action-name')?.focus(); return; }
+      const action = await createAction(hid, name, priority);
+      if (!action) return;
+      closeInlinePopover();
+      render();
+    });
+
+    // Inline popover: save on Enter key
+    document.getElementById('inline-add-popover').addEventListener('keydown', async e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      document.querySelector('#inline-add-popover .inline-action-save')?.click();
+    });
+
+    // Inline popover: close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeInlinePopover();
+    });
+
+    // Inline popover: close on click outside
+    document.addEventListener('click', e => {
+      const p = document.getElementById('inline-add-popover');
+      if (!p?.classList.contains('inline-add-popover--open')) return;
+      if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
+    }, true);
 
     // --- Column resize ---
     let resizingCol = null;

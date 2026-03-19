@@ -131,9 +131,9 @@ a:hover {
   max-width: 1400px;
   margin: 0 auto;
   height: 56px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .site-header-inner .week-pill {
@@ -145,8 +145,8 @@ a:hover {
   align-items: center;
   gap: 8px;
   font-family: var(--so-font-heading);
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 500;
   color: var(--so-text-header);
   letter-spacing: -0.5px;
   text-decoration: none;
@@ -489,11 +489,12 @@ a:hover {
 }
 
 .site-nav-link {
-  font-family: var(--so-font-tag);
-  font-size: 13px;
-  color: var(--so-text-tag);
+  font-family: var(--so-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--so-text-body);
   text-decoration: none;
-  padding: 5px 10px;
+  padding: 6px 11px;
   border-radius: var(--so-radius);
   transition: background 0.12s, color 0.12s;
 }
@@ -507,6 +508,7 @@ a:hover {
 .site-nav-link--active {
   background: var(--so-foreground);
   color: var(--so-text-header);
+  font-weight: 500;
 }
 
 /* ============================================================
@@ -516,15 +518,45 @@ a:hover {
 .crm-toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
+.crm-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.crm-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crm-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.crm-search-icon {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--so-neutral-30);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .crm-search {
-  width: 300px;
+  width: 240px;
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 30px;
   font-family: var(--so-font-body);
   font-size: 14px;
   color: var(--so-text-body);
@@ -564,15 +596,19 @@ a:hover {
 }
 
 .crm-table th {
-  font-family: var(--so-font-tag);
-  font-size: 12px;
-  font-weight: 400;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  font-weight: 500;
   color: var(--so-text-tag);
   text-align: left;
-  padding: 10px 16px;
+  padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-10);
   white-space: nowrap;
   user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--so-white);
 }
 
 .crm-table th:hover {
@@ -584,11 +620,11 @@ a:hover {
 
 .crm-table td {
   font-family: var(--so-font-body);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--so-text-body);
-  padding: 12px 16px;
+  padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-5);
-  vertical-align: top;
+  vertical-align: middle;
   transition: background 0.12s;
 }
 
@@ -601,7 +637,13 @@ a:hover {
 }
 
 .crm-placeholder {
-  color: var(--so-neutral-40);
+  color: var(--so-neutral-20);
+  font-size: 12px;
+}
+
+.crm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .crm-contact-name {
@@ -1115,13 +1157,13 @@ a:hover {
 }
 
 .crm-type-badge--plg {
-  background: rgba(0, 175, 102, 0.1);
-  color: var(--so-green-dark);
+  background: rgba(12, 88, 174, 0.1);
+  color: var(--so-blue-dark);
 }
 
 .crm-type-badge--slg {
-  background: rgba(12, 88, 174, 0.1);
-  color: var(--so-blue-dark);
+  background: rgba(150, 88, 10, 0.12);
+  color: var(--so-orange-dark);
 }
 
 .crm-type-badge--cust {
@@ -1129,12 +1171,93 @@ a:hover {
   color: var(--so-neutral-40);
 }
 
+/* CRM — type filter pills */
+.crm-type-pills {
+  display: flex;
+  align-items: center;
+  background: var(--so-foreground);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius);
+  padding: 3px;
+  gap: 2px;
+}
+
+.crm-pill {
+  padding: 4px 11px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--so-text-tag);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+}
+
+.crm-pill:hover {
+  background: var(--so-white);
+  color: var(--so-text-body);
+}
+
+.crm-pill--active {
+  background: var(--so-white);
+  color: var(--so-text-header);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* CRM — letter avatars */
+.crm-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--so-font-body);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* CRM — hover quick-action links */
+.crm-row-actions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.crm-table tr:hover .crm-row-actions {
+  display: flex;
+}
+
+.crm-row-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  color: var(--so-neutral-30);
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+}
+
+.crm-row-action:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-body);
+}
+
 /* CRM — layout actions */
 .crm-layout-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
 }
 
 .crm-layout-btn {
@@ -1171,25 +1294,6 @@ a:hover {
   color: var(--so-text-header);
 }
 
-/* CRM — type filter */
-.crm-type-filter {
-  padding: 7px 10px;
-  font-family: var(--so-font-body);
-  font-size: 14px;
-  color: var(--so-text-body);
-  background: var(--so-white);
-  border: 1px solid var(--so-neutral-10);
-  border-radius: var(--so-radius);
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s;
-  appearance: auto;
-}
-
-.crm-type-filter:focus {
-  border-color: rgba(0, 175, 102, 0.4);
-  box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
-}
 
 /* CRM — contact link */
 .crm-contact-link {
@@ -1261,3 +1365,191 @@ a:hover {
 .crm-table th {
   position: relative;
 }
+
+/* ============================================================
+   Customer card modal
+   ============================================================ */
+
+/* Overlay backdrop */
+.card-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.card-overlay--open { display: flex; }
+
+/* Modal container */
+.card-modal {
+  background: #fff;
+  border: 1px solid var(--so-neutral-10);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.14);
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+/* Header */
+.card-modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--so-neutral-5);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+.card-modal-company { font-size: 18px; font-weight: 500; color: var(--so-text-header); letter-spacing: -0.4px; }
+.card-modal-domain  { font-size: 12px; color: var(--so-neutral-40); margin-top: 2px; }
+.card-hs-link       { color: var(--so-green-dark); text-decoration: none; }
+.card-hs-link:hover { text-decoration: underline; }
+.card-modal-close   {
+  background: none; border: none; cursor: pointer;
+  color: var(--so-neutral-40); font-size: 20px; line-height: 1;
+  padding: 2px 6px; border-radius: 6px;
+}
+.card-modal-close:hover { background: var(--so-foreground); color: var(--so-text-header); }
+
+/* Two-column body */
+.card-modal-body { display: grid; grid-template-columns: 1fr 1fr; }
+.card-modal-left  { padding: 18px 20px; border-right: 1px solid var(--so-neutral-5); }
+.card-modal-right { padding: 18px 20px; }
+
+/* Section labels and field rows */
+.card-section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--so-neutral-40); margin-bottom: 12px;
+}
+.field-row      { margin-bottom: 14px; }
+.field-label    {
+  font-size: 11px; color: var(--so-neutral-40);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px;
+}
+.field-value     { font-size: 13px; color: var(--so-text-header); }
+.field-email a   { font-size: 12px; color: var(--so-green-dark); text-decoration: none; }
+.field-email a:hover { text-decoration: underline; }
+.field-notes     { font-size: 13px; color: var(--so-text-body); line-height: 1.5; }
+.field-date-rel  { font-size: 13px; color: var(--so-text-header); }
+.field-date-abs  { font-size: 11px; color: var(--so-neutral-40); margin-top: 1px; }
+.section-divider { height: 1px; background: var(--so-neutral-5); margin: 14px 0; }
+
+/* Fireflies call items */
+.ff-item            { padding: 8px 0; border-bottom: 1px solid var(--so-neutral-5); }
+.ff-item:last-child { border-bottom: none; }
+.ff-call   { font-size: 12px; color: var(--so-text-tag); margin-bottom: 4px; }
+.ff-action { font-size: 13px; color: var(--so-text-header); display: flex; gap: 6px; align-items: flex-start; }
+.ff-dot    { width: 5px; height: 5px; background: var(--so-neutral-20); border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.ff-empty  { font-size: 13px; color: var(--so-neutral-40); font-style: italic; }
+
+/* CS actions list in card */
+.actions-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.add-btn        {
+  background: var(--so-foreground); border: none; border-radius: 6px;
+  color: var(--so-text-body); font-size: 12px; padding: 4px 10px;
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+.add-btn:hover { background: var(--so-neutral-5); }
+
+.action-item            { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--so-neutral-5); }
+.action-item:last-child { border-bottom: none; }
+.action-check      {
+  width: 16px; height: 16px; border: 1.5px solid var(--so-neutral-20);
+  border-radius: 4px; flex-shrink: 0; cursor: pointer; background: none;
+  padding: 0;
+}
+.action-check.done { background: var(--so-primary); border-color: var(--so-primary); }
+.action-name       { flex: 1; font-size: 13px; color: var(--so-text-header); }
+.action-name.done  { text-decoration: line-through; color: var(--so-neutral-40); }
+.action-delete     {
+  background: none; border: none; cursor: pointer;
+  color: var(--so-neutral-40); font-size: 14px; padding: 2px;
+  opacity: 0; transition: opacity 0.1s;
+}
+.action-item:hover .action-delete { opacity: 1; }
+
+.priority-badge { font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.priority-high  { background: #FDEAEA; color: var(--so-red-dark); }
+.priority-med   { background: #FEF3E2; color: var(--so-orange-dark); }
+.priority-low   { background: var(--so-neutral-5); color: var(--so-text-tag); }
+
+/* Inline add form inside the card */
+.card-add-form       { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.card-action-input   {
+  flex: 1; min-width: 120px; font-size: 13px; padding: 5px 8px;
+  border: 1px solid var(--so-neutral-10); border-radius: 6px; color: var(--so-text-header);
+}
+.card-action-input:focus   { outline: none; border-color: var(--so-primary); }
+.card-action-select        {
+  font-size: 12px; padding: 5px 6px;
+  border: 1px solid var(--so-neutral-10); border-radius: 6px; color: var(--so-text-body);
+}
+.card-action-save   {
+  background: var(--so-primary); color: #fff; border: none;
+  border-radius: 6px; font-size: 12px; padding: 5px 10px; cursor: pointer;
+}
+.card-action-save:hover   { background: var(--so-green-dark); }
+.card-action-cancel {
+  background: none; border: none; color: var(--so-neutral-40);
+  font-size: 12px; padding: 5px; cursor: pointer;
+}
+.card-action-cancel:hover { color: var(--so-text-header); }
+
+/* ── CRM table: name cell open button ── */
+.crm-name-cell   { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+.card-open-btn   {
+  background: none; border: none; cursor: pointer;
+  color: var(--so-green-dark); font-size: 14px; padding: 2px;
+  flex-shrink: 0; line-height: 1;
+}
+.card-open-btn:hover { color: var(--so-primary); }
+
+/* ── CRM table: CS actions column ── */
+.actions-cell    { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.action-pill     { font-size: 11px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+.action-pill.high { background: #FDEAEA; color: var(--so-red-dark); }
+.action-pill.med  { background: #FEF3E2; color: var(--so-orange-dark); }
+.action-pill.low  { background: var(--so-neutral-5); color: var(--so-text-tag); }
+.add-action-btn  {
+  background: none; border: 1px dashed var(--so-neutral-20);
+  border-radius: 6px; color: var(--so-neutral-40);
+  font-size: 12px; padding: 2px 8px; cursor: pointer; white-space: nowrap;
+}
+.add-action-btn:hover { border-color: var(--so-green-dark); color: var(--so-green-dark); }
+
+/* ── Inline add popover (table row quick-add) ── */
+.inline-add-popover {
+  display: none;
+  position: fixed;
+  background: #fff;
+  border: 1px solid var(--so-neutral-10);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  z-index: 300;
+  gap: 6px;
+  align-items: center;
+  min-width: 280px;
+}
+.inline-add-popover--open { display: flex; flex-wrap: wrap; }
+.inline-action-name {
+  flex: 1; min-width: 120px; font-size: 13px; padding: 5px 8px;
+  border: 1px solid var(--so-neutral-10); border-radius: 6px; color: var(--so-text-header);
+}
+.inline-action-name:focus  { outline: none; border-color: var(--so-primary); }
+.inline-action-priority    {
+  font-size: 12px; padding: 5px 6px;
+  border: 1px solid var(--so-neutral-10); border-radius: 6px; color: var(--so-text-body);
+}
+.inline-action-save {
+  background: var(--so-primary); color: #fff; border: none;
+  border-radius: 6px; font-size: 12px; padding: 5px 10px; cursor: pointer;
+}
+.inline-action-save:hover  { background: var(--so-green-dark); }
