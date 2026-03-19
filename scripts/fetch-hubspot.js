@@ -133,8 +133,8 @@ function pickPrimaryContact(contactIds, contactMap) {
     return parseInt(a._id, 10) - parseInt(b._id, 10);           // tiebreak: lowest numeric ID
   });
 
-  const { name, email } = contacts[0];
-  return (name || email) ? { name, email } : null;
+  const { name, email, _id } = contacts[0];
+  return (name || email) ? { name, email, _id } : null;
 }
 
 async function main() {

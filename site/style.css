@@ -157,6 +157,11 @@ a:hover {
   color: var(--so-text-header);
 }
 
+.site-logo-svg {
+  color: var(--so-primary);
+  flex-shrink: 0;
+}
+
 .logo-dot {
   width: 8px;
   height: 8px;
@@ -1408,6 +1413,61 @@ a:hover {
 .crm-contact-link:hover {
   color: var(--so-green-dark);
   text-decoration: underline;
+}
+
+/* CRM — contact cell (name + email button) */
+.crm-contact-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.crm-contact-name-link {
+  color: var(--so-text-body);
+  text-decoration: none;
+  font-size: 13px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.crm-contact-name-link:hover {
+  color: var(--so-green-dark);
+  text-decoration: underline;
+}
+.crm-email-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: var(--so-neutral-30);
+  text-decoration: none;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s, background 0.1s;
+}
+.crm-table tr:hover .crm-email-btn {
+  opacity: 1;
+}
+.crm-email-btn:hover {
+  background: var(--so-foreground);
+  color: var(--so-green-dark);
+  text-decoration: none;
+}
+
+/* CRM — local notes cell (editable) */
+.crm-local-notes-cell {
+  cursor: text;
+  font-size: 13px;
+  color: var(--so-text-body);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crm-local-notes-cell:hover {
+  background: rgba(0, 175, 102, 0.04);
 }
 
 /* CRM — pin/freeze button */

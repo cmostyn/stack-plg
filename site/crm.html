@@ -12,7 +12,7 @@
   <header class="site-header">
     <div class="site-header-inner">
       <a href="http://go/plg-hub" class="site-logo">
-        <span class="logo-dot"></span>
+        <svg class="site-logo-svg" viewBox="6 2 28 38" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M20 4 C12 4 8 10 8 16 L8 28 C8 34 12 38 18 38 L22 38 C28 38 32 34 32 28 L32 14 C32 10 29 8 26 8 L24 8 C21 8 18 10 18 14 L18 26 C18 28 20 30 22 30 L24 30 C26 30 28 28 28 26 L28 14"/></svg>
         PLG-Hub
       </a>
       <nav class="site-nav">
@@ -44,10 +44,6 @@
       </div>
       <div class="crm-toolbar-right">
         <span id="crm-count" class="crm-count"></span>
-        <div class="crm-layout-actions">
-          <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
-          <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
-        </div>
       </div>
     </div>
 
@@ -73,7 +69,7 @@
     const PLACEHOLDER_CELL = '<td></td>';
 
     const DEFAULT_COL_ORDER = [
-      'name', 'contact', 'notes', 'last_contact',
+      'name', 'contact', 'notes', 'local_notes', 'last_contact',
       'account', 'integrations', 'clicks', 'api_requests',
       'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
     ];
@@ -83,6 +79,7 @@
       name:          150,
       contact:       160,
       notes:         170,
+      local_notes:   160,
       last_contact:  105,
       account:       120,
       integrations:   95,
@@ -104,7 +101,8 @@
     const COL_HEADERS = {
       name:          () => thHtml('name', 'Name'),
       contact:       () => thHtml('contact', 'Primary contact'),
-      notes:         () => thHtml('notes', 'Notes'),
+      notes:         () => thHtml('notes', 'HubSpot Notes'),
+      local_notes:   () => thHtml('local_notes', 'Notes'),
       last_contact:  () => thHtml('last_contact', 'Last contact'),
       account:       () => thHtml('account', 'Pylon account'),
       integrations:  () => thHtml('integrations', 'Integrations'),
@@ -141,17 +139,34 @@
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
         if (!c || !c.name) return PLACEHOLDER_CELL;
-        const mailtoUrl = c.email ? `mailto:${c.email}` : null;
         const name = escHtml(c.name);
-        return `<td>${mailtoUrl
-          ? `<a href="${mailtoUrl}" class="crm-contact-link">${name}</a>`
-          : name}</td>`;
+        // Build HubSpot contact URL if we have _id
+        let contactHref = null;
+        if (c._id && company.hubspot_url) {
+          const portalMatch = company.hubspot_url.match(/\/contacts\/(\d+)\//);
+          if (portalMatch) {
+            contactHref = `https://app-eu1.hubspot.com/contacts/${portalMatch[1]}/record/0-1/${c._id}`;
+          }
+        }
+        const emailBtn = c.email
+          ? `<a href="mailto:${escHtml(c.email)}" class="crm-email-btn" title="Email ${escHtml(c.name)}" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></a>`
+          : '';
+        const nameEl = contactHref
+          ? `<a href="${escHtml(contactHref)}" target="_blank" rel="noopener" class="crm-contact-name-link">${name}</a>`
+          : name;
+        return `<td><div class="crm-contact-cell">${nameEl}${emailBtn}</div></td>`;
       },
       notes: company => {
         const n = company.notes;
         if (!n) return PLACEHOLDER_CELL;
         const truncated = n.length > 80 ? n.slice(0, 80) + '…' : n;
         return `<td class="crm-notes" title="${escHtml(n)}">${escHtml(truncated)}</td>`;
+      },
+      local_notes: company => {
+        const hid  = escHtml(String(company.hubspot_id ?? ''));
+        const note = localNotes[String(company.hubspot_id)] ?? '';
+        const display = escHtml(note.length > 60 ? note.slice(0, 60) + '…' : note);
+        return `<td class="crm-local-notes-cell" data-hubspot-id="${hid}" title="${escHtml(note)}">${display || '<span class="crm-placeholder">Add note…</span>'}</td>`;
       },
       last_contact: company => {
         const rel = relativeTime(company.last_contact);
@@ -226,6 +241,15 @@
     let colOrder   = loadColOrder();
     let colWidths  = loadColWidths();
     let frozenCols = loadFrozenCols();
+
+    // Local notes: per-company freetext stored in localStorage
+    let localNotes = (() => {
+      try { return JSON.parse(localStorage.getItem('plg_crm_local_notes') ?? 'null') ?? {}; }
+      catch { return {}; }
+    })();
+    function saveLocalNotes() {
+      localStorage.setItem('plg_crm_local_notes', JSON.stringify(localNotes));
+    }
 
     // --- Helpers ---
 
@@ -383,7 +407,8 @@
         (company.domain ?? '').toLowerCase().includes(q) ||
         (c?.name  ?? '').toLowerCase().includes(q) ||
         (c?.email ?? '').toLowerCase().includes(q) ||
-        (company.notes ?? '').toLowerCase().includes(q)
+        (company.notes ?? '').toLowerCase().includes(q) ||
+        (localNotes[String(company.hubspot_id)] ?? '').toLowerCase().includes(q)
       );
     }
 
@@ -802,30 +827,6 @@
       render();
     });
 
-    // --- Save / Reset layout buttons ---
-    document.getElementById('crm-save-layout').addEventListener('click', () => {
-      localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
-      saveColWidths();
-      saveFrozenCols();
-      const btn = document.getElementById('crm-save-layout');
-      btn.textContent = 'Saved ✓';
-      btn.classList.add('crm-layout-btn--saved');
-      setTimeout(() => {
-        btn.textContent = 'Save layout';
-        btn.classList.remove('crm-layout-btn--saved');
-      }, 2000);
-    });
-
-    document.getElementById('crm-reset-layout').addEventListener('click', () => {
-      colOrder   = [...DEFAULT_COL_ORDER];
-      colWidths  = { ...DEFAULT_COL_WIDTHS };
-      frozenCols = new Set(['name']);
-      localStorage.removeItem('plg_crm_col_order');
-      localStorage.removeItem('plg_crm_col_widths');
-      localStorage.removeItem('plg_crm_frozen');
-      render();
-    });
-
     // --- Column header dropdown menu ---
     let activeMenuCol = null;
 
@@ -868,6 +869,7 @@
       if (action === 'sort-clear') { sortKey = 'name'; sortDir = 'asc'; render(); }
       if (action === 'freeze') {
         if (frozenCols.has(col)) { frozenCols.delete(col); } else { frozenCols.add(col); }
+        saveFrozenCols();
         render();
       }
       closeColMenu();
@@ -1085,6 +1087,35 @@
       );
       resizingCol = null;
       saveColWidths();
+    });
+
+    // Inline edit for local_notes cells
+    document.querySelector('.crm-table').addEventListener('dblclick', e => {
+      const td = e.target.closest('.crm-local-notes-cell');
+      if (!td || td.querySelector('input')) return;
+      const hid  = td.dataset.hubspotId;
+      const note = localNotes[hid] ?? '';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = note;
+      input.className = 'crm-local-notes-input';
+      input.style.cssText = 'width:100%;font:inherit;padding:2px 4px;border:1px solid #00AF66;border-radius:4px;outline:none;background:#fff;';
+      td.innerHTML = '';
+      td.appendChild(input);
+      input.focus();
+      input.select();
+      const save = () => {
+        const val = input.value.trim();
+        if (val) localNotes[hid] = val;
+        else delete localNotes[hid];
+        saveLocalNotes();
+        render();
+      };
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', e2 => {
+        if (e2.key === 'Enter') { e2.preventDefault(); save(); }
+        if (e2.key === 'Escape') { e2.stopPropagation(); render(); }
+      });
     });
   </script>
 
