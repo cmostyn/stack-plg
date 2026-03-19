@@ -247,18 +247,18 @@
       const companies = filterCompanies(allCompanies);
       const ps = pylonSummary ? pylonSummary[activeFilter] ?? pylonSummary.all : null;
 
-      // Tile 1 — Total Free Sign Ups
+      // Tile 1 — Total Free Sign Ups (weekly cumulative)
       document.getElementById('val-accounts').textContent = companies.length || '—';
-      const byMonth = {};
+      const byWeekAcc = {};
       for (const c of companies) {
         if (!c.createdate) continue;
-        const m = c.createdate.slice(0, 7);
-        byMonth[m] = (byMonth[m] || 0) + 1;
+        const w = isoWeekMonday(c.createdate);
+        byWeekAcc[w] = (byWeekAcc[w] || 0) + 1;
       }
-      const months = Object.keys(byMonth).sort();
-      let cum = 0;
-      const growthSeries = months.map(m => { cum += byMonth[m]; return cum; });
-      renderSparkline(document.getElementById('chart-accounts'), growthSeries.slice(-8), '#047B43');
+      const weeksAcc = Object.keys(byWeekAcc).sort();
+      let cumAcc = 0;
+      const growthSeries = weeksAcc.map(w => { cumAcc += byWeekAcc[w]; return cumAcc; });
+      renderSparkline(document.getElementById('chart-accounts'), growthSeries.slice(-12), '#047B43');
 
       // Tile 2 — New Sign Ups Last 30 days
       const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -380,6 +380,20 @@
     document.getElementById('expandClose').addEventListener('click', closeExpand);
     dialog.addEventListener('click', e => { if (e.target === dialog) closeExpand(); });
 
+    // ISO week Monday helper (browser)
+    function isoWeekMonday(dateStr) {
+      const d = new Date(dateStr);
+      const day = d.getUTCDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      const monday = new Date(d);
+      monday.setUTCDate(d.getUTCDate() + diff);
+      return monday.toISOString().slice(0, 10);
+    }
+
+    function weekLabel(isoMonday) {
+      return new Date(isoMonday).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
     function openExpand(chartId, title) {
       document.getElementById('expandTitle').textContent = title;
       expandBody.innerHTML = '';
@@ -392,25 +406,23 @@
       expandChart = echarts.init(wrap, null, { renderer: 'canvas' });
 
       if (chartId === 'accounts') {
-        const byMonth = {};
+        // Weekly cumulative growth
+        const byWeek = {};
         for (const c of companies) {
           if (!c.createdate) continue;
-          const m = c.createdate.slice(0, 7);
-          byMonth[m] = (byMonth[m] || 0) + 1;
+          const w = isoWeekMonday(c.createdate);
+          byWeek[w] = (byWeek[w] || 0) + 1;
         }
-        const months = Object.keys(byMonth).sort();
+        const weeks = Object.keys(byWeek).sort();
         let cum = 0;
-        const series = months.map(m => { cum += byMonth[m]; return cum; });
-        const labels = months.map(m => {
-          const [y, mo] = m.split('-');
-          return new Date(+y, +mo - 1).toLocaleString('en-GB', { month: 'short', year: '2-digit' });
-        });
+        const series = weeks.map(w => { cum += byWeek[w]; return cum; });
+        const labels = weeks.map(weekLabel);
         expandChart.setOption({
           animation: true,
-          tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/><b>${p[0].value}</b> customers` },
-          grid: { top: 16, right: 24, bottom: 48, left: 48 },
+          tooltip: { trigger: 'axis', formatter: p => `w/c ${p[0].name}<br/><b>${p[0].value}</b> customers total` },
+          grid: { top: 16, right: 24, bottom: 56, left: 56 },
           xAxis: { type: 'category', data: labels,
-            axisLabel: { color: '#7A7A7A', fontSize: 11, rotate: 30 },
+            axisLabel: { color: '#7A7A7A', fontSize: 11, rotate: 35, interval: Math.ceil(labels.length / 12) },
             axisLine: { lineStyle: { color: '#E0DEDC' } }, axisTick: { show: false } },
           yAxis: { type: 'value', name: 'Cumulative customers', nameTextStyle: { color: '#7A7A7A', fontSize: 11 },
             axisLabel: { color: '#7A7A7A', fontSize: 11 },
@@ -520,6 +532,8 @@
       }
 
       dialog.showModal();
+      // ECharts reads dimensions after the dialog is painted
+      requestAnimationFrame(() => expandChart?.resize());
     }
 
     // ── Chart click handler ───────────────────────────────────────────────────
