@@ -1,0 +1,8 @@
+name = "stack-plg-actions"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "stack-plg-actions"
+database_id = "a32e329a-e0a4-41e2-a03f-b51e01cd9b18"
