@@ -676,7 +676,7 @@ a:hover {
 }
 
 .crm-num {
-  text-align: right;
+  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 
@@ -695,6 +695,70 @@ a:hover {
   text-align: center;
   font-size: 14px;
   color: var(--so-text-tag);
+}
+
+/* CRM — clickable header */
+.crm-th--clickable {
+  cursor: pointer;
+}
+
+/* CRM — column context menu */
+.col-menu {
+  display: none;
+  position: absolute;
+  z-index: 500;
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 4px;
+  min-width: 160px;
+}
+
+.col-menu--open {
+  display: block;
+}
+
+.col-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 12px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-body);
+  background: none;
+  border: none;
+  border-radius: var(--so-radius);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+}
+
+.col-menu-item:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-header);
+}
+
+.col-menu-divider {
+  height: 1px;
+  background: var(--so-neutral-10);
+  margin: 4px 0;
+}
+
+/* CRM — most recent call link */
+.crm-call-link {
+  color: var(--so-text-body);
+  text-decoration: none;
+  font-size: 13px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crm-call-link:hover {
+  color: var(--so-green-dark);
+  text-decoration: underline;
 }
 
 /* CRM — drag-to-reorder */

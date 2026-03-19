@@ -65,6 +65,7 @@
 
   <div id="card-overlay" class="card-overlay"></div>
   <div id="inline-add-popover" class="inline-add-popover"></div>
+  <div id="col-menu" class="col-menu"></div>
 
   <script>
     // --- Constants ---
@@ -95,10 +96,8 @@
 
     function thHtml(col, label) {
       const pinned = frozenCols.has(col);
-      return `<th data-col="${col}" draggable="${!pinned}"${pinned ? ' class="crm-th--frozen"' : ''}>` +
-        `<button class="crm-pin-btn${pinned ? ' crm-pin-btn--active' : ''}" data-pin="${col}" title="${pinned ? 'Unfreeze column' : 'Freeze column'}">` +
-        `<svg viewBox="0 0 12 16" width="9" height="13" fill="currentColor"><path d="M9 1H3v2.5L5 6.5V11l-2 2h6l-2-2V6.5L9 3.5V1z"/><rect x="5.5" y="11" width="1" height="4"/></svg>` +
-        `</button>` +
+      const cls = ['crm-th--clickable', pinned ? 'crm-th--frozen' : ''].filter(Boolean).join(' ');
+      return `<th data-col="${col}" draggable="${!pinned}" class="${cls}">` +
         `${label}<div class="crm-resize-handle"></div></th>`;
     }
 
@@ -114,7 +113,7 @@
       tickets_total: () => thHtml('tickets_total', 'Tickets (30d)'),
       open_tickets:  () => thHtml('open_tickets', 'Open tickets'),
       cs_actions:    () => thHtml('cs_actions', 'CS actions'),
-      last_call:     () => thHtml('last_call', 'Last call'),
+      last_call:     () => thHtml('last_call', 'Most recent call'),
     };
 
     const CELLS = {
@@ -207,7 +206,8 @@
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
         const dateStr = new Date(ff.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        return `<td title="${escHtml(ff.title)}">${escHtml(ff.title)}<div class="crm-contact-email">${escHtml(dateStr)}</div></td>`;
+        const href = ff.id ? escHtml(`https://app.fireflies.ai/view/call--${ff.id}`) : 'https://app.fireflies.ai/';
+        return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link">${escHtml(ff.title)}</a><div class="crm-contact-email">${escHtml(dateStr)}</div></td>`;
       },
     };
 
@@ -222,7 +222,7 @@
     let typeFilter = '';
     let sortKey  = 'name';
     let sortDir  = 'asc';
-    let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
+    let clickCounts = {};
     let colOrder   = loadColOrder();
     let colWidths  = loadColWidths();
     let frozenCols = loadFrozenCols();
@@ -396,27 +396,60 @@
     function sortedRows(rows) {
       return [...rows].sort((a, b) => {
         const dir = sortDir === 'asc' ? 1 : -1;
-        if (sortKey === 'contact') {
-          return dir * contactSortValue(a).localeCompare(contactSortValue(b));
+        switch (sortKey) {
+          case 'contact':
+            return dir * contactSortValue(a).localeCompare(contactSortValue(b));
+          case 'notes': {
+            if (!a.notes && !b.notes) return 0;
+            if (!a.notes) return 1; if (!b.notes) return -1;
+            return dir * a.notes.toLowerCase().localeCompare(b.notes.toLowerCase());
+          }
+          case 'last_contact': {
+            const va = lastContactSortValue(a, sortDir), vb = lastContactSortValue(b, sortDir);
+            return va === vb ? 0 : (va > vb ? dir : -dir);
+          }
+          case 'account': {
+            const na = (pylonMap.get(String(a.hubspot_id))?.name ?? '').toLowerCase();
+            const nb = (pylonMap.get(String(b.hubspot_id))?.name ?? '').toLowerCase();
+            return dir * na.localeCompare(nb);
+          }
+          case 'integrations': {
+            const ia = posthogMap.get(normName(a.name))?.linked_accounts ?? -1;
+            const ib = posthogMap.get(normName(b.name))?.linked_accounts ?? -1;
+            return dir * (ia - ib);
+          }
+          case 'clicks': {
+            const ca = posthogMap.get(normName(a.name))?.click_interactions ?? -1;
+            const cb = posthogMap.get(normName(b.name))?.click_interactions ?? -1;
+            return dir * (ca - cb);
+          }
+          case 'tickets_total': {
+            const ta = pylonMap.get(String(a.hubspot_id))?.issues_last_30d.total ?? -1;
+            const tb = pylonMap.get(String(b.hubspot_id))?.issues_last_30d.total ?? -1;
+            return dir * (ta - tb);
+          }
+          case 'open_tickets': {
+            const pa = pylonMap.get(String(a.hubspot_id));
+            const pb = pylonMap.get(String(b.hubspot_id));
+            const oa = pa ? (pa.open_tickets_live ?? pa.issues_last_30d.open) : -1;
+            const ob = pb ? (pb.open_tickets_live ?? pb.issues_last_30d.open) : -1;
+            return dir * (oa - ob);
+          }
+          case 'cs_actions': {
+            const ca = actionsMap.get(String(a.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
+            const cb = actionsMap.get(String(b.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
+            return dir * (ca - cb);
+          }
+          case 'last_call': {
+            const da = a.domain ? (firefliesMap.get(a.domain)?.date ?? '') : '';
+            const db = b.domain ? (firefliesMap.get(b.domain)?.date ?? '') : '';
+            if (!da && !db) return 0;
+            if (!da) return 1; if (!db) return -1;
+            return dir * da.localeCompare(db);
+          }
+          default:
+            return dir * (a.name ?? '').localeCompare(b.name ?? '');
         }
-        if (sortKey === 'notes') {
-          if (!a.notes && !b.notes) return 0;
-          if (!a.notes) return 1;
-          if (!b.notes) return -1;
-          return dir * a.notes.toLowerCase().localeCompare(b.notes.toLowerCase());
-        }
-        if (sortKey === 'last_contact') {
-          const va = lastContactSortValue(a, sortDir);
-          const vb = lastContactSortValue(b, sortDir);
-          if (va === vb) return 0;
-          return va > vb ? dir : -dir;
-        }
-        if (sortKey === 'clicks') {
-          const ca = posthogMap.get(normName(a.name))?.click_interactions ?? -1;
-          const cb = posthogMap.get(normName(b.name))?.click_interactions ?? -1;
-          return dir * (ca - cb);
-        }
-        return dir * (a.name ?? '').localeCompare(b.name ?? '');
       });
     }
 
@@ -687,22 +720,6 @@
         (query || typeFilter) ? `${shown} of ${total} customers` : `${total} customers`;
     }
 
-    // --- Sort ---
-
-    function setSort(key) {
-      if (key !== sortKey) clickCounts[sortKey] = 0;
-      clickCounts[key] = (clickCounts[key] ?? 0) + 1;
-      const click = clickCounts[key];
-      if (click % 3 === 1) {
-        sortKey = key; sortDir = 'asc';
-      } else if (click % 3 === 2) {
-        sortKey = key; sortDir = 'desc';
-      } else {
-        sortKey = 'name'; sortDir = 'asc';
-        clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
-      }
-      render();
-    }
 
     // --- Init ---
 
@@ -784,28 +801,67 @@
       render();
     });
 
-    // --- Sort + freeze + click on headers ---
+    // --- Column header dropdown menu ---
+    let activeMenuCol = null;
+
+    function closeColMenu() {
+      const m = document.getElementById('col-menu');
+      if (m) m.classList.remove('col-menu--open');
+      activeMenuCol = null;
+    }
+
+    function showColMenu(th, col) {
+      const m = document.getElementById('col-menu');
+      if (!m) return;
+      // Toggle off if same column clicked again
+      if (activeMenuCol === col) { closeColMenu(); return; }
+      activeMenuCol = col;
+
+      const frozen = frozenCols.has(col);
+      m.innerHTML = `
+        <button class="col-menu-item" data-action="sort-asc">Sort A → Z ↑</button>
+        <button class="col-menu-item" data-action="sort-desc">Sort Z → A ↓</button>
+        ${sortKey === col ? `<button class="col-menu-item" data-action="sort-clear">Clear sort</button>` : ''}
+        <div class="col-menu-divider"></div>
+        <button class="col-menu-item" data-action="freeze">${frozen ? 'Unfreeze column' : 'Freeze column'}</button>
+      `;
+      m.dataset.col = col;
+
+      const rect = th.getBoundingClientRect();
+      m.style.top  = `${rect.bottom + window.scrollY}px`;
+      m.style.left = `${rect.left  + window.scrollX}px`;
+      m.classList.add('col-menu--open');
+    }
+
+    document.getElementById('col-menu').addEventListener('click', e => {
+      const item = e.target.closest('.col-menu-item');
+      if (!item) return;
+      const col    = document.getElementById('col-menu').dataset.col;
+      const action = item.dataset.action;
+      if (action === 'sort-asc')   { sortKey = col; sortDir = 'asc';  render(); }
+      if (action === 'sort-desc')  { sortKey = col; sortDir = 'desc'; render(); }
+      if (action === 'sort-clear') { sortKey = 'name'; sortDir = 'asc'; render(); }
+      if (action === 'freeze') {
+        if (frozenCols.has(col)) { frozenCols.delete(col); } else { frozenCols.add(col); }
+        render();
+      }
+      closeColMenu();
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#col-menu') && !e.target.closest('th[data-col]')) closeColMenu();
+    }, true);
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeColMenu(); });
+
+    // --- Sort + header click ---
     const crmTable = document.querySelector('.crm-table');
 
     crmTable.addEventListener('click', e => {
       if (e.target.closest('.crm-resize-handle')) return;
-
-      // Pin / freeze toggle
-      const pinBtn = e.target.closest('.crm-pin-btn');
-      if (pinBtn) {
-        e.stopPropagation();
-        const col = pinBtn.dataset.pin;
-        if (frozenCols.has(col)) { frozenCols.delete(col); } else { frozenCols.add(col); }
-        render();
-        return;
-      }
-
       const th = e.target.closest('th[data-col]');
       if (!th) return;
-      const col = th.dataset.col;
-      if (['name', 'contact', 'notes', 'last_contact', 'clicks'].includes(col)) {
-        setSort(col);
-      }
+      showColMenu(th, th.dataset.col);
     });
 
     // --- Drag-to-reorder ---

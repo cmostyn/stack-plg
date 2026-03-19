@@ -81,6 +81,7 @@ async function main() {
     for (const domain of domains) {
       output.push({
         domain,
+        id:           t.id,
         title:        t.title,
         date:         t.dateString,   // ISO 8601 string — used for lexicographic sort
         action_items: actionItems,
