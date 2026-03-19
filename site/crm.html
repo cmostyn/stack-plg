@@ -41,6 +41,10 @@
         <option value="Customer">Customer</option>
       </select>
       <span id="crm-count" class="crm-count"></span>
+      <div class="crm-layout-actions">
+        <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
+        <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
+      </div>
     </div>
 
     <div id="crm-table-wrap" class="crm-table-wrap">
@@ -106,13 +110,11 @@
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
         if (!c) return PLACEHOLDER_CELL;
-        const superhumanUrl = c.email
-          ? `https://mail.superhuman.com/compose?to=${encodeURIComponent(c.email)}`
-          : null;
+        const mailtoUrl = c.email ? `mailto:${c.email}` : null;
         return `<td>
           <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
-          ${superhumanUrl
-            ? `<div class="crm-contact-email"><a href="${escHtml(superhumanUrl)}" target="_blank" rel="noopener" class="crm-mailto">${escHtml(c.email)}</a></div>`
+          ${mailtoUrl
+            ? `<div class="crm-contact-email"><a href="${mailtoUrl}" class="crm-mailto">${escHtml(c.email)}</a></div>`
             : ''}
         </td>`;
       },
@@ -128,9 +130,7 @@
         const abs = new Date(company.last_contact).toLocaleDateString('en-GB', {
           day: 'numeric', month: 'short', year: 'numeric',
         });
-        const activityUrl = company.hubspot_url
-          ? safeHref(company.hubspot_url + '/activity')
-          : null;
+        const activityUrl = company.hubspot_url ? safeHref(company.hubspot_url) : null;
         return activityUrl
           ? `<td class="crm-date" title="${escHtml(abs)}"><a href="${activityUrl}" target="_blank" rel="noopener">${escHtml(rel)}</a></td>`
           : `<td class="crm-date" title="${escHtml(abs)}">${escHtml(rel)}</td>`;
@@ -386,6 +386,27 @@
     document.getElementById('crm-search').addEventListener('input', render);
     document.getElementById('crm-type-filter').addEventListener('change', render);
 
+    // --- Save / Reset layout buttons ---
+    document.getElementById('crm-save-layout').addEventListener('click', () => {
+      localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
+      saveColWidths();
+      const btn = document.getElementById('crm-save-layout');
+      btn.textContent = 'Saved ✓';
+      btn.classList.add('crm-layout-btn--saved');
+      setTimeout(() => {
+        btn.textContent = 'Save layout';
+        btn.classList.remove('crm-layout-btn--saved');
+      }, 2000);
+    });
+
+    document.getElementById('crm-reset-layout').addEventListener('click', () => {
+      colOrder = [...DEFAULT_COL_ORDER];
+      colWidths = { ...DEFAULT_COL_WIDTHS };
+      localStorage.removeItem('plg_crm_col_order');
+      localStorage.removeItem('plg_crm_col_widths');
+      render();
+    });
+
     // --- Sort + click on headers ---
     const crmTable = document.querySelector('.crm-table');
 
@@ -470,7 +491,6 @@
       document.querySelectorAll('.crm-resize-handle--active').forEach(h =>
         h.classList.remove('crm-resize-handle--active')
       );
-      saveColWidths();
       resizingCol = null;
     });
   </script>
