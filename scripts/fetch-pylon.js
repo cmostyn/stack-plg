@@ -146,22 +146,30 @@ async function main() {
   const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
   const fmt = d => d.toISOString().replace(/\.\d+Z$/, 'Z');
 
-  console.log('[pylon] Fetching PLG + SLG accounts and 90 days of issues in parallel...');
-  const [plgRaw, slgRaw, issues60_90, issues30_60, issues30d] = await Promise.all([
+  console.log('[pylon] Fetching all customer accounts and 90 days of issues in parallel...');
+  const [plgRaw, slgRaw, custRaw, issues60_90, issues30_60, issues30d] = await Promise.all([
     fetchAccountsByType('Customer - PLG'),
     fetchAccountsByType('Customer - SLG'),
+    fetchAccountsByType('Customer'),
     fetchIssues(fmt(ninetyDaysAgo), fmt(sixtyDaysAgo)),
     fetchIssues(fmt(sixtyDaysAgo), fmt(thirtyDaysAgo)),
     fetchIssues(fmt(thirtyDaysAgo), fmt(now)),
   ]);
 
-  console.log(`[pylon] Accounts: ${plgRaw.length} PLG, ${slgRaw.length} SLG`);
+  // Deduplicate across type buckets (an account could theoretically match multiple)
+  const seenIds = new Set();
+  const dedupe = arr => arr.filter(a => { if (seenIds.has(a.id)) return false; seenIds.add(a.id); return true; });
+  const plgUniq  = dedupe(plgRaw);
+  const slgUniq  = dedupe(slgRaw);
+  const custUniq = dedupe(custRaw);
+
+  console.log(`[pylon] Accounts: ${plgUniq.length} PLG, ${slgUniq.length} SLG, ${custUniq.length} Customer`);
   const allIssues90d = [...issues60_90, ...issues30_60, ...issues30d];
   console.log(`[pylon] Issues: ${issues30d.length} (30d), ${allIssues90d.length} (90d)`);
 
-  // Build sets for issue type filtering
-  const plgIds = new Set(plgRaw.map(a => a.id));
-  const slgIds = new Set(slgRaw.map(a => a.id));
+  // Build sets for issue type filtering (summaries still split by PLG/SLG)
+  const plgIds = new Set(plgUniq.map(a => a.id));
+  const slgIds = new Set(slgUniq.map(a => a.id));
 
   // Index 30d issues by account ID
   const issues30dByAccountId = {};
@@ -173,9 +181,10 @@ async function main() {
   }
 
   // Build per-account output
-  const plgOutput = plgRaw.map(a => mapAccount(a, issues30dByAccountId, 'plg'));
-  const slgOutput = slgRaw.map(a => mapAccount(a, issues30dByAccountId, 'slg'));
-  const output    = [...plgOutput, ...slgOutput];
+  const plgOutput  = plgUniq.map(a => mapAccount(a, issues30dByAccountId, 'plg'));
+  const slgOutput  = slgUniq.map(a => mapAccount(a, issues30dByAccountId, 'slg'));
+  const custOutput = custUniq.map(a => mapAccount(a, issues30dByAccountId, 'customer'));
+  const output     = [...plgOutput, ...slgOutput, ...custOutput];
   output.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
   // Build summaries per type
@@ -184,9 +193,9 @@ async function main() {
   const plgIssues90d = allIssues90d.filter(i => plgIds.has(i.account?.id));
   const slgIssues90d = allIssues90d.filter(i => slgIds.has(i.account?.id));
 
-  // "all" = PLG + SLG combined (not every Pylon account type)
-  const allFilteredIssues30d = [...plgIssues30d, ...slgIssues30d];
-  const allFilteredIssues90d = [...plgIssues90d, ...slgIssues90d];
+  // "all" = PLG + SLG + Customer combined
+  const allFilteredIssues30d = issues30d.filter(i => seenIds.has(i.account?.id));
+  const allFilteredIssues90d = allIssues90d.filter(i => seenIds.has(i.account?.id));
 
   const summary = {
     all: buildSummary(allFilteredIssues30d, allFilteredIssues90d, output),

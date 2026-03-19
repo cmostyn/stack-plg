@@ -1,0 +1,119 @@
+{
+  "all": {
+    "open_by_state": {
+      "new": 4,
+      "waiting_on_you": 17,
+      "waiting_on_customer": 44,
+      "waiting_on_engineering": 4
+    },
+    "total_open_live": 139,
+    "needing_action": 25,
+    "frt_weekly": [
+      {
+        "week": "2025-12-15",
+        "avg_hours": 7.3
+      },
+      {
+        "week": "2025-12-22",
+        "avg_hours": 2.1
+      },
+      {
+        "week": "2025-12-29",
+        "avg_hours": 22.3
+      },
+      {
+        "week": "2026-01-05",
+        "avg_hours": 7.7
+      },
+      {
+        "week": "2026-01-12",
+        "avg_hours": 2.7
+      },
+      {
+        "week": "2026-01-19",
+        "avg_hours": 1.2
+      },
+      {
+        "week": "2026-01-26",
+        "avg_hours": 2.9
+      },
+      {
+        "week": "2026-02-02",
+        "avg_hours": 2.1
+      },
+      {
+        "week": "2026-02-09",
+        "avg_hours": 2.1
+      },
+      {
+        "week": "2026-02-16",
+        "avg_hours": 2.8
+      },
+      {
+        "week": "2026-02-23",
+        "avg_hours": 5
+      },
+      {
+        "week": "2026-03-02",
+        "avg_hours": 4.1
+      },
+      {
+        "week": "2026-03-09",
+        "avg_hours": 2.5
+      },
+      {
+        "week": "2026-03-16",
+        "avg_hours": 1.5
+      }
+    ]
+  },
+  "plg": {
+    "open_by_state": {
+      "new": 0,
+      "waiting_on_you": 0,
+      "waiting_on_customer": 10,
+      "waiting_on_engineering": 0
+    },
+    "total_open_live": 20,
+    "needing_action": 0,
+    "frt_weekly": [
+      {
+        "week": "2026-02-16",
+        "avg_hours": 2.1
+      },
+      {
+        "week": "2026-03-02",
+        "avg_hours": 3.7
+      },
+      {
+        "week": "2026-03-09",
+        "avg_hours": 0.3
+      },
+      {
+        "week": "2026-03-16",
+        "avg_hours": 2.3
+      }
+    ]
+  },
+  "slg": {
+    "open_by_state": {
+      "new": 0,
+      "waiting_on_you": 0,
+      "waiting_on_customer": 0,
+      "waiting_on_engineering": 0
+    },
+    "total_open_live": 1,
+    "needing_action": 0,
+    "frt_weekly": [
+      {
+        "week": "2026-03-09",
+        "avg_hours": 0.1
+      },
+      {
+        "week": "2026-03-16",
+        "avg_hours": 1.1
+      }
+    ]
+  },
+  "updated_at": "2026-03-19T16:55:27.919Z"
+}
