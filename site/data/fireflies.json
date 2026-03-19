@@ -218,5 +218,161 @@
     "title": "Boundless <> StackOne Falcon Demo",
     "date": "2026-03-11T17:00:00.000Z",
     "action_items": []
+  },
+  {
+    "domain": "kinfolkhq.com",
+    "id": "01KKC2JCKD8W9RC9AKDXHYQTZ4",
+    "title": "Kinfolk <> StackOne - Technical Sync",
+    "date": "2026-03-10T14:31:36.509Z",
+    "action_items": []
+  },
+  {
+    "domain": "kinfolkhq.com",
+    "id": "01KJW7FPTMKTGAM2TVPZ1C3HPC",
+    "title": "Kinfolk <> StackOne - Technical Sync",
+    "date": "2026-03-10T14:30:00.000Z",
+    "action_items": []
+  },
+  {
+    "domain": "revopsconsulting.io",
+    "id": "01KK9RNK3FV2ABN3Q4NDWWY3CB",
+    "title": "Lewis/Charlie",
+    "date": "2026-03-09T17:00:07.814Z",
+    "action_items": [
+      "**Charlie Mostyn**",
+      "Manually enroll contacts missing welcome emails but with known org IDs to trigger the workflow email send (14:12)",
+      "Share workflow link with Lewis for review and feedback (03:14)",
+      "Filter and monitor contacts by PLG/SLG and org ID status to verify correct welcome email dispatch (11:58)",
+      "Plan transition to fully automated provisioning workflow for customer onboarding including automated org ID addition (15:00)",
+      "Evaluate deal management strategy with Roman and consider company-level management tied to usage metrics and deal triggers (15:34)",
+      "**Lewis Chawko**",
+      "Adjust workflow filters and subscription settings in HubSpot to ensure contacts are subscribed appropriately before welcome emails send (05:11)",
+      "Consolidate deal type and PLG filters to reduce redundant workflows and optimize automation flow (09:16)",
+      "Remove unnecessary workflow delays to streamline email sending processes (10:31)",
+      "Assist Charlie with manual enrollment process options and workflow troubleshooting (14:12)",
+      "Provide insight on managing product-led growth leads using usage metrics and deal triggers based on similar real-world client examples (15:24)"
+    ]
+  },
+  {
+    "domain": "revopsconsulting.io",
+    "id": "01KK94DSDXBB787HRZ3QT2WN6Q",
+    "title": "Lewis/Charlie",
+    "date": "2026-03-09T17:00:00.000Z",
+    "action_items": []
+  },
+  {
+    "domain": "incubane.com",
+    "id": "01KJX48JZXQTKAANBFDZ6HTTVV",
+    "title": "Jacob Kalinowski and Rick Leunisse",
+    "date": "2026-03-06T14:00:00.000Z",
+    "action_items": [
+      "**Rick Leunisse**",
+      "Build two simple Workday agent demos with limited tool sets for client interest presentations (27:39)",
+      "**Jacob Kalinowski**",
+      "Send Rick documentation on Flowise integration setup with Stack One MCP, including demo files (21:45)",
+      "Provide example skill file used in performance demo to Rick for reference (29:25)",
+      "Support Rick with technical questions and demos as needed in follow-up sessions (28:55)"
+    ]
+  },
+  {
+    "domain": "codelabs.pl",
+    "id": "01KJYNEA5Z1BHXT88ZARBKCA2E",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:32:04.904Z",
+    "action_items": [
+      "**Max Strivens**",
+      "Follow up with the development team regarding Southern Hampshire University content availability issue and provide an update to Mateusz (11:19)",
+      "Provide detailed response to SocialTalent regarding the Southern Hampshire issue after speaking to the integration team (12:06)",
+      "**Mateusz Szwaja**",
+      "Coordinate with Helply AI bot team to clarify the nature of API integration with Stack One documentation and continue exploring URL scraping for documentation access with Max’s input (09:30)",
+      "Inform Brandon on SocialTalent side about ongoing talks and updates related to Southern Hampshire University integration status (11:36)",
+      "**Tristam Riordan**",
+      "Investigate engineering team concerns and blockers around the new Unified API and organize further demos or deep dives (06:25)",
+      "Monitor engineering capacity changes in Q2 and manage pace of new API adoption accordingly (07:55)",
+      "Share feedback from SocialTalent team and coordinate a follow-up call or discussion to enhance collaboration with Stack One (12:30)",
+      "**Charlie Mostyn**",
+      "Check with the Stack One marketing team regarding joint marketing posts about the Smart Recruiters Marketplace launch involving Stack One branding (05:40)",
+      "Explore options for scheduling direct engineering feedback sessions and connecting engineering teams between both companies (12:25)"
+    ]
+  },
+  {
+    "domain": "socialtalent.com",
+    "id": "01KJYNEA5Z1BHXT88ZARBKCA2E",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:32:04.904Z",
+    "action_items": [
+      "**Max Strivens**",
+      "Follow up with the development team regarding Southern Hampshire University content availability issue and provide an update to Mateusz (11:19)",
+      "Provide detailed response to SocialTalent regarding the Southern Hampshire issue after speaking to the integration team (12:06)",
+      "**Mateusz Szwaja**",
+      "Coordinate with Helply AI bot team to clarify the nature of API integration with Stack One documentation and continue exploring URL scraping for documentation access with Max’s input (09:30)",
+      "Inform Brandon on SocialTalent side about ongoing talks and updates related to Southern Hampshire University integration status (11:36)",
+      "**Tristam Riordan**",
+      "Investigate engineering team concerns and blockers around the new Unified API and organize further demos or deep dives (06:25)",
+      "Monitor engineering capacity changes in Q2 and manage pace of new API adoption accordingly (07:55)",
+      "Share feedback from SocialTalent team and coordinate a follow-up call or discussion to enhance collaboration with Stack One (12:30)",
+      "**Charlie Mostyn**",
+      "Check with the Stack One marketing team regarding joint marketing posts about the Smart Recruiters Marketplace launch involving Stack One branding (05:40)",
+      "Explore options for scheduling direct engineering feedback sessions and connecting engineering teams between both companies (12:25)"
+    ]
+  },
+  {
+    "domain": "socialtalent.co",
+    "id": "01KJYNEA5Z1BHXT88ZARBKCA2E",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:32:04.904Z",
+    "action_items": [
+      "**Max Strivens**",
+      "Follow up with the development team regarding Southern Hampshire University content availability issue and provide an update to Mateusz (11:19)",
+      "Provide detailed response to SocialTalent regarding the Southern Hampshire issue after speaking to the integration team (12:06)",
+      "**Mateusz Szwaja**",
+      "Coordinate with Helply AI bot team to clarify the nature of API integration with Stack One documentation and continue exploring URL scraping for documentation access with Max’s input (09:30)",
+      "Inform Brandon on SocialTalent side about ongoing talks and updates related to Southern Hampshire University integration status (11:36)",
+      "**Tristam Riordan**",
+      "Investigate engineering team concerns and blockers around the new Unified API and organize further demos or deep dives (06:25)",
+      "Monitor engineering capacity changes in Q2 and manage pace of new API adoption accordingly (07:55)",
+      "Share feedback from SocialTalent team and coordinate a follow-up call or discussion to enhance collaboration with Stack One (12:30)",
+      "**Charlie Mostyn**",
+      "Check with the Stack One marketing team regarding joint marketing posts about the Smart Recruiters Marketplace launch involving Stack One branding (05:40)",
+      "Explore options for scheduling direct engineering feedback sessions and connecting engineering teams between both companies (12:25)"
+    ]
+  },
+  {
+    "domain": "codelabs.pl",
+    "id": "01KJCMX9PH6VABMM636J44EMR0",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:30:00.000Z",
+    "action_items": []
+  },
+  {
+    "domain": "socialtalent.com",
+    "id": "01KJCMX9PH6VABMM636J44EMR0",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:30:00.000Z",
+    "action_items": []
+  },
+  {
+    "domain": "socialtalent.co",
+    "id": "01KJCMX9PH6VABMM636J44EMR0",
+    "title": "StackOne <> SocialTalent Monthly Sync",
+    "date": "2026-03-05T09:30:00.000Z",
+    "action_items": []
+  },
+  {
+    "domain": "getflip.com",
+    "id": "01KJWS9Y1K73AY7V5328XG51KW",
+    "title": "StackOne <> Flip",
+    "date": "2026-03-04T16:01:07.044Z",
+    "action_items": [
+      "**Romain Sestier**",
+      "Follow up with Charlie on renegotiation of release package and scope reduction with flexible contract terms (09:40)",
+      "Send Luke details on connectors and product information discussed, including Stack One Defender and Code Mode features (10:25)",
+      "Propose a new engagement plan focusing on agentic use cases with full flexibility for Flip (18:30)",
+      "Ensure clear communication of evolving roadmaps and product offerings prior to Flip’s final decision on continued collaboration (22:35)",
+      "Verify and confirm Flip’s logo presence on Stack One’s website and address any discrepancies (22:50)",
+      "**Luke Talbot**",
+      "Provide Romain with notes on connectors and roadmap details to assist scope reduction and transition planning (10:25)",
+      "Confirm Flip’s logo visibility on Stack One’s site and report back (22:50)"
+    ]
   }
 ]
