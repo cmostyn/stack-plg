@@ -524,6 +524,28 @@
       delete p.dataset.hubspotId;
     }
 
+    function openInlinePopover(btn) {
+      closeInlinePopover();
+      closeCard();
+      const hid  = btn.dataset.hubspotId;
+      const rect = btn.getBoundingClientRect();
+      const p    = document.getElementById('inline-add-popover');
+      p.innerHTML = `
+        <input type="text" class="inline-action-name" placeholder="Action name…" maxlength="200">
+        <select class="inline-action-priority">
+          <option value="high">High</option>
+          <option value="med" selected>Med</option>
+          <option value="low">Low</option>
+        </select>
+        <button class="inline-action-save">Add</button>
+      `;
+      p.dataset.hubspotId = hid;
+      p.style.top  = `${rect.bottom + window.scrollY + 4}px`;
+      p.style.left = `${rect.left  + window.scrollX}px`;
+      p.classList.add('inline-add-popover--open');
+      p.querySelector('.inline-action-name')?.focus();
+    }
+
     function openCard(company) {
       closeInlinePopover();
       const c       = isContactObj(company.contact) ? company.contact : null;
@@ -910,6 +932,46 @@
       e.preventDefault();
       document.getElementById('card-action-save')?.click();
     });
+
+    // Inline add: delegated click on + Add button in CS actions column
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const btn = e.target.closest('.add-action-btn');
+      if (!btn) return;
+      openInlinePopover(btn);
+    });
+
+    // Inline popover: save on button click
+    document.getElementById('inline-add-popover').addEventListener('click', async e => {
+      if (!e.target.closest('.inline-action-save')) return;
+      const p        = document.getElementById('inline-add-popover');
+      const hid      = p.dataset.hubspotId;
+      const name     = p.querySelector('.inline-action-name')?.value.trim();
+      const priority = p.querySelector('.inline-action-priority')?.value;
+      if (!name) { p.querySelector('.inline-action-name')?.focus(); return; }
+      const action = await createAction(hid, name, priority);
+      if (!action) return;
+      closeInlinePopover();
+      render();
+    });
+
+    // Inline popover: save on Enter key
+    document.getElementById('inline-add-popover').addEventListener('keydown', async e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      document.querySelector('#inline-add-popover .inline-action-save')?.click();
+    });
+
+    // Inline popover: close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeInlinePopover();
+    });
+
+    // Inline popover: close on click outside
+    document.addEventListener('click', e => {
+      const p = document.getElementById('inline-add-popover');
+      if (!p?.classList.contains('inline-add-popover--open')) return;
+      if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
+    }, true);
 
     // --- Column resize ---
     let resizingCol = null;
