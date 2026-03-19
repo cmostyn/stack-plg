@@ -96,6 +96,19 @@ Surface: last contact date, unanswered emails, accounts going quiet
 
 ---
 
+## External API rules — READ ONLY
+
+**Never write to, update, or delete data in these services:**
+
+- **Pylon** — read only. Never create, update, or delete tickets, contacts, accounts, or any other records.
+- **HubSpot** — read only. Never create, update, or delete contacts, companies, deals, tickets, or any other CRM records.
+- **PostHog** — read only. Never create events, update persons, modify feature flags, or write any data.
+- **Fireflies** — read only. Never create soundbites, update transcripts, change privacy settings, or write any data.
+
+If a task appears to require writing to one of these services, stop and ask Charlie before proceeding.
+
+---
+
 ## Handling untracked data
 
 Never hide a section because data isn't available. Show a placeholder card:
