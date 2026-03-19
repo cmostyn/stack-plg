@@ -456,6 +456,7 @@
     // --- Card modal ---
 
     function renderCardLeft(company, c, gmailUrl, calls) {
+      const py  = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
       const rel = relativeTime(company.last_contact);
       const abs = company.last_contact
         ? new Date(company.last_contact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -499,6 +500,19 @@
             <div class="field-notes">${escHtml(company.notes)}</div>
           </div>
         ` : ''}
+        ${py ? `
+          <div class="section-divider"></div>
+          <div class="card-section-label">Support</div>
+          <div class="field-row">
+            <div class="field-label">Open tickets</div>
+            <div class="field-value">
+              <a href="${escHtml(`https://app.usepylon.com/accounts/${py.pylon_account_id}`)}" target="_blank" rel="noopener" class="card-hs-link">
+                ${py.open_tickets_live ?? py.issues_last_30d.open} open
+              </a>
+              <span class="field-date-abs"> · ${py.issues_last_30d.total} in last 30d</span>
+            </div>
+          </div>
+        ` : ''}
         <div class="section-divider"></div>
         <div class="card-section-label">Fireflies actions</div>
         ${ffHtml}
@@ -511,23 +525,34 @@
       const all  = [...open, ...done];
 
       const listHtml = all.length === 0
-        ? '<p class="ff-empty">No actions yet — add one above.</p>'
+        ? '<p class="ff-empty">No actions yet.</p>'
         : all.map(action => `
-            <div class="action-item">
-              <button class="action-check ${action.done ? 'done' : ''}" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}"></button>
-              <div class="action-name ${action.done ? 'done' : ''}">${escHtml(action.name)}</div>
+            <div class="action-item${action.done ? ' action-item--done' : ''}">
+              <button class="action-check${action.done ? ' done' : ''}"
+                data-action-id="${escHtml(action.id)}"
+                data-hubspot-id="${escHtml(action.hubspot_id)}"
+                title="${action.done ? 'Mark open' : 'Mark done'}">
+                ${action.done ? `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg>` : ''}
+              </button>
+              <div class="action-name${action.done ? ' done' : ''}">${escHtml(action.name)}</div>
               <span class="priority-badge priority-${escHtml(action.priority)}">${escHtml(action.priority.charAt(0).toUpperCase() + action.priority.slice(1))}</span>
-              <button class="action-delete" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}" aria-label="Delete">✕</button>
+              <button class="action-delete" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}" aria-label="Delete">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+              </button>
             </div>
           `).join('');
 
+      const openCount = open.length;
       return `
         <div class="actions-header">
-          <div class="card-section-label" style="margin-bottom:0">CS actions</div>
+          <div>
+            <div class="card-section-label" style="margin-bottom:0">CS actions</div>
+            ${openCount > 0 ? `<div class="actions-open-count">${openCount} open</div>` : ''}
+          </div>
           <button class="add-btn" id="card-add-btn">＋ Add</button>
         </div>
         <div id="card-add-form" class="card-add-form" style="display:none">
-          <input type="text" id="card-action-name" class="card-action-input" placeholder="Action name…" maxlength="200">
+          <input type="text" id="card-action-name" class="card-action-input" placeholder="Action name…" maxlength="200" autofocus>
           <select id="card-action-priority" class="card-action-select">
             <option value="high">High</option>
             <option value="med" selected>Med</option>
@@ -1059,6 +1084,7 @@
         h.classList.remove('crm-resize-handle--active')
       );
       resizingCol = null;
+      saveColWidths();
     });
   </script>
 

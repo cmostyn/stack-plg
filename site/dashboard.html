@@ -31,6 +31,7 @@
       <button class="dash-filter-pill dash-filter-pill--active" data-filter="all">All</button>
       <button class="dash-filter-pill" data-filter="plg">PLG</button>
       <button class="dash-filter-pill" data-filter="slg">SLG</button>
+      <button class="dash-filter-pill" data-filter="cust">Cust</button>
     </div>
 
     <div class="dash-grid" id="dashGrid">
@@ -277,8 +278,9 @@
 
     // ── Filter type → HubSpot `type` value ───────────────────────────────────
     const TYPE_MAP = {
-      plg: 'Customer - PLG',
-      slg: 'Customer - SLG',
+      plg:  'Customer - PLG',
+      slg:  'Customer - SLG',
+      cust: 'Customer',
     };
 
     function filterCompanies(companies) {

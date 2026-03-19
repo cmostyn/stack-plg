@@ -676,7 +676,7 @@ a:hover {
 }
 
 .crm-num {
-  text-align: left;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
@@ -748,7 +748,7 @@ a:hover {
 
 /* CRM — most recent call link */
 .crm-call-link {
-  color: var(--so-text-body);
+  color: var(--so-green-dark);
   text-decoration: none;
   font-size: 13px;
   display: block;
@@ -757,7 +757,6 @@ a:hover {
   text-overflow: ellipsis;
 }
 .crm-call-link:hover {
-  color: var(--so-green-dark);
   text-decoration: underline;
 }
 
@@ -1466,10 +1465,7 @@ a:hover {
   background: rgba(0, 175, 102, 0.25);
 }
 
-/* th needs relative positioning for the handle */
-.crm-table th {
-  position: relative;
-}
+/* sticky already establishes a positioning context for the resize handle */
 
 /* ============================================================
    Customer card modal
@@ -1563,22 +1559,38 @@ a:hover {
 }
 .add-btn:hover { background: var(--so-neutral-5); }
 
+.actions-open-count {
+  font-size: 11px;
+  color: var(--so-neutral-40);
+  margin-top: 2px;
+}
+
 .action-item            { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--so-neutral-5); }
 .action-item:last-child { border-bottom: none; }
-.action-check      {
-  width: 16px; height: 16px; border: 1.5px solid var(--so-neutral-20);
+.action-item--done .action-name,
+.action-name.done { text-decoration: line-through; color: var(--so-neutral-40); }
+
+.action-check {
+  width: 18px; height: 18px; border: 1.5px solid var(--so-neutral-20);
   border-radius: 4px; flex-shrink: 0; cursor: pointer; background: none;
-  padding: 0;
+  padding: 0; display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, border-color 0.12s;
 }
-.action-check.done { background: var(--so-primary); border-color: var(--so-primary); }
+.action-check.done {
+  background: var(--so-primary);
+  border-color: var(--so-primary);
+}
+.action-check svg { color: #fff; width: 12px; height: 12px; }
+
 .action-name       { flex: 1; font-size: 13px; color: var(--so-text-header); }
-.action-name.done  { text-decoration: line-through; color: var(--so-neutral-40); }
 .action-delete     {
   background: none; border: none; cursor: pointer;
-  color: var(--so-neutral-40); font-size: 14px; padding: 2px;
+  color: var(--so-neutral-40); padding: 2px;
   opacity: 0; transition: opacity 0.1s;
+  display: flex; align-items: center; justify-content: center;
 }
 .action-item:hover .action-delete { opacity: 1; }
+.action-delete:hover { color: var(--so-red-dark); }
 
 .priority-badge { font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
 .priority-high  { background: #FDEAEA; color: var(--so-red-dark); }
