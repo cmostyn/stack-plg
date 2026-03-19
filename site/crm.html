@@ -105,7 +105,10 @@
         });
         return `<td class="crm-date" title="${escHtml(abs)}">${escHtml(rel)}</td>`;
       },
-      account:      () => PLACEHOLDER_CELL,
+      account: company => {
+        const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+        return py ? `<td>${escHtml(py.name)}</td>` : PLACEHOLDER_CELL;
+      },
       integrations: () => PLACEHOLDER_CELL,
       clicks: company => {
         const ph = posthogMap.get(normName(company.name));
@@ -114,8 +117,14 @@
           : PLACEHOLDER_CELL;
       },
       api_requests:  () => PLACEHOLDER_CELL,
-      tickets_total: () => PLACEHOLDER_CELL,
-      open_tickets:  () => PLACEHOLDER_CELL,
+      tickets_total: company => {
+        const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+        return py ? `<td>${py.issues_last_30d.total}</td>` : PLACEHOLDER_CELL;
+      },
+      open_tickets: company => {
+        const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+        return py ? `<td>${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
+      },
       cs_actions:    () => PLACEHOLDER_CELL,
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
@@ -129,6 +138,7 @@
     let allRows      = [];
     let posthogMap   = new Map();
     let firefliesMap = new Map();
+    let pylonMap     = new Map(); // hubspot_id → pylon account
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 }; // name starts at 1 (already asc)
@@ -311,9 +321,11 @@
       fetch('./data/hubspot.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
       fetch('./data/posthog.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/fireflies.json').then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([hubspot, posthog, fireflies]) => {
+      fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog, fireflies, pylon]) => {
       posthogMap   = new Map(posthog.map(r => [normName(r.org_name), r]));
       firefliesMap = new Map(fireflies.map(r => [r.domain, r]));
+      pylonMap     = new Map(pylon.map(r => [String(r.hubspot_id), r]));
       allRows = hubspot;
       render();
     }).catch(() => {
