@@ -43,7 +43,7 @@
             <th id="th-contact">Primary contact (HubSpot)</th>
             <th>Account (Pylon)</th>
             <th>Connected integrations (PostHog)</th>
-            <th>API requests (PostHog)</th>
+            <th id="th-clicks" aria-sort="none">Clicks (PostHog)</th>
             <th>Tickets total (Pylon)</th>
             <th>Open tickets (Pylon)</th>
             <th>Open CS actions</th>
@@ -61,13 +61,17 @@
   <script>
     // --- Constants ---
     const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
-    const PLACEHOLDER_COLS = 7; // columns 3–9
 
     // --- State ---
-    let allRows  = [];
-    let sortKey  = 'name';  // 'name' | 'contact'
-    let sortDir  = 'asc';   // 'asc' | 'desc'
-    let clickCounts = { name: 1, contact: 0 }; // name starts at 1 (already asc)
+    let allRows    = [];
+    let posthogMap = new Map(); // normalised name → posthog row
+    let sortKey    = 'name';    // 'name' | 'contact' | 'clicks'
+    let sortDir    = 'asc';
+    let clickCounts = { name: 1, contact: 0, clicks: 0 };
+
+    function normName(s) {
+      return (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
 
     // --- Helpers ---
 
@@ -113,7 +117,12 @@
            </td>`
         : `<td class="crm-placeholder">—</td>`;
 
-      return `<tr>${nameCell}${contactCell}${PLACEHOLDER_CELL.repeat(PLACEHOLDER_COLS)}</tr>`;
+      const ph = posthogMap.get(normName(company.name));
+      const clicksCell = ph != null
+        ? `<td>${ph.click_interactions.toLocaleString()}</td>`
+        : PLACEHOLDER_CELL;
+
+      return `<tr>${nameCell}${contactCell}${PLACEHOLDER_CELL}${clicksCell}${PLACEHOLDER_CELL.repeat(5)}</tr>`;
     }
 
     function searchMatch(company, query) {
@@ -132,6 +141,11 @@
         const dir = sortDir === 'asc' ? 1 : -1;
         if (sortKey === 'contact') {
           return dir * contactSortValue(a).localeCompare(contactSortValue(b));
+        }
+        if (sortKey === 'clicks') {
+          const ca = posthogMap.get(normName(a.name))?.click_interactions ?? -1;
+          const cb = posthogMap.get(normName(b.name))?.click_interactions ?? -1;
+          return dir * (ca - cb);
         }
         return dir * (a.name ?? '').localeCompare(b.name ?? '');
       });
@@ -155,11 +169,7 @@
     // --- Sort ---
 
     function setSort(key) {
-      // Reset the other column's click count when switching columns
-      if (key !== sortKey) {
-        clickCounts[sortKey] = 0;
-      }
-
+      if (key !== sortKey) clickCounts[sortKey] = 0;
       clickCounts[key] = (clickCounts[key] ?? 0) + 1;
       const click = clickCounts[key];
 
@@ -168,38 +178,37 @@
       } else if (click % 3 === 2) {
         sortKey = key; sortDir = 'desc';
       } else {
-        // Third click: reset to global default (name A→Z)
         sortKey = 'name'; sortDir = 'asc';
-        clickCounts = { name: 1, contact: 0 };
+        clickCounts = { name: 1, contact: 0, clicks: 0 };
       }
 
-      // Update aria-sort on sortable headers
-      const thName    = document.getElementById('th-name');
-      const thContact = document.getElementById('th-contact');
-      thName.removeAttribute('aria-sort');
-      thContact.removeAttribute('aria-sort');
-      const activeEl = sortKey === 'contact' ? thContact : thName;
-      activeEl.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+      ['th-name', 'th-contact', 'th-clicks'].forEach(id =>
+        document.getElementById(id).removeAttribute('aria-sort')
+      );
+      const thId = sortKey === 'contact' ? 'th-contact' : sortKey === 'clicks' ? 'th-clicks' : 'th-name';
+      document.getElementById(thId).setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 
       render();
     }
 
     // --- Init ---
 
-    fetch('./data/hubspot.json')
-      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(data => {
-        allRows = data;
-        render();
-      })
-      .catch(() => {
-        document.getElementById('crm-table-wrap').outerHTML =
-          '<p class="crm-error">Customer data couldn\'t be loaded. Try refreshing the page.</p>';
-      });
+    Promise.all([
+      fetch('./data/hubspot.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+      fetch('./data/posthog.json').then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog]) => {
+      posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
+      allRows = hubspot;
+      render();
+    }).catch(() => {
+      document.getElementById('crm-table-wrap').outerHTML =
+        '<p class="crm-error">Customer data couldn\'t be loaded. Try refreshing the page.</p>';
+    });
 
     document.getElementById('crm-search').addEventListener('input', render);
     document.getElementById('th-name').addEventListener('click', () => setSort('name'));
     document.getElementById('th-contact').addEventListener('click', () => setSort('contact'));
+    document.getElementById('th-clicks').addEventListener('click', () => setSort('clicks'));
   </script>
 
 </body>
