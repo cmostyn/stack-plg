@@ -58,7 +58,20 @@ async function fetchPLGAccounts() {
 
 // Fetch all issues in a 30-day window (max window allowed by Pylon)
 async function fetchIssues(startTime, endTime) {
-  const data = await rpc('pylon_list_issues', { query: { start_time: startTime, end_time: endTime } });
+  const res = await fetch('https://api.stackone.com/actions/rpc', {
+    method: 'POST',
+    headers: {
+      'Authorization': AUTH,
+      'x-account-id': ACCOUNT_ID,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'pylon_list_issues',
+      query: { start_time: startTime, end_time: endTime },
+    }),
+  });
+  if (!res.ok) throw new Error(`RPC pylon_list_issues failed: ${res.status} ${await res.text()}`);
+  const data = await res.json();
   return data?.result?.data?.data ?? data?.data?.data ?? [];
 }
 
