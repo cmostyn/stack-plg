@@ -96,7 +96,7 @@ body {
   font-weight: 400;
   line-height: 1.6;
   color: var(--so-text-body);
-  background-color: var(--so-background);
+  background-color: #EEF8F3;
 }
 
 a {
@@ -179,6 +179,10 @@ a:hover {
   padding: 48px 2rem 80px;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.page-main--crm {
+  max-width: none;
 }
 
 .page-heading {
@@ -595,6 +599,10 @@ a:hover {
   background: var(--so-white);
 }
 
+.crm-table thead tr {
+  background: var(--so-foreground);
+}
+
 .crm-table th {
   font-family: var(--so-font-body);
   font-size: 13px;
@@ -603,12 +611,18 @@ a:hover {
   text-align: left;
   padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-10);
+  border-right: 1px dotted var(--so-neutral-10);
   white-space: nowrap;
   user-select: none;
+  vertical-align: middle;
   position: sticky;
   top: 0;
   z-index: 4;
-  background: var(--so-white);
+  background: var(--so-foreground);
+}
+
+.crm-table th:last-child {
+  border-right: none;
 }
 
 .crm-table th:hover {
@@ -624,8 +638,13 @@ a:hover {
   color: var(--so-text-body);
   padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-5);
+  border-right: 1px dotted var(--so-neutral-10);
   vertical-align: middle;
   transition: background 0.12s;
+}
+
+.crm-table td:last-child {
+  border-right: none;
 }
 
 .crm-table tr:last-child td {
@@ -1341,8 +1360,8 @@ a:hover {
 
 /* CRM — frozen column indicator */
 .crm-th--frozen {
-  background: var(--so-white) !important;
-  border-right: 2px solid var(--so-neutral-10);
+  background: var(--so-foreground) !important;
+  border-right: 2px solid var(--so-neutral-20) !important;
 }
 .crm-td--frozen {
   background: var(--so-white);

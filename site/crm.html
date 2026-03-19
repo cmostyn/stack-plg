@@ -24,7 +24,7 @@
     </div>
   </header>
 
-  <main class="page-main">
+  <main class="page-main page-main--crm">
 
     <div class="crm-toolbar">
       <div class="crm-toolbar-left">
@@ -190,18 +190,15 @@
       },
       open_tickets: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td class="crm-num">${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
+        if (!py) return PLACEHOLDER_CELL;
+        const count = py.open_tickets_live ?? py.issues_last_30d.open;
+        const pylonUrl = escHtml(`https://app.usepylon.com/accounts/${py.pylon_account_id}`);
+        return `<td class="crm-num"><a href="${pylonUrl}" target="_blank" rel="noopener">${count}</a></td>`;
       },
       cs_actions: company => {
-        const actions = actionsMap.get(String(company.hubspot_id ?? '')) ?? [];
-        const open    = actions.filter(a => !a.done);
-        const pills   = open.slice(0, 2).map(a =>
-          `<span class="action-pill ${escHtml(a.priority)}">${escHtml(a.name)}</span>`
-        ).join('');
         const hid = escHtml(String(company.hubspot_id ?? ''));
         return `<td>
           <div class="actions-cell">
-            ${pills}
             <button class="add-action-btn" data-hubspot-id="${hid}">+ Add</button>
           </div>
         </td>`;
