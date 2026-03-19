@@ -5,16 +5,17 @@
     "domain": "antoniocpa.com",
     "org_id": "bxRAaHpYCdqnFI1RmYZJ3UtqRNss7GZP",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T03:46:06.994Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411466041590",
-    "updated_at": "2026-03-12T19:29:37.369Z",
+    "updated_at": "2026-03-19T10:52:44.323Z",
     "contact": {
       "name": "Antonio Perez",
       "email": "aperez@antoniocpa.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "408498373828",
@@ -22,16 +23,17 @@
     "domain": "assembledhq.com",
     "org_id": "GLukv6lLIY6BeoGUJGIJMH2wUZxCxO9q",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:23:57.410Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/408498373828",
-    "updated_at": "2026-03-12T19:32:33.849Z",
+    "updated_at": "2026-03-19T10:59:02.966Z",
     "contact": {
       "name": "Maitrik Shah",
       "email": "maitrik@assembledhq.com"
-    }
+    },
+    "last_contact": "2026-01-15T16:19:49.000Z"
   },
   {
     "hubspot_id": "411267914973",
@@ -39,16 +41,17 @@
     "domain": "atarashii.org",
     "org_id": "4o5PkPqdhTV7RWRSeivqQxQ8yejPht1c",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T01:14:58.951Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411267914973",
-    "updated_at": "2026-03-12T19:29:45.086Z",
+    "updated_at": "2026-03-19T10:58:56.164Z",
     "contact": {
       "name": "Jessee Skittrall-Lemons",
       "email": "jessee@atarashii.org"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "385814758612",
@@ -56,16 +59,17 @@
     "domain": "atender.in",
     "org_id": "U0TidbDBgyjGNnyzwfImXd1OJQbPbp9N",
     "tier": "Free",
-    "notes": "No projects?\n",
+    "notes": "No projects or users 19/03 \n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-02T10:07:23.397Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/385814758612",
-    "updated_at": "2026-03-16T23:58:01.060Z",
+    "updated_at": "2026-03-19T10:47:52.697Z",
     "contact": {
       "name": "dhaval kathrotiya",
       "email": "support@atender.in"
-    }
+    },
+    "last_contact": "2026-02-17T20:57:47.429Z"
   },
   {
     "hubspot_id": "415908711663",
@@ -73,16 +77,17 @@
     "domain": "mycashq.com",
     "org_id": "YMjYBS25esqW8Er9o0esf4Rzr91VMpH6",
     "tier": "Free",
-    "notes": "0",
+    "notes": "alex@mycashq.com\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-06T05:25:29.387Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/415908711663",
-    "updated_at": "2026-03-18T15:16:56.708Z",
+    "updated_at": "2026-03-19T10:42:43.519Z",
     "contact": {
       "name": "ALEX VORONOVICH",
       "email": "alex@mycashq.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "386213542102",
@@ -90,16 +95,17 @@
     "domain": "blackmountain.io",
     "org_id": "keHVjqquwHAKU2sd34guxmk7EdrIavX5",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity, CM msg 18.03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-02T12:46:27.137Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/386213542102",
-    "updated_at": "2026-03-18T15:16:28.867Z",
+    "updated_at": "2026-03-19T09:52:37.235Z",
     "contact": {
       "name": "Quentin",
       "email": "quentin@blackmountain.io"
-    }
+    },
+    "last_contact": "2026-02-02T14:53:11.822Z"
   },
   {
     "hubspot_id": "394927124696",
@@ -107,16 +113,17 @@
     "domain": "boost08.com",
     "org_id": "5z7czByxXsh9zCQIZoguJZec99sNKN5q",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm mssg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-11T15:19:05.524Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/394927124696",
-    "updated_at": "2026-03-18T15:16:34.804Z",
+    "updated_at": "2026-03-19T10:10:42.654Z",
     "contact": {
       "name": "Linus Friis",
       "email": "linus.friis@boost08.com"
-    }
+    },
+    "last_contact": "2026-02-20T14:30:00.000Z"
   },
   {
     "hubspot_id": "414832755899",
@@ -124,16 +131,17 @@
     "domain": "bramble.care",
     "org_id": "50iYPZGsGOHba3MKdOPi9DrCDoj5vDLQ",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-04T13:06:33.340Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/414832755899",
-    "updated_at": "2026-03-18T15:16:51.777Z",
+    "updated_at": "2026-03-19T10:16:04.170Z",
     "contact": {
       "name": "Elliot Mandy",
       "email": "elliot.mandy@bramble.care"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "337002173661",
@@ -141,16 +149,17 @@
     "domain": "bridgeconsulting.com.br",
     "org_id": "OZLoi1ClBR88A7h4XS8qYbJCoBfbwKxU",
     "tier": "Free",
-    "notes": "Elena's brother in law's company in Brazil - interesting for us to get intros to ENT clients and learn about their interoperability needs",
+    "notes": "Ask Elena. Facing 6 API requests, errors. CM reach out.\n\nElena's brother in law's company in Brazil - interesting for us to get intros to ENT clients and learn about their interoperability needs",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-12-15T13:20:42.572Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/337002173661",
-    "updated_at": "2026-03-18T17:51:51.718Z",
+    "updated_at": "2026-03-19T09:51:25.769Z",
     "contact": {
       "name": "Alice Lopes de Sousa",
       "email": "alice.sousa@bridgetechnology.com.br"
-    }
+    },
+    "last_contact": "2026-03-16T15:13:59.287Z"
   },
   {
     "hubspot_id": "264826313955",
@@ -158,16 +167,17 @@
     "domain": "candidatehub.io",
     "org_id": "PQfvzDrSdUL7xEReYV35ZaRrAphWTmqV",
     "tier": "Free",
-    "notes": "Lever config done but not connected",
+    "notes": "CM msg 19/03 ____ Lever config done but not connected",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:23:56.032Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264826313955",
-    "updated_at": "2026-03-18T15:16:02.590Z",
+    "updated_at": "2026-03-19T09:23:54.983Z",
     "contact": {
       "name": "Brad DiPaolo",
       "email": "brad@candidatehub.io"
-    }
+    },
+    "last_contact": "2026-02-04T22:07:44.716Z"
   },
   {
     "hubspot_id": "405685984452",
@@ -175,16 +185,17 @@
     "domain": "cloud-ace.com",
     "org_id": "Kw2tdTT9hhDANcYrfExAS69DUdviMxao",
     "tier": "Free",
-    "notes": "60 requests, gmail",
+    "notes": "72 requests, gmail & drive. CM msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-23T15:30:51.681Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/405685984452",
-    "updated_at": "2026-03-18T15:16:41.948Z",
+    "updated_at": "2026-03-19T10:58:20.053Z",
     "contact": {
       "name": "Van Duong",
       "email": "vandb@cloud-ace.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "394265558217",
@@ -192,16 +203,17 @@
     "domain": "crefi.ai",
     "org_id": "EWwMHyqBAa9XipS40B7y9WTNXSxuLKiI",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-10T21:45:33.957Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/394265558217",
-    "updated_at": "2026-03-12T19:30:34.248Z",
+    "updated_at": "2026-03-19T10:58:24.269Z",
     "contact": {
       "name": "Joseph K",
       "email": "aysar.khalid@crefi.ai"
-    }
+    },
+    "last_contact": "2026-02-24T11:35:05.254Z"
   },
   {
     "hubspot_id": "409858460921",
@@ -209,16 +221,17 @@
     "domain": "xmachina.digital",
     "org_id": "1yR2KHWH5afX8RPbPeV670SjsYxlISQ2",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-28T14:12:58.147Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/409858460921",
-    "updated_at": "2026-03-12T19:29:55.482Z",
+    "updated_at": "2026-03-19T10:58:58.148Z",
     "contact": {
       "name": "N S",
       "email": "nancy@xmachina.digital"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "389085312195",
@@ -226,16 +239,17 @@
     "domain": "ddvi.io",
     "org_id": "s8YGtyQJ8PRUptT9JjVEU3c6BDiEezFT",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-06T05:02:48.128Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/389085312195",
-    "updated_at": "2026-03-18T15:16:33.970Z",
+    "updated_at": "2026-03-19T10:58:43.928Z",
     "contact": {
       "name": "David Sanchez",
       "email": "david@ddvi.io"
-    }
+    },
+    "last_contact": "2026-02-13T08:57:00.280Z"
   },
   {
     "hubspot_id": "405919011002",
@@ -243,16 +257,17 @@
     "domain": "eon.io",
     "org_id": "tKjgKxbPqQE9s6gl3PpxrIzAPpmabQqV",
     "tier": "Free",
-    "notes": "No project",
+    "notes": "No users or project 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-24T11:27:54.292Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/405919011002",
-    "updated_at": "2026-03-12T19:35:46.893Z",
+    "updated_at": "2026-03-19T10:52:50.005Z",
     "contact": {
       "name": "rachel schifter",
       "email": "rachel@eon.io"
-    }
+    },
+    "last_contact": "2026-03-04T16:37:23.543Z"
   },
   {
     "hubspot_id": "361973674233",
@@ -260,16 +275,17 @@
     "domain": "episode1.com",
     "org_id": "sfcXStBg6kyyWqLieeEzj0NVXQggVhwr",
     "tier": "Free",
-    "notes": "309 requests, Affinity & Mailchimp set up",
+    "notes": "CHECK: 309 requests, Affinity & Mailchimp set up",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-09-24T13:23:09.943Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361973674233",
-    "updated_at": "2026-03-18T17:51:52.029Z",
+    "updated_at": "2026-03-19T10:52:19.027Z",
     "contact": {
       "name": "Adam Shuaib",
       "email": "adam@episode1.com"
-    }
+    },
+    "last_contact": "2026-02-26T15:30:00.000Z"
   },
   {
     "hubspot_id": "417252380911",
@@ -277,16 +293,17 @@
     "domain": "zohomail.in",
     "org_id": "8tae5w9xNexfbiDJIe6qnzBbGVKcMjFf",
     "tier": "Free",
-    "notes": "0",
+    "notes": "paragpakhrani@zohomail.in\n\nCHECK IF DOCUSIGN\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-06T12:58:15.812Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/417252380911",
-    "updated_at": "2026-03-18T15:16:57.557Z",
+    "updated_at": "2026-03-19T10:43:13.432Z",
     "contact": {
       "name": "Parag Pakhrani",
       "email": "paragpakhrani@zohomail.in"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "387722095824",
@@ -294,16 +311,17 @@
     "domain": "geloc.eu",
     "org_id": "axhdK3PIDiLdg8hoKro8lIGTF25ORbKu",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm mssg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-04T09:29:29.823Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/387722095824",
-    "updated_at": "2026-03-18T15:16:29.791Z",
+    "updated_at": "2026-03-19T10:03:45.874Z",
     "contact": {
       "name": "Orphéo Hellandsjo",
       "email": "orpheo@geloc.eu"
-    }
+    },
+    "last_contact": "2026-02-17T20:55:32.821Z"
   },
   {
     "hubspot_id": "421275455721",
@@ -311,16 +329,17 @@
     "domain": "gloriousgaming.com",
     "org_id": "gTpEkQg0zeLB4uYWqJppN57UfUbWlHFX",
     "tier": "Free",
-    "notes": null,
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-12T17:56:27.303Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/421275455721",
-    "updated_at": "2026-03-18T15:14:37.742Z",
+    "updated_at": "2026-03-19T11:01:35.533Z",
     "contact": {
       "name": "Shannon Sanford",
       "email": "shannon.s@gloriousgaming.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "264769275123",
@@ -328,16 +347,17 @@
     "domain": "gorgias.com",
     "org_id": "0hHSXVAuUuBK8lYqf4t7tInV9zNRLmVx",
     "tier": "Free",
-    "notes": "No projects",
+    "notes": "No projects or users 19/03 \n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:23:58.209Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264769275123",
-    "updated_at": "2026-03-16T17:41:16.115Z",
+    "updated_at": "2026-03-19T10:47:54.623Z",
     "contact": {
       "name": "Stan He",
       "email": "stanley.h@gorgias.io"
-    }
+    },
+    "last_contact": "2026-02-27T14:50:27.000Z"
   },
   {
     "hubspot_id": "417736338668",
@@ -345,16 +365,17 @@
     "domain": "dbhalo.com",
     "org_id": "6rOQUPccIizJTp4jzKaVYX0i27qokYLO",
     "tier": "Free",
-    "notes": "0",
+    "notes": "Xero configured but not linked. CM msg 19/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-07T16:15:14.586Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/417736338668",
-    "updated_at": "2026-03-18T15:16:58.545Z",
+    "updated_at": "2026-03-19T11:11:05.342Z",
     "contact": {
       "name": "Craig Patterson",
       "email": "craig@dbhalo.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "411710458095",
@@ -362,16 +383,17 @@
     "domain": "headway.inc",
     "org_id": "jPmbel1qMoShniefPOGyU9uho77hZH7D",
     "tier": "Free",
-    "notes": "2 requests, Slack (erroring)",
+    "notes": "2 requests, Slack. CM msg 19/03.\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T09:19:39.605Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411710458095",
-    "updated_at": "2026-03-18T15:16:46.200Z",
+    "updated_at": "2026-03-19T10:58:29.412Z",
     "contact": {
       "name": "Oleksandr Potapov",
       "email": "o.potapov@headway.inc"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "265810080957",
@@ -379,16 +401,17 @@
     "domain": "hirehoot.net",
     "org_id": "JZX9qu7e4w78bBoKjqwktSXBL0jezSvm",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:03.736Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265810080957",
-    "updated_at": "2026-03-18T15:16:11.533Z",
+    "updated_at": "2026-03-19T10:09:48.406Z",
     "contact": {
       "name": null,
       "email": "ilknur@hirehoot.net"
-    }
+    },
+    "last_contact": "2026-02-17T20:53:15.384Z"
   },
   {
     "hubspot_id": "412712932593",
@@ -396,16 +419,17 @@
     "domain": "hngconsulting.co.uk",
     "org_id": "RAtePX1JWjXOlIRRWiFSXENleYDbEYoF",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-03T04:37:00.521Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/412712932593",
-    "updated_at": "2026-03-12T19:29:13.486Z",
+    "updated_at": "2026-03-19T10:46:06.379Z",
     "contact": {
       "name": "Harish Access",
       "email": "harish@hngconsulting.co.uk"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "264767473892",
@@ -413,16 +437,17 @@
     "domain": "gethownow.com",
     "org_id": "AR6OUfRNQZZvERpvK5P3czqcyd1c69nx",
     "tier": "Free",
-    "notes": "24k requests - mainly hubspot. Datadog, 1PW making less requests.",
+    "notes": "26k requests. CM / Richard to reach out for minimum spend: email drafted.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:05.557Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264767473892",
-    "updated_at": "2026-03-18T15:16:18.075Z",
+    "updated_at": "2026-03-19T09:33:56.720Z",
     "contact": {
       "name": "Nelson Sivalingam",
       "email": "nelson@gethownow.com"
-    }
+    },
+    "last_contact": "2026-02-23T08:21:37.394Z"
   },
   {
     "hubspot_id": "412513155306",
@@ -430,16 +455,17 @@
     "domain": "htgtechs.com",
     "org_id": "abDXAhOHRje9EDYa7CUiGvl9NLn1GFb3",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T23:27:11.788Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/412513155306",
-    "updated_at": "2026-03-12T19:29:21.566Z",
+    "updated_at": "2026-03-19T10:58:41.527Z",
     "contact": {
       "name": "BLAKE HELTON",
       "email": "bhelton@htgtechs.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "417663310033",
@@ -447,16 +473,17 @@
     "domain": "kudosity.com",
     "org_id": "eBrNfont6jQltfestoAtFU6YwBrKZfOW",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 19/03.\n\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-09T06:18:58.458Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/417663310033",
-    "updated_at": "2026-03-18T15:17:04.712Z",
+    "updated_at": "2026-03-19T11:08:59.120Z",
     "contact": {
       "name": "Tony Becker",
       "email": "tony.becker@kudosity.com"
-    }
+    },
+    "last_contact": "2026-03-09T12:23:50.351Z"
   },
   {
     "hubspot_id": "421230393554",
@@ -464,16 +491,17 @@
     "domain": "intellibricks.app",
     "org_id": "odn5mGb04Xl6cbC4ZXdWBMncu9OHxdFD",
     "tier": null,
-    "notes": null,
+    "notes": "No activity. Cm msg 19/03.\n",
     "welcome_email_sent": false,
     "type": "Customer - PLG",
     "createdate": "2026-03-12T14:47:21.575Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/421230393554",
-    "updated_at": "2026-03-12T18:24:58.088Z",
+    "updated_at": "2026-03-19T11:09:01.683Z",
     "contact": {
       "name": "Jason Pereira",
       "email": "support@intellibricks.app"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "264733275352",
@@ -481,16 +509,17 @@
     "domain": "jointflows.com",
     "org_id": "v1OPmPuPHDwjys9de2mSElpJEA0t9vtB",
     "tier": "Free",
-    "notes": "Salesforce config done",
+    "notes": "Salesforce config done, but no linked account. Cm msg 19/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:04.867Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264733275352",
-    "updated_at": "2026-03-18T15:16:13.010Z",
+    "updated_at": "2026-03-19T10:52:34.037Z",
     "contact": {
       "name": "Peter Balazs",
       "email": "pb@jointflows.com"
-    }
+    },
+    "last_contact": "2025-02-26T00:00:00.000Z"
   },
   {
     "hubspot_id": "380418439393",
@@ -498,16 +527,17 @@
     "domain": "kingsleygate.com",
     "org_id": "kjyLSBOtZ48nqD3urUumwLyGW9DMkYs1",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-01-28T10:21:19.559Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/380418439393",
-    "updated_at": "2026-03-12T19:31:39.914Z",
+    "updated_at": "2026-03-19T10:46:12.941Z",
     "contact": {
       "name": "Adesh Singh",
       "email": "asingh@kingsleygate.com"
-    }
+    },
+    "last_contact": "2026-02-09T19:31:51.943Z"
   },
   {
     "hubspot_id": "381624286440",
@@ -524,7 +554,8 @@
     "contact": {
       "name": "Hlib Davydov",
       "email": "s19208@pjwstk.edu.pl"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "420911353069",
@@ -532,16 +563,17 @@
     "domain": "neoiq.ai",
     "org_id": "6F4pyyGqchHx8E85aBWNXYnqZXXihmpW",
     "tier": "Free",
-    "notes": null,
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-11T00:06:44.329Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/420911353069",
-    "updated_at": "2026-03-11T14:39:44.391Z",
+    "updated_at": "2026-03-19T11:01:33.559Z",
     "contact": {
       "name": "Marwan Abdelaziz",
       "email": "marwan@neoiq.ai"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "411678434503",
@@ -549,16 +581,17 @@
     "domain": "netram.se",
     "org_id": "yPSfgPGsfISa1vV1w2GJlKvq0wyt8lbO",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T10:45:12.777Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411678434503",
-    "updated_at": "2026-03-12T19:29:30.677Z",
+    "updated_at": "2026-03-19T10:58:48.419Z",
     "contact": {
       "name": "Axel Engdahl",
       "email": "axel@netram.se"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "413791169736",
@@ -566,16 +599,17 @@
     "domain": "newdecoded.com",
     "org_id": "JjNMYRJXf6GF13U7ecysjhjbeMKcTWD2",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-03T20:29:40.998Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/413791169736",
-    "updated_at": "2026-03-12T19:28:57.547Z",
+    "updated_at": "2026-03-19T10:58:26.871Z",
     "contact": {
       "name": "J Dijkstra",
       "email": "ops@newdecoded.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "421409266923",
@@ -583,16 +617,17 @@
     "domain": "omnigon.biz",
     "org_id": "fC2Q51VTBkax5eBLSAeXbMeivOBpDe0i",
     "tier": "Free",
-    "notes": null,
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-14T20:42:29.958Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/421409266923",
-    "updated_at": "2026-03-17T14:43:34.714Z",
+    "updated_at": "2026-03-19T11:01:39.202Z",
     "contact": {
       "name": "Oleg Kvyatkovskiy",
       "email": "oleg.kvyatkovskiy@omnigon.biz"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "265837209829",
@@ -600,16 +635,17 @@
     "domain": "outhire.ai",
     "org_id": "AML0rfjJveI7p9JbRFD4hTGKNwJzKpnV",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity, CM msg 18.03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:03.998Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265837209829",
-    "updated_at": "2026-03-18T15:16:12.293Z",
+    "updated_at": "2026-03-19T09:25:32.354Z",
     "contact": {
       "name": "Matt Bauer",
       "email": "matt@outhire.ai"
-    }
+    },
+    "last_contact": "2026-02-19T14:54:34.152Z"
   },
   {
     "hubspot_id": "413805483211",
@@ -617,16 +653,17 @@
     "domain": "parentos.ai",
     "org_id": "rbKSJIAum5sWTQhAXqSMYQVHQP1O4dm3",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-03T17:57:43.218Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/413805483211",
-    "updated_at": "2026-03-18T15:16:47.767Z",
+    "updated_at": "2026-03-19T10:52:47.003Z",
     "contact": {
       "name": "Eryk Panter",
       "email": "contact@parentos.ai"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "398144402651",
@@ -634,16 +671,17 @@
     "domain": "buddyrents.com",
     "org_id": "X1dONeuPwtzyLgwFBZnAISb6hqZJQRZk",
     "tier": "Free",
-    "notes": "No project",
+    "notes": "No projects or users 19/03 \n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-13T17:08:16.482Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/398144402651",
-    "updated_at": "2026-03-15T08:40:09.796Z",
+    "updated_at": "2026-03-19T10:52:06.614Z",
     "contact": {
       "name": "steven smith",
       "email": "steve.smith@buddyrents.com"
-    }
+    },
+    "last_contact": "2026-02-17T21:21:15.451Z"
   },
   {
     "hubspot_id": "264787456206",
@@ -651,16 +689,17 @@
     "domain": "getpg.ai",
     "org_id": "zltdRFvwVBUT2ISCEoepthRqi3bWQjDF",
     "tier": "Free",
-    "notes": "6 requests, Hubspot\n",
+    "notes": "6 requests, Hubspot. CM check in 19/03.\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:23:57.328Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264787456206",
-    "updated_at": "2026-03-18T15:16:07.163Z",
+    "updated_at": "2026-03-19T10:03:48.323Z",
     "contact": {
       "name": "Ed Moore",
       "email": "ed@getpg.ai"
-    }
+    },
+    "last_contact": "2026-02-05T09:24:16.099Z"
   },
   {
     "hubspot_id": "421442477272",
@@ -668,16 +707,17 @@
     "domain": "pge.ba.gov.br",
     "org_id": "16BEfbixZzsGjhw6fANqNDIcFEEURXed",
     "tier": "Free",
-    "notes": null,
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-13T17:38:41.842Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/421442477272",
-    "updated_at": "2026-03-18T15:14:40.670Z",
+    "updated_at": "2026-03-19T11:01:37.418Z",
     "contact": {
       "name": "Uriel Torres Nunes",
       "email": "uriel.nunes@pge.ba.gov.br"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "388018528465",
@@ -685,16 +725,17 @@
     "domain": "quellist.com",
     "org_id": "LJxPoQIlxFDcwt0KedUAqmwHJbq5WIdX",
     "tier": "Free",
-    "notes": "No project",
+    "notes": "No projects or users 19/03 \n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-04T15:56:31.472Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/388018528465",
-    "updated_at": "2026-03-18T15:16:30.665Z",
+    "updated_at": "2026-03-19T10:47:58.227Z",
     "contact": {
       "name": "Jon Tippens",
       "email": "jon@quellist.com"
-    }
+    },
+    "last_contact": "2026-02-12T20:45:34.416Z"
   },
   {
     "hubspot_id": "402004098238",
@@ -702,16 +743,17 @@
     "domain": "reccy.dev",
     "org_id": "k8NXQ1XqHPTESDyUH1ZmARaulaYlirdE",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-19T02:10:18.627Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/402004098238",
-    "updated_at": "2026-03-18T15:16:41.158Z",
+    "updated_at": "2026-03-19T10:58:46.179Z",
     "contact": {
       "name": "Max Kelly",
       "email": "max@reccy.dev"
-    }
+    },
+    "last_contact": "2026-03-03T08:04:56.987Z"
   },
   {
     "hubspot_id": "361527850186",
@@ -719,16 +761,17 @@
     "domain": "requesty.ai",
     "org_id": "4LbCCWqwHebOpt5A1dgv2NujBcI2pQ4W",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 18/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-09-14T20:11:18.692Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361527850186",
-    "updated_at": "2026-03-18T15:15:55.860Z",
+    "updated_at": "2026-03-19T10:58:17.499Z",
     "contact": {
       "name": "Leslie Nooteboom",
       "email": "leslie@requesty.ai"
-    }
+    },
+    "last_contact": "2025-07-09T23:00:00.000Z"
   },
   {
     "hubspot_id": "417688846540",
@@ -736,16 +779,17 @@
     "domain": "soulseer.app",
     "org_id": "xqPbaafG2BF0qmJDRJpsa35p5FngEgYM",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-06T19:23:39.216Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/417688846540",
-    "updated_at": "2026-03-12T19:28:07.813Z",
+    "updated_at": "2026-03-19T11:01:31.216Z",
     "contact": {
       "name": "Emily Kennedy",
       "email": "emilynn@soulseer.app"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "411796039873",
@@ -753,16 +797,17 @@
     "domain": "superorgs.com",
     "org_id": "iowb2hERys1kWaqVbSeFQckwm3otXWD8",
     "tier": "Free",
-    "notes": "2 auth configured, no connectors or API requests. Bamboo and Gusto. Discussion on Pylon.",
+    "notes": "CHECK 2 auth configured, no connectors or API requests. Bamboo and Gusto. Discussion on Pylon.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T11:00:17.760Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411796039873",
-    "updated_at": "2026-03-18T15:16:47.379Z",
+    "updated_at": "2026-03-19T10:39:14.828Z",
     "contact": {
       "name": "Osama Inayat",
       "email": "osama@superorgs.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "390450566392",
@@ -770,16 +815,17 @@
     "domain": "tabnerglobal.com",
     "org_id": "eMWqzkr9xC9T8FZ7xc9mWuuMK5nQEzgE",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-07T06:14:49.523Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/390450566392",
-    "updated_at": "2026-03-17T16:33:44.642Z",
+    "updated_at": "2026-03-19T11:05:07.849Z",
     "contact": {
       "name": "Naga Addala",
       "email": "naga.bhushan@tabnerglobal.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "264892239034",
@@ -787,16 +833,17 @@
     "domain": "talenscio.com",
     "org_id": "Vrra9gsnvG1UELW3UrGNcGkgkw9HggYq",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 19/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:05.569Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264892239034",
-    "updated_at": "2026-03-18T15:16:18.677Z",
+    "updated_at": "2026-03-19T11:07:44.786Z",
     "contact": {
       "name": "Dave Iles",
       "email": "dave.iles@talenscio.com"
-    }
+    },
+    "last_contact": "2026-02-17T20:49:43.350Z"
   },
   {
     "hubspot_id": "265447789813",
@@ -804,16 +851,17 @@
     "domain": "talentxi.io",
     "org_id": "q7sEkFSld9FQOEAWjkzOdrOPMzfDMxqP",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity, CM msg 18.03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:07.817Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265447789813",
-    "updated_at": "2026-03-18T15:16:19.669Z",
+    "updated_at": "2026-03-19T09:37:55.650Z",
     "contact": {
       "name": "Jason Gorham",
       "email": "jason@talentxi.io"
-    }
+    },
+    "last_contact": "2026-02-10T19:22:28.936Z"
   },
   {
     "hubspot_id": "381242942672",
@@ -821,16 +869,17 @@
     "domain": "turtles.com",
     "org_id": "ityk6FpDv5kWxSjtRtYDh2bD0t0L7JCz",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-01-29T09:20:35.644Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/381242942672",
-    "updated_at": "2026-03-12T19:31:31.737Z",
+    "updated_at": "2026-03-19T10:46:19.312Z",
     "contact": {
       "name": "Diego Bennett",
       "email": "diego@turtles.com"
-    }
+    },
+    "last_contact": "2026-02-06T11:06:45.706Z"
   },
   {
     "hubspot_id": "264946176188",
@@ -838,16 +887,17 @@
     "domain": "tyckco.com",
     "org_id": "Y10DYnxGvEVEeLnIPpkLTYvKHvcz1wkn",
     "tier": "Free",
-    "notes": "16 API Requests, CharlieHR.",
+    "notes": "16 API Requests, CharlieHR. CM msg 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:24:00.558Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264946176188",
-    "updated_at": "2026-03-18T15:16:08.260Z",
+    "updated_at": "2026-03-19T10:47:34.820Z",
     "contact": {
       "name": "Tyck",
       "email": "matty@tyckco.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "269887455441",
@@ -855,16 +905,17 @@
     "domain": "tryunmask.ai",
     "org_id": "0qzZeb9hNFh7HAAyCy7EnRUxcpXOxW7U",
     "tier": "Free",
-    "notes": "64 requests, 2 linked accounts, Gmail, Ashby",
+    "notes": "70 requests, 2 linked accounts, Gmail, Ashby",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-24T14:46:44.556Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/269887455441",
-    "updated_at": "2026-03-18T15:16:23.467Z",
+    "updated_at": "2026-03-19T09:43:44.405Z",
     "contact": {
       "name": "Henry Allen",
       "email": "henry+unmask@tryunmask.ai"
-    }
+    },
+    "last_contact": "2026-03-03T21:00:00.000Z"
   },
   {
     "hubspot_id": "416054478072",
@@ -872,16 +923,17 @@
     "domain": "uibel.dev",
     "org_id": "zsYOBjOH7iaOqT1m0hAPfNKrjSer7ob4",
     "tier": "Free",
-    "notes": "0",
+    "notes": "CHECK",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-05T12:36:07.276Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/416054478072",
-    "updated_at": "2026-03-18T15:16:53.618Z",
+    "updated_at": "2026-03-19T10:42:30.500Z",
     "contact": {
       "name": "Vince Uibel",
       "email": "vince@uibel.dev"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "409199484100",
@@ -889,16 +941,17 @@
     "domain": "saferrecruit.com",
     "org_id": "hvi9Ad6kgwN9FuiGVNmIfn1Hd0hmxFoB",
     "tier": "Free",
-    "notes": "0",
+    "notes": "admin@saferrecruit.com\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-27T16:23:53.955Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/409199484100",
-    "updated_at": "2026-03-18T15:16:42.759Z",
+    "updated_at": "2026-03-19T10:41:56.301Z",
     "contact": {
       "name": "Calebb Ndlovu",
       "email": "admin@saferrecruit.com"
-    }
+    },
+    "last_contact": null
   },
   {
     "hubspot_id": "398628372669",
@@ -906,16 +959,17 @@
     "domain": "woflow.com",
     "org_id": "2PnfiFDOgqBeSB449sRhWwZKSQy0LBMe",
     "tier": "Free",
-    "notes": "0",
+    "notes": "No activity. Cm msg 19/03.",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-14T00:33:21.872Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/398628372669",
-    "updated_at": "2026-03-18T15:16:36.987Z",
+    "updated_at": "2026-03-19T10:52:30.586Z",
     "contact": {
       "name": "Lily Wei",
       "email": "lily@woflow.com"
-    }
+    },
+    "last_contact": "2026-03-11T09:42:56.341Z"
   },
   {
     "hubspot_id": "421713469677",
@@ -923,15 +977,16 @@
     "domain": "zaimler.ai",
     "org_id": "LdWrHsha7SdUVL9hlQ9S9ntMccW12mbm",
     "tier": "Free",
-    "notes": null,
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-18T06:22:39.205Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/421713469677",
-    "updated_at": "2026-03-18T14:35:38.752Z",
+    "updated_at": "2026-03-19T10:47:36.766Z",
     "contact": {
       "name": "Caleb Burns",
       "email": "caleb@zaimler.ai"
-    }
+    },
+    "last_contact": null
   }
 ]

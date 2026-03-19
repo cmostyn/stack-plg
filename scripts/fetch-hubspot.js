@@ -97,7 +97,7 @@ async function fetchContacts(contactIds) {
       filterGroups: chunk.map(id => ({
         filters: [{ propertyName: 'hs_object_id', operator: 'EQ', value: id }],
       })),
-      properties: ['firstname', 'lastname', 'email', 'createdate'],
+      properties: ['firstname', 'lastname', 'email', 'createdate', 'notes_last_contacted'],
       limit: 100,
     });
 
@@ -106,10 +106,11 @@ async function fetchContacts(contactIds) {
     const contacts = data?.result?.results ?? data?.results ?? [];
     for (const c of contacts) {
       result.set(c.id, {
-        name:       [c.properties.firstname, c.properties.lastname].filter(Boolean).join(' ') || null,
-        email:      c.properties.email ?? null,
-        createdate: c.properties.createdate ?? null,
-        _id:        c.id,
+        name:                   [c.properties.firstname, c.properties.lastname].filter(Boolean).join(' ') || null,
+        email:                  c.properties.email ?? null,
+        createdate:             c.properties.createdate ?? null,
+        notes_last_contacted:   c.properties.notes_last_contacted ?? null,
+        _id:                    c.id,
       });
     }
   }
@@ -162,6 +163,16 @@ async function main() {
   for (const company of companies) {
     const ids = assocMap.get(company.hubspot_id) ?? [];
     company.contact = pickPrimaryContact(ids, contactMap);
+
+    // Derive last_contact: most recent notes_last_contacted across all contacts
+    const timestamps = ids
+      .map(id => contactMap.get(id)?.notes_last_contacted)
+      .filter(Boolean)
+      .map(ts => new Date(ts).getTime())
+      .filter(t => !isNaN(t));
+    company.last_contact = timestamps.length > 0
+      ? new Date(Math.max(...timestamps)).toISOString()
+      : null;
   }
 
   companies.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
