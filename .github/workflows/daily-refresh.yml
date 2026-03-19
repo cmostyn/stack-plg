@@ -1,0 +1,13 @@
+ name: Daily data refresh
+
+  on:
+    schedule:
+      - cron: '0 7 * * *'
+    workflow_dispatch:
+
+  jobs:
+    refresh:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Trigger Cloudflare Pages deploy
+          run: curl -s -X POST "${{ secrets.CF_DEPLOY_HOOK_URL }}"
