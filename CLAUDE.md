@@ -150,12 +150,14 @@ Run /review-copy before committing any text. Specifically:
 
 ## Git rules
 
-- Never push directly to main
+- **Never push directly to main — no exceptions**
 - One branch per feature: feat/pulse-row, feat/customer-page, etc.
 - Every branch gets a Cloudflare preview URL — share it before merging
 - Commit after every meaningful chunk of work
 - Commit message format: "feat: [what changed]" or "fix: [what was wrong]"
 - Merge to main only when Charlie says "ship it"
+- After completing work on a branch, always end with: "Ready to merge — say **ship it** when you want this live."
+- Do not push to main mid-session just because changes are ready
 
 ---
 
