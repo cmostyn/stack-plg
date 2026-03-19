@@ -627,11 +627,11 @@ a:hover {
 .crm-table th[draggable="true"]:active {
   cursor: grabbing;
 }
-/* Sortable columns — placed after grab so pointer wins via cascade */
-.crm-table th[data-col="name"],
-.crm-table th[data-col="contact"],
-.crm-table th[data-col="notes"],
-.crm-table th[data-col="last_contact"] {
+/* Sortable columns — higher specificity so pointer beats grab regardless of source order */
+.crm-table th[draggable="true"][data-col="name"],
+.crm-table th[draggable="true"][data-col="contact"],
+.crm-table th[draggable="true"][data-col="notes"],
+.crm-table th[draggable="true"][data-col="last_contact"] {
   cursor: pointer;
 }
 .crm-th--dragging {
