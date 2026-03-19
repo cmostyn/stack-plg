@@ -143,5 +143,307 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function sparkline(el, series, color) {
+      if (!el) return null;
+      const chart = echarts.init(el, null, { renderer: 'canvas' });
+      chart.setOption({
+        animation: true,
+        grid: { top: 0, right: 0, bottom: 0, left: 0, containLabel: false },
+        xAxis: {
+          type: 'category',
+          show: false,
+          data: series.map((_, i) => `W${i + 1}`),
+          boundaryGap: false,
+        },
+        yAxis: {
+          type: 'value',
+          show: false,
+          min: v => Math.max(0, v.min - (v.max - v.min) * 0.3),
+          max: v => v.max + (v.max - v.min) * 0.15,
+        },
+        series: [{
+          type: 'line',
+          data: series,
+          smooth: 0.4,
+          symbol: 'none',
+          lineStyle: { color, width: 1.5 },
+          areaStyle: {
+            color: {
+              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: color + '28' },
+                { offset: 1, color: color + '00' },
+              ],
+            },
+          },
+        }],
+      });
+      window.addEventListener('resize', () => chart.resize());
+      return chart;
+    }
+
+    // ── Tile data for expand dialog ───────────────────────────────────────────
+    const TILE_DATA = {
+      accounts: { title: 'Total PLG accounts',               type: 'sparkline', color: '#00AF66' },
+      signups:  { title: 'New signups last 30 days',         type: 'sparkline', color: '#00AF66' },
+      tickets:  { title: 'Open tickets',                     type: 'donut'                       },
+      action:   { title: 'Tickets needing action',           type: 'number',    value: '4'       },
+      frt:      { title: 'Avg first response',               type: 'sparkline', color: '#7A7A7A',
+                  series: [3.2, 2.8, 3.1, 2.9, 2.7, 2.5, 2.5, 2.1]                             },
+      clicks:   { title: 'Avg clicks per customer',          type: 'sparkline', color: '#0C58AE',
+                  series: [12, 14, 13, 15, 14, 16, 15, 17]                                       },
+      linked:   { title: 'Avg linked accounts per customer', type: 'sparkline', color: '#0C58AE',
+                  series: [1.2, 1.4, 1.3, 1.5, 1.4, 1.6, 1.5, 1.7]                             },
+      apireqs:  { title: 'Avg API requests per customer',    type: 'sparkline', color: '#0C58AE',
+                  series: [800, 950, 900, 1100, 1050, 1200, 1150, 1300]                          },
+      pctapi:   { title: '% customers with API requests',    type: 'number',    value: '—'       },
+    };
+
+    // Live series updated after fetch (for expand dialog)
+    const liveExpandData = {};
+
+    // ── Load HubSpot data ─────────────────────────────────────────────────────
+    fetch('./data/hubspot.json')
+      .then(r => r.json())
+      .then(companies => {
+        // Tile 1 — Total accounts
+        const total = companies.length;
+        document.getElementById('val-accounts').textContent = total;
+        const accountSeries = [45, 47, 48, 49, 50, 52, 52, total];
+        sparkline(document.getElementById('chart-accounts'), accountSeries, '#00AF66');
+        liveExpandData['accounts'] = accountSeries;
+
+        // Tile 2 — New signups last 30 days
+        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff).length;
+        document.getElementById('val-signups').textContent = recent;
+        const signupSeries = [3, 5, 4, 6, 5, 7, 6, recent];
+        sparkline(document.getElementById('chart-signups'), signupSeries, '#00AF66');
+        liveExpandData['signups'] = signupSeries;
+      })
+      .catch(() => {
+        document.getElementById('val-accounts').textContent = '—';
+        document.getElementById('val-signups').textContent = '—';
+      });
+
+    // ── Tile 3 — Open tickets donut (Pylon placeholder) ───────────────────────
+    (function () {
+      const el = document.getElementById('chart-tickets');
+      if (!el) return;
+      const chart = echarts.init(el, null, { renderer: 'canvas' });
+      chart.setOption({
+        animation: true,
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        legend: { show: false },
+        graphic: [{
+          type: 'text',
+          left: 'center',
+          top: 'center',
+          style: { text: '12', font: 'bold 28px Geist, sans-serif', fill: '#222121' },
+        }],
+        series: [{
+          type: 'pie',
+          radius: ['50%', '75%'],
+          avoidLabelOverlap: false,
+          label: { show: false },
+          data: [
+            { value: 5, name: 'StackOne',    itemStyle: { color: '#96580A' } },
+            { value: 4, name: 'Customer',    itemStyle: { color: '#0C58AE' } },
+            { value: 3, name: 'Engineering', itemStyle: { color: '#7A7A7A' } },
+          ],
+        }],
+      });
+      window.addEventListener('resize', () => chart.resize());
+    })();
+
+    // ── Tile 5 — Avg first response line (Pylon placeholder) ─────────────────
+    sparkline(document.getElementById('chart-frt'), [3.2, 2.8, 3.1, 2.9, 2.7, 2.5, 2.5, 2.1], '#7A7A7A');
+
+    // ── Tiles 6–8 — PostHog lines (placeholder) ──────────────────────────────
+    sparkline(document.getElementById('chart-clicks'),  [12, 14, 13, 15, 14, 16, 15, 17],                  '#0C58AE');
+    sparkline(document.getElementById('chart-linked'),  [1.2, 1.4, 1.3, 1.5, 1.4, 1.6, 1.5, 1.7],         '#0C58AE');
+    sparkline(document.getElementById('chart-apireqs'), [800, 950, 900, 1100, 1050, 1200, 1150, 1300],      '#0C58AE');
+
+    // ── Drag to rearrange ─────────────────────────────────────────────────────
+    const STORAGE_KEY = 'plg_tile_order';
+    const grid = document.getElementById('dashGrid');
+
+    function saveTileOrder() {
+      const ids = [...grid.querySelectorAll('.dash-tile')].map(t => t.dataset.tileId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
+
+    function applyStoredOrder() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      try {
+        const ids = JSON.parse(stored);
+        ids.forEach(id => {
+          const tile = grid.querySelector(`[data-tile-id="${id}"]`);
+          if (tile) grid.appendChild(tile);
+        });
+      } catch {}
+    }
+
+    let dragSrc = null;
+
+    grid.addEventListener('dragstart', e => {
+      const tile = e.target.closest('.dash-tile');
+      if (!tile) return;
+      dragSrc = tile;
+      tile.classList.add('dash-tile--dragging');
+    });
+
+    grid.addEventListener('dragend', e => {
+      const tile = e.target.closest('.dash-tile');
+      if (tile) tile.classList.remove('dash-tile--dragging');
+      grid.querySelectorAll('.dash-tile--drag-over').forEach(t => t.classList.remove('dash-tile--drag-over'));
+    });
+
+    grid.addEventListener('dragover', e => {
+      e.preventDefault();
+      const tile = e.target.closest('.dash-tile');
+      if (!tile || tile === dragSrc) return;
+      grid.querySelectorAll('.dash-tile--drag-over').forEach(t => t.classList.remove('dash-tile--drag-over'));
+      tile.classList.add('dash-tile--drag-over');
+    });
+
+    grid.addEventListener('drop', e => {
+      e.preventDefault();
+      const target = e.target.closest('.dash-tile');
+      if (!target || !dragSrc || target === dragSrc) return;
+      target.classList.remove('dash-tile--drag-over');
+      const allTiles = [...grid.querySelectorAll('.dash-tile')];
+      const srcIdx = allTiles.indexOf(dragSrc);
+      const tgtIdx = allTiles.indexOf(target);
+      if (srcIdx < tgtIdx) {
+        grid.insertBefore(dragSrc, target.nextSibling);
+      } else {
+        grid.insertBefore(dragSrc, target);
+      }
+      saveTileOrder();
+    });
+
+    applyStoredOrder();
+
+    // ── Click to expand / navigate ────────────────────────────────────────────
+    const dialog       = document.getElementById('dashExpand');
+    const expandTitle  = document.getElementById('expandTitle');
+    const expandBody   = document.getElementById('expandBody');
+    let expandChart    = null;
+
+    function closeDashExpand() {
+      dialog.close();
+      if (expandChart) { expandChart.dispose(); expandChart = null; }
+      expandBody.innerHTML = '';
+    }
+
+    document.getElementById('expandClose').addEventListener('click', closeDashExpand);
+
+    dialog.addEventListener('click', e => {
+      if (e.target === dialog) closeDashExpand();
+    });
+
+    grid.addEventListener('click', e => {
+      if (e.target.tagName === 'A') return;
+
+      const tile = e.target.closest('.dash-tile');
+      if (!tile) return;
+
+      const href = tile.dataset.href;
+      if (href) {
+        window.open(href, '_blank', 'noopener');
+        return;
+      }
+
+      const id = tile.dataset.tileId;
+      const td = TILE_DATA[id];
+      if (!td) return;
+
+      expandTitle.textContent = td.title;
+      expandBody.innerHTML = '';
+
+      if (td.type === 'number') {
+        const div = document.createElement('div');
+        div.className = 'dash-expand-value';
+        div.textContent = liveExpandData[id] ?? td.value ?? '—';
+        expandBody.appendChild(div);
+
+      } else if (td.type === 'sparkline') {
+        const series = liveExpandData[id] ?? td.series ?? [];
+        const div = document.createElement('div');
+        div.className = 'dash-expand-chart';
+        expandBody.appendChild(div);
+        expandChart = echarts.init(div, null, { renderer: 'canvas' });
+        expandChart.setOption({
+          animation: true,
+          grid: { top: 8, right: 8, bottom: 24, left: 40, containLabel: false },
+          xAxis: {
+            type: 'category',
+            data: series.map((_, i) => `W${i + 1}`),
+            boundaryGap: false,
+            axisLine: { lineStyle: { color: '#E0DEDC' } },
+            axisLabel: { color: '#7A7A7A', fontSize: 11 },
+          },
+          yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: '#EBE9E7' } },
+            axisLabel: { color: '#7A7A7A', fontSize: 11 },
+          },
+          series: [{
+            type: 'line',
+            data: series,
+            smooth: 0.4,
+            symbol: 'circle',
+            symbolSize: 4,
+            lineStyle: { color: td.color, width: 2 },
+            itemStyle: { color: td.color },
+            areaStyle: {
+              color: {
+                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [
+                  { offset: 0, color: td.color + '28' },
+                  { offset: 1, color: td.color + '00' },
+                ],
+              },
+            },
+          }],
+        });
+
+      } else if (td.type === 'donut') {
+        const div = document.createElement('div');
+        div.className = 'dash-expand-chart';
+        expandBody.appendChild(div);
+        expandChart = echarts.init(div, null, { renderer: 'canvas' });
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+          legend: { bottom: 0, textStyle: { color: '#4C4B4B', fontSize: 12 } },
+          graphic: [{
+            type: 'text',
+            left: 'center',
+            top: 'center',
+            style: { text: '12', font: 'bold 36px Geist, sans-serif', fill: '#222121' },
+          }],
+          series: [{
+            type: 'pie',
+            radius: ['50%', '72%'],
+            avoidLabelOverlap: false,
+            label: { show: false },
+            data: [
+              { value: 5, name: 'StackOne',    itemStyle: { color: '#96580A' } },
+              { value: 4, name: 'Customer',    itemStyle: { color: '#0C58AE' } },
+              { value: 3, name: 'Engineering', itemStyle: { color: '#7A7A7A' } },
+            ],
+          }],
+        });
+      }
+
+      dialog.showModal();
+    });
+  </script>
 </body>
 </html>
