@@ -518,15 +518,45 @@ a:hover {
 .crm-toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
+.crm-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.crm-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crm-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.crm-search-icon {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--so-neutral-30);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .crm-search {
-  width: 300px;
+  width: 240px;
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 30px;
   font-family: var(--so-font-body);
   font-size: 14px;
   color: var(--so-text-body);
@@ -567,7 +597,7 @@ a:hover {
 
 .crm-table th {
   font-family: var(--so-font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--so-text-tag);
   text-align: left;
@@ -1141,12 +1171,93 @@ a:hover {
   color: var(--so-neutral-40);
 }
 
+/* CRM — type filter pills */
+.crm-type-pills {
+  display: flex;
+  align-items: center;
+  background: var(--so-foreground);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius);
+  padding: 3px;
+  gap: 2px;
+}
+
+.crm-pill {
+  padding: 4px 11px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--so-text-tag);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+}
+
+.crm-pill:hover {
+  background: var(--so-white);
+  color: var(--so-text-body);
+}
+
+.crm-pill--active {
+  background: var(--so-white);
+  color: var(--so-text-header);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* CRM — letter avatars */
+.crm-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--so-font-body);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* CRM — hover quick-action links */
+.crm-row-actions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.crm-table tr:hover .crm-row-actions {
+  display: flex;
+}
+
+.crm-row-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  color: var(--so-neutral-30);
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+}
+
+.crm-row-action:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-body);
+}
+
 /* CRM — layout actions */
 .crm-layout-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
 }
 
 .crm-layout-btn {
@@ -1183,25 +1294,6 @@ a:hover {
   color: var(--so-text-header);
 }
 
-/* CRM — type filter */
-.crm-type-filter {
-  padding: 7px 10px;
-  font-family: var(--so-font-body);
-  font-size: 14px;
-  color: var(--so-text-body);
-  background: var(--so-white);
-  border: 1px solid var(--so-neutral-10);
-  border-radius: var(--so-radius);
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s;
-  appearance: auto;
-}
-
-.crm-type-filter:focus {
-  border-color: rgba(0, 175, 102, 0.4);
-  box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
-}
 
 /* CRM — contact link */
 .crm-contact-link {
@@ -1411,7 +1503,7 @@ a:hover {
 .card-action-cancel:hover { color: var(--so-text-header); }
 
 /* ── CRM table: name cell open button ── */
-.crm-name-cell   { display: flex; align-items: center; gap: 6px; }
+.crm-name-cell   { display: flex; align-items: center; gap: 6px; overflow: hidden; }
 .card-open-btn   {
   background: none; border: none; cursor: pointer;
   color: var(--so-green-dark); font-size: 14px; padding: 2px;

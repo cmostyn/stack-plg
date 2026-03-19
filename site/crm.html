@@ -27,23 +27,27 @@
   <main class="page-main">
 
     <div class="crm-toolbar">
-      <input
-        id="crm-search"
-        class="crm-search"
-        type="search"
-        placeholder="Search customers…"
-        autocomplete="off"
-      >
-      <select id="crm-type-filter" class="crm-type-filter">
-        <option value="">All types</option>
-        <option value="Customer - PLG">PLG</option>
-        <option value="Customer - SLG">SLG</option>
-        <option value="Customer">Customer</option>
-      </select>
-      <span id="crm-count" class="crm-count"></span>
-      <div class="crm-layout-actions">
-        <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
-        <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
+      <div class="crm-toolbar-left">
+        <div class="crm-search-wrap">
+          <svg class="crm-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6.5" cy="6.5" r="4"/>
+            <line x1="9.5" y1="9.5" x2="13.5" y2="13.5"/>
+          </svg>
+          <input id="crm-search" class="crm-search" type="search" placeholder="Search customers…" autocomplete="off">
+        </div>
+        <div class="crm-type-pills" id="crm-type-pills">
+          <button class="crm-pill crm-pill--active" data-type="">All</button>
+          <button class="crm-pill" data-type="Customer - PLG">PLG</button>
+          <button class="crm-pill" data-type="Customer - SLG">SLG</button>
+          <button class="crm-pill" data-type="Customer">Cust</button>
+        </div>
+      </div>
+      <div class="crm-toolbar-right">
+        <span id="crm-count" class="crm-count"></span>
+        <div class="crm-layout-actions">
+          <button id="crm-save-layout" class="crm-layout-btn crm-layout-btn--save">Save layout</button>
+          <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -64,7 +68,7 @@
 
   <script>
     // --- Constants ---
-    const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
+    const PLACEHOLDER_CELL = '<td></td>';
 
     const DEFAULT_COL_ORDER = [
       'name', 'contact', 'notes', 'last_contact',
@@ -114,13 +118,24 @@
 
     const CELLS = {
       name: company => {
-        const display = company.name ?? company.hubspot_id;
-        const href    = safeHref(company.hubspot_url);
-        const hid     = escHtml(String(company.hubspot_id ?? ''));
-        const badge   = typeBadge(company.type);
+        const display    = company.name ?? company.hubspot_id;
+        const href       = safeHref(company.hubspot_url);
+        const hid        = escHtml(String(company.hubspot_id ?? ''));
+        const badge      = typeBadge(company.type);
+        const avatar     = avatarHtml(company.name);
+        const c          = isContactObj(company.contact) ? company.contact : null;
+        const mailtoHref = c?.email ? `mailto:${c.email}` : null;
+        const pylonEntry = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+        const pylonHref  = pylonEntry ? escHtml(`https://app.usepylon.com/accounts/${pylonEntry.pylon_account_id}`) : null;
+        const quickLinks = [
+          href !== '#' ? `<a href="${href}" class="crm-row-action" target="_blank" rel="noopener" title="Open in HubSpot"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M1 6h14"/><path d="M6 2v4"/><path d="M10 2v4"/></svg></a>` : '',
+          mailtoHref    ? `<a href="${mailtoHref}" class="crm-row-action" title="Send email"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 4l7 5 7-5"/></svg></a>` : '',
+          pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
+        ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
-          <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+          ${avatar}<button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
           <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
+          <div class="crm-row-actions">${quickLinks}</div>
         </td>`;
       },
       contact: company => {
@@ -206,6 +221,7 @@
     let pylonMap            = new Map();  // hubspot_id → pylon account
     let actionsMap          = new Map();  // hubspot_id (string) → action[]
     let openCardId          = null;       // hubspot_id of the open card, or null
+    let typeFilter = '';
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
@@ -237,6 +253,16 @@
 
     function normName(s) {
       return (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function avatarHtml(name) {
+      const letter = (name ?? '?')[0].toUpperCase();
+      const COLORS = [
+        ['#EFF6FF', '#1D4ED8'], ['#F0FDF4', '#15803D'], ['#FFF7ED', '#C2410C'],
+        ['#FAF5FF', '#7C3AED'], ['#FFF1F2', '#BE123C'], ['#F0FDFA', '#0F766E'],
+      ];
+      const [bg, fg] = COLORS[((name ?? '').charCodeAt(0) || 0) % COLORS.length];
+      return `<span class="crm-avatar" style="background:${bg};color:${fg}">${escHtml(letter)}</span>`;
     }
 
     function typeBadge(type) {
@@ -284,10 +310,12 @@
 
     function loadFrozenCols() {
       try {
-        const parsed = JSON.parse(localStorage.getItem('plg_crm_frozen') ?? '[]');
-        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : []);
+        const raw = localStorage.getItem('plg_crm_frozen');
+        if (raw === null) return new Set(['name']); // first visit: freeze name by default
+        const parsed = JSON.parse(raw);
+        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : ['name']);
       } catch {
-        return new Set();
+        return new Set(['name']);
       }
     }
 
@@ -394,15 +422,163 @@
       });
     }
 
+    // --- Card modal ---
+
+    function renderCardLeft(company, c, gmailUrl, calls) {
+      const rel = relativeTime(company.last_contact);
+      const abs = company.last_contact
+        ? new Date(company.last_contact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : null;
+
+      const ffHtml = calls.length === 0
+        ? '<p class="ff-empty">No calls on record.</p>'
+        : calls.map(call => {
+            const callDate = new Date(call.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const items = call.action_items ?? [];
+            const itemsHtml = items.length === 0
+              ? '<div class="ff-empty">No action items.</div>'
+              : items.map(item => `<div class="ff-action"><span class="ff-dot"></span>${escHtml(item)}</div>`).join('');
+            return `<div class="ff-item">
+              <div class="ff-call">${escHtml(call.title)} · ${escHtml(callDate)}</div>
+              ${itemsHtml}
+            </div>`;
+          }).join('');
+
+      return `
+        <div class="card-section-label">Customer details</div>
+        ${c ? `
+          <div class="field-row">
+            <div class="field-label">Primary contact</div>
+            <div class="field-value">${escHtml(c.name ?? '')}</div>
+            ${gmailUrl
+              ? `<div class="field-email"><a href="${escHtml(gmailUrl)}" target="_blank" rel="noopener">${escHtml(c.email)}</a></div>`
+              : ''}
+          </div>
+        ` : ''}
+        ${rel ? `
+          <div class="field-row">
+            <div class="field-label">Last contact</div>
+            <div class="field-date-rel">${escHtml(rel)}</div>
+            <div class="field-date-abs">${escHtml(abs ?? '')}</div>
+          </div>
+        ` : ''}
+        ${company.notes ? `
+          <div class="field-row">
+            <div class="field-label">Notes</div>
+            <div class="field-notes">${escHtml(company.notes)}</div>
+          </div>
+        ` : ''}
+        <div class="section-divider"></div>
+        <div class="card-section-label">Fireflies actions</div>
+        ${ffHtml}
+      `;
+    }
+
+    function renderCardRight(actions) {
+      const open = actions.filter(a => !a.done);
+      const done = actions.filter(a =>  a.done);
+      const all  = [...open, ...done];
+
+      const listHtml = all.length === 0
+        ? '<p class="ff-empty">No actions yet — add one above.</p>'
+        : all.map(action => `
+            <div class="action-item">
+              <button class="action-check ${action.done ? 'done' : ''}" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}"></button>
+              <div class="action-name ${action.done ? 'done' : ''}">${escHtml(action.name)}</div>
+              <span class="priority-badge priority-${escHtml(action.priority)}">${escHtml(action.priority.charAt(0).toUpperCase() + action.priority.slice(1))}</span>
+              <button class="action-delete" data-action-id="${escHtml(action.id)}" data-hubspot-id="${escHtml(action.hubspot_id)}" aria-label="Delete">✕</button>
+            </div>
+          `).join('');
+
+      return `
+        <div class="actions-header">
+          <div class="card-section-label" style="margin-bottom:0">CS actions</div>
+          <button class="add-btn" id="card-add-btn">＋ Add</button>
+        </div>
+        <div id="card-add-form" class="card-add-form" style="display:none">
+          <input type="text" id="card-action-name" class="card-action-input" placeholder="Action name…" maxlength="200">
+          <select id="card-action-priority" class="card-action-select">
+            <option value="high">High</option>
+            <option value="med" selected>Med</option>
+            <option value="low">Low</option>
+          </select>
+          <button class="card-action-save" id="card-action-save">Add</button>
+          <button class="card-action-cancel" id="card-action-cancel">Cancel</button>
+        </div>
+        ${listHtml}
+      `;
+    }
+
+    function rerenderCardActions() {
+      const right = document.querySelector('.card-modal-right');
+      if (!right || !openCardId) return;
+      const actions = actionsMap.get(openCardId) ?? [];
+      right.innerHTML = renderCardRight(actions);
+    }
+
+    function closeInlinePopover() {
+      const p = document.getElementById('inline-add-popover');
+      if (!p) return;
+      p.classList.remove('inline-add-popover--open');
+      p.innerHTML = '';
+      delete p.dataset.hubspotId;
+    }
+
+    function openCard(company) {
+      closeInlinePopover();
+      const c       = isContactObj(company.contact) ? company.contact : null;
+      const gmailUrl = c?.email
+        ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`
+        : null;
+      const calls   = firefliesActionsMap.get(company.domain) ?? [];
+      const actions = actionsMap.get(String(company.hubspot_id ?? '')) ?? [];
+
+      openCardId = String(company.hubspot_id ?? '');
+
+      const overlay = document.getElementById('card-overlay');
+      overlay.innerHTML = `
+        <div class="card-modal" id="card-modal">
+          <div class="card-modal-header">
+            <div>
+              <div class="card-modal-company">${escHtml(company.name ?? company.hubspot_id)}</div>
+              <div class="card-modal-domain">${escHtml(company.domain ?? '')}${
+                company.hubspot_url
+                  ? ` · <a href="${safeHref(company.hubspot_url)}" target="_blank" rel="noopener" class="card-hs-link">HubSpot ↗</a>`
+                  : ''
+              }</div>
+            </div>
+            <button class="card-modal-close" id="card-close">×</button>
+          </div>
+          <div class="card-modal-body">
+            <div class="card-modal-left">${renderCardLeft(company, c, gmailUrl, calls)}</div>
+            <div class="card-modal-right">${renderCardRight(actions)}</div>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('card-overlay--open');
+      document.addEventListener('keydown', handleCardKeydown);
+    }
+
+    function closeCard() {
+      const overlay = document.getElementById('card-overlay');
+      overlay.classList.remove('card-overlay--open');
+      overlay.innerHTML = '';
+      openCardId = null;
+      document.removeEventListener('keydown', handleCardKeydown);
+    }
+
+    function handleCardKeydown(e) {
+      if (e.key === 'Escape') closeCard();
+    }
+
     // --- Render ---
 
     function render() {
       const table      = document.querySelector('.crm-table');
       const thead      = table.querySelector('thead');
       const tbody      = table.querySelector('tbody');
-      const query      = document.getElementById('crm-search').value.trim();
-      const typeFilter = document.getElementById('crm-type-filter').value;
-      const filtered   = allRows.filter(c =>
+      const query    = document.getElementById('crm-search').value.trim();
+      const filtered = allRows.filter(c =>
         (!query || searchMatch(c, query)) &&
         (!typeFilter || c.type === typeFilter)
       );
@@ -490,7 +666,16 @@
     });
 
     document.getElementById('crm-search').addEventListener('input', render);
-    document.getElementById('crm-type-filter').addEventListener('change', render);
+
+    document.getElementById('crm-type-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      typeFilter = pill.dataset.type;
+      document.querySelectorAll('#crm-type-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
+      render();
+    });
 
     // --- Save / Reset layout buttons ---
     document.getElementById('crm-save-layout').addEventListener('click', () => {
@@ -507,9 +692,9 @@
     });
 
     document.getElementById('crm-reset-layout').addEventListener('click', () => {
-      colOrder  = [...DEFAULT_COL_ORDER];
-      colWidths = { ...DEFAULT_COL_WIDTHS };
-      frozenCols.clear();
+      colOrder   = [...DEFAULT_COL_ORDER];
+      colWidths  = { ...DEFAULT_COL_WIDTHS };
+      frozenCols = new Set(['name']);
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
       localStorage.removeItem('plg_crm_frozen');
