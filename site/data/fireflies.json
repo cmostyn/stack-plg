@@ -1,0 +1,275 @@
+[
+  {
+    "domain": "ujji.co.uk",
+    "title": "Ujji <> StackOne Falcon Demo",
+    "date": "2026-03-19T13:01:49.628Z",
+    "action_items": [
+      "**Alex Cox**",
+      "Share the presentation and demo materials with Gustavo’s team for further review and integration testing (18:31)",
+      "**Charlie Mostyn**",
+      "Schedule a follow-up meeting in approximately two weeks to discuss FilePicker updates and document integration details with Gustavo and his team (27:32)",
+      "**Gustavo Mainchein**",
+      "Confirm internal project timelines for integration and share with Alex and Charlie when ready (28:50)",
+      "**Alex Cox & Charlie Mostyn**",
+      "Coordinate session with Max, the solutions engineer, to provide detailed insights on FilePicker functionality and improvements for Gustavo’s team (26:44)"
+    ]
+  },
+  {
+    "domain": "ujji.co.uk",
+    "title": "Ujji <> StackOne Falcon Demo",
+    "date": "2026-03-19T13:00:00.000Z",
+    "action_items": [
+      "**Gustavo Mainchein**",
+      "Review shared presentation materials and follow up with clarification/questions during integration testing phase (18:58)",
+      "Confirm project timelines for AI integration and agent development and communicate back to Stack One team (27:42)",
+      "Provide availability for follow-up meeting post vacation to discuss file picker and enterprise integration (26:06)",
+      "**Alex Cox**",
+      "Share the presentation and demo materials from today’s meeting with Gustavo for detailed review (18:58)",
+      "Coordinate scheduling of follow-up meeting with Gustavo and Charlie regarding file picker improvements and document integrations (26:06)",
+      "Arrange for Solutions Engineer Max to join in follow-up session to address file picker and folder selection challenges in detail (25:18)",
+      "Provide meeting recording for Gustavo’s team to facilitate further analysis (28:00)",
+      "**Charlie Mostyn**",
+      "Assist in scheduling the follow-up meeting with Gustavo after his vacation and communicate available time slots (26:06)",
+      "Support discussions around technical details related to connectors, file picker enhancements, and API integrations in follow-up"
+    ]
+  },
+  {
+    "domain": "glean.com",
+    "title": "Glean <> StackOne",
+    "date": "2026-03-18T18:30:00.000Z",
+    "action_items": [
+      "**Matthew Warneke**",
+      "Send Crossbeam invite to Elena to enable visibility on short-term addressable market and potential design partners (32:50)",
+      "Schedule face-to-face meeting week of HumanX event in San Francisco to explore partnership in more detail (33:10)",
+      "**Romain Sestier**",
+      "Follow up on timeline and details regarding OAuth implementation and end-user concept in Stack One (25:30)",
+      "Share part of this meeting transcript with co-founder for deeper technical discussion and further alignment (30:15)",
+      "Plan to schedule a more technical, detailed session with Glean team after internal discussions (31:57)",
+      "**Eugene Wiehahn**",
+      "Follow up with Steve Calvert internally on potential partnerships regarding MCP connectors and integration opportunities (06:40)",
+      "After syncing internally, coordinate and propose scheduling a technical session with Stack One team (34:15)",
+      "**Elena Angela**",
+      "Coordinate with Matthew and Romain to schedule one-on-one session on partnership process and set up a group meeting during HumanX week (32:58)"
+    ]
+  },
+  {
+    "domain": "usepylon.com",
+    "title": "Pylon / StackOne : Pylon issues",
+    "date": "2026-03-18T16:00:00.000Z",
+    "action_items": [
+      "**Charlie**",
+      "Raise the widget conversation history bug on the Slack support channel for internal escalation (03:18)",
+      "Provide an example and raise the SLA breach notification issue on Slack for investigation (23:35)",
+      "Submit all bugs identified during the meeting and request support from Pylon engineers for resolution (26:27)",
+      "**Kelly Xia**",
+      "Internally escalate the widget conversation history bug after receiving Slack channel details (04:08)",
+      "Confirm if customer email notification on agent response happens by default and provide follow-up details (05:45)",
+      "Verify how the widget groups tickets by session or topic and confirm best practices for widget usage (08:40)",
+      "Confirm best practices and guidance on training the agent to selectively respond to product-related questions and handle unclear messages via runbooks or clarifications (25:10)",
+      "Verify feature roadmap or create a feature request regarding the weekly rotating assignment (rota) for team members handling PLG customer support (11:20)",
+      "Confirm details and assist with automation toggles in the portal concerning ticket status changes and auto-close behavior (15:00)",
+      "Investigate the SLA breach notification issue and assist with debugging logs from Charlie’s shared flow setup (21:00)",
+      "**Max**",
+      "Continue reviewing portal automation and fine-tune auto status updates to optimize ticket lifecycle and reduce reopening of resolved tickets (15:00)"
+    ]
+  },
+  {
+    "domain": "kinfolkhq.com",
+    "title": "Falcon Chat: Kinfolk",
+    "date": "2026-03-17T14:01:36.324Z",
+    "action_items": [
+      "**Charlie Mostyn**",
+      "Provide Kinfolk with a recorded demo of Falcon connector usage for sales team enablement (26:37)",
+      "Schedule and lead a two-hour session in May for Kinfolk covering connector testing, customization, and webhook usage (26:37)",
+      "Follow up on webhook explanations and clarify terminology with Kinfolk asynchronously (27:57)",
+      "**Jeran Norman**",
+      "Coordinate with Kim Hellbom to initiate native webhook testing for Rippling and Dayforce connectors (26:37)",
+      "Share Falcon connector technical documentation and connection guides with Kinfolk (10:37)",
+      "Review existing connector actions with Kinfolk to identify gaps or customization needs (09:18)",
+      "**Kim Hellbom**",
+      "Enable connectors in Kinfolk’s production project modal for preliminary access before full integration work (16:00)",
+      "Collaborate with Jeran Norman on test sandbox accounts for Rippling and Dayforce (08:06)",
+      "Lead internal work on adapting Kinfolk’s codebase to support new connector call methods via unified API (15:58)",
+      "**Jeet Mukerji**",
+      "Drive sales team preparation by understanding Falcon connector workflows and identifying common prospect requirements for actions (06:15)",
+      "Use provided connector action lists as sales collateral to guide customer conversations on capabilities and limitations (17:10)",
+      "Clarify any remaining questions on webhooks and integration processes with Stack One team post-meeting (27:57)"
+    ]
+  },
+  {
+    "domain": "kinfolkhq.com",
+    "title": "Falcon Chat: Kinfolk",
+    "date": "2026-03-17T14:00:00.000Z",
+    "action_items": [
+      "**Charlie Mostyn**",
+      "Provide a recorded concise demo of Falcon for Kinfolk sales team to support sales conversations (04:49)",
+      "Follow up with Jaron and Kim on Rippling and Dayforce native webhook testing capabilities and progress (23:55)",
+      "Collaborate with Kinfolk for a detailed two-hour session in May covering connector testing, customization, and synthetic webhook use (23:55)",
+      "**Jaron Norman**",
+      "Review existing Rippling connector actions to identify gaps or required modifications per Kinfolk’s input (06:35)",
+      "Share additional technical details on synthetic and native webhook capabilities with Kinfolk team via Slack (25:15)",
+      "Assist Kim in technical testing and webhook integration setup for Rippling and Dayforce (23:55)",
+      "**Jeet Mukerji**",
+      "Surface unresolved questions or unclear areas regarding Falcon usage promptly to Charlie and Jaron (00:00)",
+      "Coordinate with sales team to incorporate sandbox usage in the sales cycle and understand connector action availability (03:01)",
+      "Clarify webhook concepts internally and with Stack One technical team (25:19)",
+      "**Kim Hellbom**",
+      "Enable connectors (e.g., Rippling) immediately in the modal for demo readiness, despite backend API calls pending integration (13:23)",
+      "Work on engineering side to implement new SDK call flows for connector actions integration (14:23)",
+      "Provide feedback on connector action requirements and sandbox availability for demos (05:22)",
+      "Communicate API licensing and cost implications for webhook workflows with prospects (30:39)"
+    ]
+  },
+  {
+    "domain": "joinpopp.com",
+    "title": "Build Falcon Connectors: Popp",
+    "date": "2026-03-17T13:01:33.781Z",
+    "action_items": [
+      "**Jeran Norman**",
+      "Share valid shared credentials token via 1Password for Stack One CLI setup (10:50)",
+      "Assist in resolving 500 internal server error during connector testing and review POP email API key scopes for MCP connection (58:00)",
+      "Send Andrei the exact Git clone command for connectors template repo and check repository sharing status (31:00)",
+      "**Ilyes Benmansour**",
+      "Review Jeran’s last Mercury discussion reply asynchronously post-meeting (02:00)",
+      "Complete Stack One CLI profile setup and authenticate using the shared credentials token (11:10)",
+      "Share sandbox credentials for Dayforce with Andrei to enable testing accounts (52:20)",
+      "Help troubleshoot MCP connection configuration and ensure CLAUDE code points to correct credentials (19:00)",
+      "**Andrei Catalin Bogdan**",
+      "Fork and clone connectors template repo locally for building connectors (32:00)",
+      "Connect MCP server using CLAUDE code and test connector generation via provided prompts (29:30)",
+      "Push newly built Dayforce connector to Stack One dev profile after confirming API key permissions (48:00)",
+      "Collaborate on testing Dayforce connector and report any ongoing issues or errors encountered (55:00)",
+      "**Charlie Mostyn**",
+      "Confirm Dayforce sandbox availability and API document access with internal team member (Sam) (51:30)",
+      "Follow up with Jeremy post-meeting regarding unresolved topics (59:45)"
+    ]
+  },
+  {
+    "domain": "joinpopp.com",
+    "title": "Build Falcon Connectors: Popp",
+    "date": "2026-03-17T13:00:00.000Z",
+    "action_items": [
+      "**Ilyes Benmansour**",
+      "Look into completing proper MCP credential setup and token management for CLAUDE code integration (13:49)",
+      "Share Dayforce sandbox credentials with Andrei for account linking and testing (51:20)",
+      "Follow up with Jeran on Mercury-related topics asynchronously post-meeting (01:00:15)",
+      "**Andrei Catalin Bogdan**",
+      "Clone the connectors template repository and set up local development environment (30:58)",
+      "Follow and replicate Jeran’s workflow to build and edit Dayforce connector using MCP and Stack One CLI (39:59)",
+      "Retry MCP connection with new API credentials and validate MCP integration through CLAUDE code setup (19:00)",
+      "Push updated API key with connector write permissions and retry pushing developed connector to dev environment (48:34)",
+      "Link Dayforce sandbox account via Stack One Auth config and run connector action tests (52:00)",
+      "Report results of connector tests and 500 server error for further debugging (56:30)",
+      "**Jeran Norman**",
+      "Provide updated shared credentials with appropriate scopes for MCP access and Stack One CLI dev profile (09:58)",
+      "Assist with troubleshooting MCP connectivity issues and guide CLI profile setup (13:40)",
+      "Monitor and investigate the 500 internal server error encountered during connector action tests and update team promptly (56:57)",
+      "Prepare documentation and timeline for upcoming native webhook support for connector models and communicate updates to Popp team (59:10)",
+      "Continue follow-up on API key management and integration details for seamless developer experience (58:39)"
+    ]
+  },
+  {
+    "domain": "gmail.com",
+    "title": "Marina / Charlie",
+    "date": "2026-03-17T12:30:22.765Z",
+    "action_items": [
+      "**Charlie Mostyn**",
+      "Remove section B related to document migration from the document (01:07)",
+      "Review and clarify the pro-rated hourly support remedy rate with Roman and mark this in red for sign-off (03:44)",
+      "Confirm with Roman the details regarding the API rate limit section before approval (05:13)",
+      "Discuss the case study details with Roman to ensure it's about a different product launch (06:21)",
+      "**Marina Khawaja**",
+      "Facilitate and obtain sign-off from Roman on the pro-rated hourly rate per linked account (03:44)"
+    ]
+  },
+  {
+    "domain": "gmail.com",
+    "title": "Marina / Charlie",
+    "date": "2026-03-17T12:30:00.000Z",
+    "action_items": [
+      "**Charlie Mostyn**",
+      "Finalize removal of clause 1 1B concerning LMS migration support (00:43)",
+      "Rephrase integration build section to replace 'remedy' terminology and consider placing timeline under clause 3.1 (01:28)",
+      "Confirm service credit calculation wording and replace 'rate' with 'monthly fee' after further discussion with Roman (02:45)",
+      "Clarify and finalize cap on service credit to ensure credit limit per incident is one month’s fee (04:26)",
+      "Confirm API rate limit clause details with Roman and Guillaume as needed (05:09)",
+      "Consult Roman regarding reintroduction of case study wording for marketing section and update accordingly (05:47)",
+      "Conduct final discussion with Roman on the updated draft before end-of-month renewals (06:43)",
+      "**Marina Khawaja**",
+      "Assist by inserting suggested case study wording into the draft document to support Charlie (06:08)"
+    ]
+  },
+  {
+    "domain": "drata.com",
+    "title": "Drata <> StackOne Renewal Chat",
+    "date": "2026-03-12T20:00:57.299Z",
+    "action_items": [
+      "**Romain Sestier**",
+      "Follow up with Daniel regarding the updated order form and AI package details (10:18)",
+      "Share AI research blog posts and engineering documentation on tool discovery, code mode, and related solutions with Faraz via Google Meet chat and Slack (12:10)",
+      "Maintain regular communication and provide short summaries of new technical developments to Drata teams engaged in agent building (23:55)",
+      "**Unassigned**",
+      "Organize onsite developer collaboration session between StackOne and Drata teams to accelerate AI integration and knowledge sharing (10:51)",
+      "Continue development and refinement of proprietary fine-tuned AI models optimized for tool calling within multi-agent systems (22:05)"
+    ]
+  },
+  {
+    "domain": "gmail.com",
+    "title": "Romain / Marina",
+    "date": "2026-03-12T14:01:39.805Z",
+    "action_items": [
+      "**Romain Sestier**",
+      "Introduce Marina to VC platform teams within his portfolio ventures and explore additional potential introductions (02:50)",
+      "Prepare and clarify contract amendments for Drato renewal, including removing outdated clauses and adding wording for unlimited linked accounts with fair usage protection (06:00)",
+      "Include SLA and migration details into contract document emphasizing transition support from LMS to IAM/Documents by contract end (24:30)",
+      "Schedule and conduct meeting with Drato to agree on contract changes and confirm possible revisions before sending final version (25:33)",
+      "Maintain ongoing communications with Marina on updates post-Drato meeting, especially if major changes arise (25:40)",
+      "**Marina Khawaja**",
+      "Review and add comments to contract based on discussed changes, including fair usage clause, revised SLAs, support credit formulas, and migration details (06:30)",
+      "Confirm timelines and prepare for contract delivery by the coming Monday to meet March 20 deadline (26:02)",
+      "Plan recruitment or commercial capacity expansion to support engagement with VC introductions and new business outreach (26:30)"
+    ]
+  },
+  {
+    "domain": "boundless.com",
+    "title": "Boundless <> StackOne Falcon Demo",
+    "date": "2026-03-11T17:00:22.536Z",
+    "action_items": [
+      "**David Cobey**",
+      "Gain access to Boundless StackOne environment and begin hands-on testing of Rippling connector (35:00)",
+      "Share list of active integrations and specific endpoints used with StackOne team for platform assessment (20:00)",
+      "Continue discussions with Gusto and other agent companies; explore AI agent integration opportunities (38:00)",
+      "Evaluate test POC outcomes and compare Merge replacement feasibility with StackOne (34:00)",
+      "**Alex Cox**",
+      "Support onboarding and hands-on sessions for Boundless’s team in StackOne UI, including non-unified connectors and testing playground (37:00)",
+      "Assist in clarifying integration builder toolkit capabilities, especially concerning OAuth and complex API scenarios (16:00)",
+      "**Richard South**",
+      "Prepare and share synthesis summary and next steps from meeting, including platform capabilities relative to Boundless’s current stacks (57:00)",
+      "Assess StackOne’s connector library coverage against Boundless integration needs (19:00)",
+      "**Charlie Mostyn**",
+      "Coordinate data sharing and follow-up on integration endpoints and use cases (21:00)"
+    ]
+  },
+  {
+    "domain": "boundless.com",
+    "title": "Boundless <> StackOne Falcon Demo",
+    "date": "2026-03-11T17:00:00.000Z",
+    "action_items": [
+      "**William Lang**",
+      "Explore access to Boundless’s Stack One environment and start a proof of concept integrating Rippling using Stack One connectors (28:17)",
+      "**Richard South and Alex Cox**",
+      "Coordinate a demo session and onboarding training for Boundless on Stack One’s UI and non-unified connector ecosystem (30:08)",
+      "Continue relationship building with Boundless regarding AI HR agent partnerships and potential integration opportunities with other HR platform providers (50:51)",
+      "**Boundless**",
+      "Share current live integrations and desired API endpoint usage with Stack One for an assessment of platform coverage and gaps (13:07)",
+      "Investigate and initiate discussions with Gusto and other potential HRIS partners, leveraging Stack One’s guidance and introductions (38:56)",
+      "**Alex Cox**",
+      "Retrieve and share detailed use case documentation from Boundless regarding integrations to assist matching with Stack One’s pre-built connectors and endpoint actions (14:42)",
+      "**Stack One**",
+      "Provide updated end-user documentation URLs and information on dynamic scope-based documentation for Boundless’s evaluation (23:08)",
+      "**Richard South**",
+      "Provide Boundless with open source tools relevant for MCP server implementation, including prompt injection defenses and token optimization utilities (42:01)",
+      "Synthesize meeting insights, next steps, and potential partnership pathways into a summary document and share it with Boundless (50:40)"
+    ]
+  }
+]

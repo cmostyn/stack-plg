@@ -20,7 +20,10 @@ if (!API_KEY || !ACCOUNT_ID) {
 
 const AUTH = 'Basic ' + Buffer.from(API_KEY + ':').toString('base64');
 
-async function rpc(action, body) {
+// params is spread into the top-level RPC request alongside action
+// e.g. rpc('fireflies_list_transcripts', { body: { ... }, query: {} })
+//   => POST /actions/rpc { action, body: { ... }, query: {} }
+async function rpc(action, params = {}) {
   const res = await fetch('https://api.stackone.com/actions/rpc', {
     method: 'POST',
     headers: {
@@ -28,7 +31,7 @@ async function rpc(action, body) {
       'x-account-id': ACCOUNT_ID,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, body }),
+    body: JSON.stringify({ action, ...params }),
   });
   if (!res.ok) throw new Error(`RPC ${action} failed: ${res.status} ${await res.text()}`);
   return res.json();
@@ -56,23 +59,43 @@ async function main() {
   const transcripts = data?.data ?? [];
   console.log(`[fireflies] Found ${transcripts.length} transcripts`);
 
-  // Build domain → most recent transcript map
-  const byDomain = {};
-  for (const t of transcripts) {
+  // Only fetch detail for transcripts that have external participants
+  const externalTranscripts = transcripts.filter(t => externalDomains(t).length > 0);
+  console.log(`[fireflies] Fetching action items for ${externalTranscripts.length} external transcripts...`);
+
+  const output = [];
+  for (const t of externalTranscripts) {
+    let actionItems = [];
+    try {
+      const detail = await rpc('fireflies_get_transcript', {
+        path: { id: t.id },
+      });
+      // action_items is a multi-line string inside summary; split into array
+      const raw = detail?.data?.summary?.action_items ?? '';
+      actionItems = raw.split('\n').map(s => s.trim()).filter(Boolean);
+    } catch (e) {
+      console.warn(`[fireflies] Could not fetch detail for ${t.id}: ${e.message}`);
+    }
+
     const domains = externalDomains(t);
     for (const domain of domains) {
-      if (!byDomain[domain] || t.date > byDomain[domain].date) {
-        byDomain[domain] = { title: t.title, date: t.dateString, domain };
-      }
+      output.push({
+        domain,
+        title:        t.title,
+        date:         t.dateString,   // ISO 8601 string — used for lexicographic sort
+        action_items: actionItems,
+      });
     }
   }
 
-  const output = Object.values(byDomain);
+  // Sort most-recent first so the card shows calls in chronological order
+  output.sort((a, b) => b.date.localeCompare(a.date));
+
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(output, null, 2) + '\n');
-  console.log(`[fireflies] Written ${output.length} domain entries to ${OUT_FILE}`);
+  console.log(`[fireflies] Written ${output.length} entries to ${OUT_FILE}`);
 
-  writeStatus('fireflies', 'ok', { records: transcripts.length });
+  writeStatus('fireflies', 'ok', { transcripts: transcripts.length, entries: output.length });
 }
 
 main().catch(e => {
