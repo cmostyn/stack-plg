@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM — StackOne CS</title>
+  <title>Customer List — PLG-Hub</title>
   <link rel="stylesheet" href="style.css">
+  <script src="auth.js"></script>
 </head>
 <body>
 
   <header class="site-header">
     <div class="site-header-inner">
-      <a href="index.html" class="site-logo">
+      <a href="http://go/plg-hub" class="site-logo">
         <span class="logo-dot"></span>
-        PLG Stack
+        PLG-Hub
       </a>
       <nav class="site-nav">
         <a href="dashboard.html" class="site-nav-link">Dashboard</a>
-        <a href="crm.html" class="site-nav-link site-nav-link--active">CRM</a>
+        <a href="crm.html" class="site-nav-link site-nav-link--active">Customer List</a>
+        <a href="index.html" class="site-nav-link">Customer Support</a>
         <a href="connectors.html" class="site-nav-link">Connectors</a>
-        <a href="index.html" class="site-nav-link">Support Digests</a>
       </nav>
     </div>
   </header>
@@ -33,11 +34,18 @@
         placeholder="Search customers…"
         autocomplete="off"
       >
+      <select id="crm-type-filter" class="crm-type-filter">
+        <option value="">All types</option>
+        <option value="Customer - PLG">PLG</option>
+        <option value="Customer - SLG">SLG</option>
+        <option value="Customer">Customer</option>
+      </select>
       <span id="crm-count" class="crm-count"></span>
     </div>
 
     <div id="crm-table-wrap" class="crm-table-wrap">
-      <table class="crm-table">
+      <table class="crm-table" id="crm-table">
+        <colgroup id="crm-colgroup"></colgroup>
         <thead></thead>
         <tbody id="crm-tbody">
           <tr><td colspan="12" class="crm-placeholder" style="text-align:center;padding:32px">Loading…</td></tr>
@@ -57,37 +65,54 @@
       'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
     ];
 
+    // Default widths (px) — sum ~1385px, fills a 1400px container
+    const DEFAULT_COL_WIDTHS = {
+      name:          150,
+      contact:       160,
+      notes:         170,
+      last_contact:  105,
+      account:       120,
+      integrations:   95,
+      clicks:         75,
+      api_requests:   95,
+      tickets_total:  95,
+      open_tickets:   95,
+      cs_actions:     95,
+      last_call:     130,
+    };
+
     const COL_HEADERS = {
-      name:          () => `<th data-col="name" draggable="true">Name</th>`,
-      contact:       () => `<th data-col="contact" draggable="true">Primary contact (HubSpot)</th>`,
-      notes:         () => `<th data-col="notes" draggable="true">Notes (HubSpot)</th>`,
-      last_contact:  () => `<th data-col="last_contact" draggable="true">Last contact (HubSpot)</th>`,
-      account:       () => `<th data-col="account" draggable="true">Account (Pylon)</th>`,
-      integrations:  () => `<th data-col="integrations" draggable="true">Connected integrations (PostHog)</th>`,
-      clicks:        () => `<th data-col="clicks" draggable="true">Clicks (PostHog)</th>`,
-      api_requests:  () => `<th data-col="api_requests" draggable="true">API requests (PostHog)</th>`,
-      tickets_total: () => `<th data-col="tickets_total" draggable="true">Tickets total (Pylon)</th>`,
-      open_tickets:  () => `<th data-col="open_tickets" draggable="true">Open tickets (Pylon)</th>`,
-      cs_actions:    () => `<th data-col="cs_actions" draggable="true">Open CS actions</th>`,
-      last_call:     () => `<th data-col="last_call" draggable="true">Last call (Fireflies)</th>`,
+      name:          () => `<th data-col="name" draggable="true">Name<div class="crm-resize-handle"></div></th>`,
+      contact:       () => `<th data-col="contact" draggable="true">Primary contact<div class="crm-resize-handle"></div></th>`,
+      notes:         () => `<th data-col="notes" draggable="true">Notes<div class="crm-resize-handle"></div></th>`,
+      last_contact:  () => `<th data-col="last_contact" draggable="true">Last contact<div class="crm-resize-handle"></div></th>`,
+      account:       () => `<th data-col="account" draggable="true">Pylon account<div class="crm-resize-handle"></div></th>`,
+      integrations:  () => `<th data-col="integrations" draggable="true">Integrations<div class="crm-resize-handle"></div></th>`,
+      clicks:        () => `<th data-col="clicks" draggable="true">Clicks<div class="crm-resize-handle"></div></th>`,
+      api_requests:  () => `<th data-col="api_requests" draggable="true">API requests<div class="crm-resize-handle"></div></th>`,
+      tickets_total: () => `<th data-col="tickets_total" draggable="true">Tickets (30d)<div class="crm-resize-handle"></div></th>`,
+      open_tickets:  () => `<th data-col="open_tickets" draggable="true">Open tickets<div class="crm-resize-handle"></div></th>`,
+      cs_actions:    () => `<th data-col="cs_actions" draggable="true">CS actions<div class="crm-resize-handle"></div></th>`,
+      last_call:     () => `<th data-col="last_call" draggable="true">Last call<div class="crm-resize-handle"></div></th>`,
     };
 
     const CELLS = {
       name: company => {
         const display = company.name ?? company.hubspot_id;
         const href    = safeHref(company.hubspot_url);
-        return `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a></td>`;
+        const badge   = typeBadge(company.type);
+        return `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}</td>`;
       },
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
         if (!c) return PLACEHOLDER_CELL;
-        const gmailUrl = c.email
-          ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`
+        const superhumanUrl = c.email
+          ? `https://mail.superhuman.com/compose?to=${encodeURIComponent(c.email)}`
           : null;
         return `<td>
           <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
-          ${gmailUrl
-            ? `<div class="crm-contact-email"><a href="${escHtml(gmailUrl)}" target="_blank" rel="noopener" class="crm-mailto">${escHtml(c.email)}</a></div>`
+          ${superhumanUrl
+            ? `<div class="crm-contact-email"><a href="${escHtml(superhumanUrl)}" target="_blank" rel="noopener" class="crm-mailto">${escHtml(c.email)}</a></div>`
             : ''}
         </td>`;
       },
@@ -103,11 +128,18 @@
         const abs = new Date(company.last_contact).toLocaleDateString('en-GB', {
           day: 'numeric', month: 'short', year: 'numeric',
         });
-        return `<td class="crm-date" title="${escHtml(abs)}">${escHtml(rel)}</td>`;
+        const activityUrl = company.hubspot_url
+          ? safeHref(company.hubspot_url + '/activity')
+          : null;
+        return activityUrl
+          ? `<td class="crm-date" title="${escHtml(abs)}"><a href="${activityUrl}" target="_blank" rel="noopener">${escHtml(rel)}</a></td>`
+          : `<td class="crm-date" title="${escHtml(abs)}">${escHtml(rel)}</td>`;
       },
       account: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td>${escHtml(py.name)}</td>` : PLACEHOLDER_CELL;
+        if (!py) return PLACEHOLDER_CELL;
+        const pylonUrl = `https://app.usepylon.com/accounts/${py.pylon_account_id}`;
+        return `<td><a href="${escHtml(pylonUrl)}" target="_blank" rel="noopener">${escHtml(py.name)}</a></td>`;
       },
       integrations: () => PLACEHOLDER_CELL,
       clicks: company => {
@@ -125,7 +157,7 @@
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
         return py ? `<td>${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
       },
-      cs_actions:    () => PLACEHOLDER_CELL,
+      cs_actions: () => PLACEHOLDER_CELL,
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
@@ -138,11 +170,12 @@
     let allRows      = [];
     let posthogMap   = new Map();
     let firefliesMap = new Map();
-    let pylonMap     = new Map(); // hubspot_id → pylon account
+    let pylonMap     = new Map();
     let sortKey  = 'name';
     let sortDir  = 'asc';
-    let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 }; // name starts at 1 (already asc)
+    let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
     let colOrder = loadColOrder();
+    let colWidths = loadColWidths();
 
     // --- Helpers ---
 
@@ -170,9 +203,16 @@
       return (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
+    function typeBadge(type) {
+      if (!type) return '';
+      if (type === 'Customer - PLG') return '<span class="crm-type-badge crm-type-badge--plg">PLG</span>';
+      if (type === 'Customer - SLG') return '<span class="crm-type-badge crm-type-badge--slg">SLG</span>';
+      return '<span class="crm-type-badge crm-type-badge--cust">Cust</span>';
+    }
+
     function contactSortValue(company) {
       const c = isContactObj(company.contact) ? company.contact : null;
-      if (!c || !c.name) return '\uffff'; // nulls sort last
+      if (!c || !c.name) return '\uffff';
       const parts = c.name.trim().split(/\s+/);
       const last  = parts.at(-1) ?? '';
       const first = parts.slice(0, -1).join(' ');
@@ -191,6 +231,27 @@
       } catch {
         return [...DEFAULT_COL_ORDER];
       }
+    }
+
+    function loadColWidths() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('plg_crm_col_widths') ?? 'null');
+        return (parsed && typeof parsed === 'object') ? { ...DEFAULT_COL_WIDTHS, ...parsed } : { ...DEFAULT_COL_WIDTHS };
+      } catch {
+        return { ...DEFAULT_COL_WIDTHS };
+      }
+    }
+
+    function saveColWidths() {
+      localStorage.setItem('plg_crm_col_widths', JSON.stringify(colWidths));
+    }
+
+    function applyColWidths() {
+      const cg = document.getElementById('crm-colgroup');
+      if (!cg) return;
+      cg.innerHTML = colOrder.map(col =>
+        `<col data-col="${col}" style="width:${colWidths[col] ?? DEFAULT_COL_WIDTHS[col]}px">`
+      ).join('');
     }
 
     function relativeTime(iso) {
@@ -231,33 +292,26 @@
     function sortedRows(rows) {
       return [...rows].sort((a, b) => {
         const dir = sortDir === 'asc' ? 1 : -1;
-
         if (sortKey === 'contact') {
           return dir * contactSortValue(a).localeCompare(contactSortValue(b));
         }
-
         if (sortKey === 'notes') {
-          // Nulls always sort last in both directions
           if (!a.notes && !b.notes) return 0;
           if (!a.notes) return 1;
           if (!b.notes) return -1;
           return dir * a.notes.toLowerCase().localeCompare(b.notes.toLowerCase());
         }
-
         if (sortKey === 'last_contact') {
           const va = lastContactSortValue(a, sortDir);
           const vb = lastContactSortValue(b, sortDir);
           if (va === vb) return 0;
           return va > vb ? dir : -dir;
         }
-
         if (sortKey === 'clicks') {
           const ca = posthogMap.get(normName(a.name))?.click_interactions ?? -1;
           const cb = posthogMap.get(normName(b.name))?.click_interactions ?? -1;
           return dir * (ca - cb);
         }
-
-        // Default: name
         return dir * (a.name ?? '').localeCompare(b.name ?? '');
       });
     }
@@ -265,53 +319,49 @@
     // --- Render ---
 
     function render() {
-      const table    = document.querySelector('.crm-table');
-      const thead    = table.querySelector('thead');
-      const tbody    = table.querySelector('tbody');
-      const query    = document.getElementById('crm-search').value.trim();
-      const filtered = query ? allRows.filter(c => searchMatch(c, query)) : allRows;
-      const display  = sortedRows(filtered);
+      const table      = document.querySelector('.crm-table');
+      const thead      = table.querySelector('thead');
+      const tbody      = table.querySelector('tbody');
+      const query      = document.getElementById('crm-search').value.trim();
+      const typeFilter = document.getElementById('crm-type-filter').value;
+      const filtered   = allRows.filter(c =>
+        (!query || searchMatch(c, query)) &&
+        (!typeFilter || c.type === typeFilter)
+      );
+      const display    = sortedRows(filtered);
 
-      // Rebuild thead from colOrder
       thead.innerHTML = `<tr>${colOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
 
-      // Set aria-sort on the active sort column
       thead.querySelectorAll('th[data-col]').forEach(th => th.removeAttribute('aria-sort'));
       const activeTh = thead.querySelector(`th[data-col="${sortKey}"]`);
       if (activeTh) activeTh.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 
-      // Rebuild tbody from colOrder
       tbody.innerHTML = display.map(company =>
         `<tr>${colOrder.map(col => CELLS[col](company)).join('')}</tr>`
       ).join('');
 
+      applyColWidths();
+
       const total = allRows.length;
       const shown = display.length;
       document.getElementById('crm-count').textContent =
-        query ? `${shown} of ${total} customers` : `${total} customers`;
+        (query || typeFilter) ? `${shown} of ${total} customers` : `${total} customers`;
     }
 
     // --- Sort ---
 
     function setSort(key) {
-      // Reset the other column's click count when switching columns
-      if (key !== sortKey) {
-        clickCounts[sortKey] = 0;
-      }
-
+      if (key !== sortKey) clickCounts[sortKey] = 0;
       clickCounts[key] = (clickCounts[key] ?? 0) + 1;
       const click = clickCounts[key];
-
       if (click % 3 === 1) {
         sortKey = key; sortDir = 'asc';
       } else if (click % 3 === 2) {
         sortKey = key; sortDir = 'desc';
       } else {
-        // Third click: reset to global default (name A→Z)
         sortKey = 'name'; sortDir = 'asc';
         clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
       }
-
       render();
     }
 
@@ -330,12 +380,17 @@
       render();
     }).catch(() => {
       document.getElementById('crm-table-wrap').outerHTML =
-        '<p class="crm-error">Customer data couldn\'t be loaded. Try refreshing the page.</p>';
+        '<p class="crm-error">Customer data couldn\'t be loaded. Try refreshing.</p>';
     });
 
     document.getElementById('crm-search').addEventListener('input', render);
+    document.getElementById('crm-type-filter').addEventListener('change', render);
 
-    document.querySelector('.crm-table').addEventListener('click', e => {
+    // --- Sort + click on headers ---
+    const crmTable = document.querySelector('.crm-table');
+
+    crmTable.addEventListener('click', e => {
+      if (e.target.closest('.crm-resize-handle')) return;
       const th = e.target.closest('th[data-col]');
       if (!th) return;
       const col = th.dataset.col;
@@ -345,10 +400,11 @@
     });
 
     // --- Drag-to-reorder ---
-    let dragSrcCol = null;
-    const crmTable = document.querySelector('.crm-table');
+    let dragSrcCol  = null;
+    let isResizing  = false;
 
     crmTable.addEventListener('dragstart', e => {
+      if (isResizing) { e.preventDefault(); return; }
       const th = e.target.closest('th[data-col]');
       if (!th) return;
       dragSrcCol = th.dataset.col;
@@ -381,6 +437,41 @@
       [colOrder[srcIdx], colOrder[tgtIdx]] = [colOrder[tgtIdx], colOrder[srcIdx]];
       localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
       render();
+    });
+
+    // --- Column resize ---
+    let resizingCol = null;
+    let resizeStartX = 0;
+    let resizeStartW = 0;
+
+    document.addEventListener('mousedown', e => {
+      const handle = e.target.closest('.crm-resize-handle');
+      if (!handle) return;
+      const th = handle.closest('th[data-col]');
+      if (!th) return;
+      isResizing  = true;
+      resizingCol = th.dataset.col;
+      resizeStartX = e.clientX;
+      resizeStartW = colWidths[resizingCol] ?? DEFAULT_COL_WIDTHS[resizingCol];
+      handle.classList.add('crm-resize-handle--active');
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!isResizing || !resizingCol) return;
+      const newW = Math.max(60, resizeStartW + (e.clientX - resizeStartX));
+      colWidths[resizingCol] = newW;
+      applyColWidths();
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isResizing) return;
+      isResizing = false;
+      document.querySelectorAll('.crm-resize-handle--active').forEach(h =>
+        h.classList.remove('crm-resize-handle--active')
+      );
+      saveColWidths();
+      resizingCol = null;
     });
   </script>
 

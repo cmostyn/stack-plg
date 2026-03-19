@@ -558,6 +558,8 @@ a:hover {
 
 .crm-table {
   width: 100%;
+  min-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   background: var(--so-white);
 }
@@ -1001,4 +1003,171 @@ a:hover {
   color: var(--so-text-header);
   text-align: center;
   padding: 32px 0;
+}
+
+/* ============================================================
+   Auth Overlay
+   ============================================================ */
+
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--so-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--so-font-heading);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: var(--so-text-header);
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-text-tag);
+  margin-bottom: 16px;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--so-font-body);
+  font-size: 15px;
+  color: var(--so-text-body);
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.auth-input:focus {
+  border-color: rgba(0, 175, 102, 0.4);
+  box-shadow: 0 0 0 3px rgba(0, 175, 102, 0.1);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 10px;
+  font-family: var(--so-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--so-white);
+  background: var(--so-primary);
+  border: none;
+  border-radius: var(--so-radius);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.auth-btn:hover {
+  background: var(--so-green-dark);
+}
+
+.auth-error {
+  font-family: var(--so-font-tag);
+  font-size: 13px;
+  color: var(--so-red-dark);
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ============================================================
+   CRM — customer type badges
+   ============================================================ */
+
+.crm-type-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: var(--so-radius-sm);
+  font-family: var(--so-font-tag);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+  margin-left: 5px;
+  position: relative;
+  top: -1px;
+}
+
+.crm-type-badge--plg {
+  background: rgba(0, 175, 102, 0.1);
+  color: var(--so-green-dark);
+}
+
+.crm-type-badge--slg {
+  background: rgba(12, 88, 174, 0.1);
+  color: var(--so-blue-dark);
+}
+
+.crm-type-badge--cust {
+  background: var(--so-foreground);
+  color: var(--so-neutral-40);
+}
+
+/* CRM — type filter */
+.crm-type-filter {
+  padding: 7px 10px;
+  font-family: var(--so-font-body);
+  font-size: 14px;
+  color: var(--so-text-body);
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  appearance: auto;
+}
+
+.crm-type-filter:focus {
+  border-color: rgba(0, 175, 102, 0.4);
+  box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
+}
+
+/* CRM — column resize handle */
+.crm-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+  user-select: none;
+}
+
+.crm-resize-handle:hover,
+.crm-resize-handle--active {
+  background: rgba(0, 175, 102, 0.25);
+}
+
+/* th needs relative positioning for the handle */
+.crm-table th {
+  position: relative;
 }
