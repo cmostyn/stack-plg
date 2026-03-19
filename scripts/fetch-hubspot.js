@@ -35,13 +35,17 @@ async function rpc(action, body, pathParams) {
   return res.json();
 }
 
+const CUSTOMER_TYPES = ['Customer - PLG', 'Customer - SLG', 'Customer'];
+
 async function fetchAllPLGCompanies() {
   const companies = [];
   let after = undefined;
 
   while (true) {
     const reqBody = {
-      filterGroups: [{ filters: [{ propertyName: 'type', operator: 'EQ', value: 'Customer - PLG' }] }],
+      filterGroups: CUSTOMER_TYPES.map(type => ({
+        filters: [{ propertyName: 'type', operator: 'EQ', value: type }],
+      })),
       properties: PROPERTIES,
       limit: 100,
     };
@@ -134,7 +138,7 @@ function pickPrimaryContact(contactIds, contactMap) {
 }
 
 async function main() {
-  console.log('[hubspot] Fetching PLG companies...');
+  console.log('[hubspot] Fetching all customer companies (PLG + SLG + Customer)...');
   const raw = await fetchAllPLGCompanies();
   console.log(`[hubspot] Found ${raw.length} companies`);
 
