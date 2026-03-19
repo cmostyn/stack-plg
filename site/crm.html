@@ -765,6 +765,25 @@
       render();
     });
 
+    // Card open: delegated click on ⊞ button
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const btn = e.target.closest('.card-open-btn');
+      if (!btn) return;
+      const hid = btn.dataset.hubspotId;
+      const company = allRows.find(r => String(r.hubspot_id ?? '') === hid);
+      if (company) openCard(company);
+    });
+
+    // Card close: click on overlay backdrop (outside the modal)
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('card-overlay')) closeCard();
+    });
+
+    // Card close: × button
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target.closest('#card-close')) closeCard();
+    });
+
     // --- Column resize ---
     let resizingCol = null;
     let resizeStartX = 0;
