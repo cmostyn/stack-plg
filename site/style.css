@@ -3,7 +3,7 @@
    Source: stackone-branding SKILL.md + stackone-web-design-guidelines SKILL.md
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap');
 
 /* Stack Sans Text and Px Grotesk are self-hosted.
    Drop woff2 files into site/fonts/ and uncomment:
@@ -59,9 +59,9 @@
   --so-white: #FFFFFF;
 
   /* Typography */
-  --so-font-heading: "Stack Sans Text", system-ui, sans-serif;
+  --so-font-heading: "Stack Sans Text", "Geist", system-ui, sans-serif;
   --so-font-body: "Geist", system-ui, sans-serif;
-  --so-font-tag: "Px Grotesk", Arial, sans-serif;
+  --so-font-tag: "Px Grotesk", "Geist", system-ui, sans-serif;
   --so-font-code: "SF Mono", ui-monospace, monospace;
 
   /* Shadows */
@@ -545,7 +545,6 @@ a:hover {
   font-family: var(--so-font-tag);
   font-size: 13px;
   color: var(--so-text-tag);
-  margin-left: auto;
   white-space: nowrap;
 }
 
@@ -1128,6 +1127,48 @@ a:hover {
 .crm-type-badge--cust {
   background: var(--so-foreground);
   color: var(--so-neutral-40);
+}
+
+/* CRM — layout actions */
+.crm-layout-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.crm-layout-btn {
+  padding: 6px 12px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  border-radius: var(--so-radius);
+  border: 1px solid var(--so-neutral-10);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.crm-layout-btn--save {
+  background: var(--so-primary);
+  color: #fff;
+  border-color: transparent;
+}
+
+.crm-layout-btn--save:hover {
+  background: var(--so-green-dark);
+}
+
+.crm-layout-btn--saved {
+  background: var(--so-green-dark) !important;
+}
+
+.crm-layout-btn--reset {
+  background: var(--so-white);
+  color: var(--so-text-tag);
+}
+
+.crm-layout-btn--reset:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-header);
 }
 
 /* CRM — type filter */
