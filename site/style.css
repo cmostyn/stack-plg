@@ -688,6 +688,17 @@ a:hover {
   flex-shrink: 0;
 }
 
+.coming-soon {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: var(--so-radius-sm);
+  background: var(--so-foreground);
+  color: var(--so-neutral-40);
+  font-family: var(--so-font-tag);
+  font-size: 10px;
+}
+
 .dash-tile-body {
   display: flex;
   flex-direction: column;
