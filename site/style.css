@@ -515,6 +515,21 @@ a:hover {
   font-weight: 500;
 }
 
+.nav-coming-soon {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: var(--so-radius-sm);
+  background: var(--so-neutral-5);
+  color: var(--so-neutral-40);
+  font-family: var(--so-font-tag);
+  font-size: 10px;
+  font-weight: 500;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 /* ============================================================
    CRM Page
    ============================================================ */
@@ -1672,6 +1687,116 @@ a:hover {
 .dash-filter-pill--active:hover {
   background: var(--so-text-header, #222121);
   color: #FFFFFF;
+}
+
+/* ============================================================
+   Dashboard — Useful Links
+   ============================================================ */
+
+.useful-links {
+  margin-top: 40px;
+}
+
+.useful-links-label {
+  font-family: var(--so-font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--so-neutral-40);
+  margin-bottom: 12px;
+}
+
+.useful-links-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 1200px) {
+  .useful-links-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 680px) {
+  .useful-links-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.link-card:hover {
+  border-color: var(--so-neutral-20);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--so-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.link-card-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.link-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.link-card-name {
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--so-text-header);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-card-desc {
+  font-family: var(--so-font-body);
+  font-size: 11px;
+  color: var(--so-neutral-40);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-card-arrow {
+  width: 11px;
+  height: 11px;
+  color: var(--so-neutral-30);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.link-card:hover .link-card-arrow {
+  opacity: 1;
+  color: var(--so-green-dark);
 }
 
 /* Source link inside tile header */
