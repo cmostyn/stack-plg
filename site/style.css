@@ -1553,3 +1553,57 @@ a:hover {
   border-radius: 6px; font-size: 12px; padding: 5px 10px; cursor: pointer;
 }
 .inline-action-save:hover  { background: var(--so-green-dark); }
+
+/* ============================================================
+   Dashboard — Section Labels & Placeholder Tiles
+   ============================================================ */
+
+.dash-section-label {
+  grid-column: 1 / -1;
+  font-family: var(--so-font-body, Geist, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--so-neutral-40, #A19F9E);
+  padding: 4px 0 2px;
+}
+
+.dash-tile--placeholder {
+  background: var(--so-foreground, #F4F2F0);
+  border-style: dashed;
+}
+
+.dash-tile-badge {
+  display: inline-block;
+  font-family: var(--so-font-body, Geist, system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--so-neutral-40, #A19F9E);
+  background: var(--so-neutral-5, #EBE9E7);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dash-tile-placeholder-body {
+  justify-content: center;
+  align-items: center;
+}
+
+.dash-tile-placeholder-text {
+  font-family: var(--so-font-body, Geist, system-ui, sans-serif);
+  font-size: 13px;
+  color: var(--so-neutral-30, #B6B4B3);
+  text-align: center;
+}
+
+.dash-tile-subtext {
+  font-family: var(--so-font-body, Geist, system-ui, sans-serif);
+  font-size: 12px;
+  color: var(--so-text-tag, #7A7A7A);
+  margin-top: 4px;
+}

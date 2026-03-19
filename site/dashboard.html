@@ -27,10 +27,15 @@
   <main class="page-main">
     <div class="dash-grid" id="dashGrid">
 
-      <!-- Tile 1: Total PLG accounts -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="accounts" data-href="http://go/plg-customers" draggable="true">
+      <!-- ── Row 1: Growth ── -->
+      <div class="dash-section-label">Growth</div>
+
+      <!-- Tile 1: Total Free Sign Ups -->
+      <div class="dash-tile dash-tile--clickable" data-tile-id="accounts"
+           data-href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
+           draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Total PLG accounts</span>
+          <span class="dash-tile-title">Total Free Sign Ups</span>
           <span class="dash-tile-source">HubSpot</span>
         </div>
         <div class="dash-tile-body">
@@ -39,10 +44,10 @@
         </div>
       </div>
 
-      <!-- Tile 2: New signups last 30 days -->
+      <!-- Tile 2: New Sign Ups Last 30 days -->
       <div class="dash-tile" data-tile-id="signups" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">New signups last 30 days</span>
+          <span class="dash-tile-title">New Sign Ups Last 30 days</span>
           <span class="dash-tile-source">HubSpot</span>
         </div>
         <div class="dash-tile-body">
@@ -51,104 +56,105 @@
         </div>
       </div>
 
-      <!-- Tile 3: Open tickets (donut) -->
-      <div class="dash-tile" data-tile-id="tickets" draggable="true">
+      <!-- Tile 3: Conversion placeholder -->
+      <div class="dash-tile dash-tile--placeholder" data-tile-id="conversion" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Open tickets</span>
-          <span class="dash-tile-source">Pylon <span class="coming-soon">Coming soon</span></span>
+          <span class="dash-tile-title">Sign Up → API Request Conversion</span>
+          <span class="dash-tile-badge">Coming soon</span>
+        </div>
+        <div class="dash-tile-body dash-tile-placeholder-body">
+          <span class="dash-tile-placeholder-text">No data source connected yet</span>
+        </div>
+      </div>
+
+      <!-- ── Row 2: Support ── -->
+      <div class="dash-section-label">Support</div>
+
+      <!-- Tile 4: Open Tickets donut -->
+      <div class="dash-tile dash-tile--clickable" data-tile-id="tickets"
+           data-href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
+           draggable="true">
+        <div class="dash-tile-header">
+          <span class="dash-tile-title">Open Tickets</span>
+          <span class="dash-tile-source">Pylon</span>
         </div>
         <div class="dash-tile-body">
           <div class="dash-tile-chart dash-tile-chart--donut" id="chart-tickets"></div>
         </div>
       </div>
 
-      <!-- Tile 4: Tickets needing action -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="action" data-href="http://go/plg-issues" draggable="true">
+      <!-- Tile 5: Tickets needing action -->
+      <div class="dash-tile dash-tile--clickable" data-tile-id="action"
+           data-href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
+           draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Tickets needing action</span>
+          <span class="dash-tile-title">Tickets Needing Action</span>
           <span class="dash-tile-source">Pylon</span>
         </div>
         <div class="dash-tile-body">
-          <div class="dash-tile-value">4</div>
+          <div class="dash-tile-value" id="val-action">—</div>
+          <div class="dash-tile-subtext">New + On You + Waiting on Eng</div>
         </div>
       </div>
 
-      <!-- Tile 5: Avg first response -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="frt" data-href="https://app.usepylon.com/analytics/dashboard/109ccc44-4072-44f5-8ccb-04db52c933fd" draggable="true">
+      <!-- Tile 6: Avg First Response -->
+      <div class="dash-tile dash-tile--clickable" data-tile-id="frt"
+           data-href="https://app.usepylon.com/analytics/chart/edit/d8d83a48-5ec1-46d2-9c72-5b1d0ee81dff?dashboardID=109ccc44-4072-44f5-8ccb-04db52c933fd"
+           draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Avg first response</span>
+          <span class="dash-tile-title">Avg First Response</span>
           <span class="dash-tile-source">Pylon</span>
         </div>
         <div class="dash-tile-body">
-          <div class="dash-tile-value">2.1h</div>
+          <div class="dash-tile-value" id="val-frt">—</div>
           <div class="dash-tile-chart dash-tile-chart--line" id="chart-frt"></div>
         </div>
       </div>
 
-      <!-- Tile 6: Avg clicks per customer -->
-      <div class="dash-tile" data-tile-id="clicks" draggable="true">
+      <!-- ── Row 3: Usage ── -->
+      <div class="dash-section-label">Usage</div>
+
+      <!-- Tile 7: Placeholder -->
+      <div class="dash-tile dash-tile--placeholder" data-tile-id="usage1" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Avg clicks per customer</span>
-          <span class="dash-tile-source">PostHog</span>
+          <span class="dash-tile-title">Connected Integrations</span>
+          <span class="dash-tile-badge">Coming soon</span>
         </div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-value">—</div>
-          <div class="dash-tile-chart dash-tile-chart--line" id="chart-clicks"></div>
+        <div class="dash-tile-body dash-tile-placeholder-body">
+          <span class="dash-tile-placeholder-text">No data source connected yet</span>
         </div>
       </div>
 
-      <!-- Tile 7: Avg linked accounts per customer -->
-      <div class="dash-tile" data-tile-id="linked" draggable="true">
+      <!-- Tile 8: Placeholder -->
+      <div class="dash-tile dash-tile--placeholder" data-tile-id="usage2" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Avg linked accounts per customer</span>
-          <span class="dash-tile-source">PostHog</span>
+          <span class="dash-tile-title">API Requests (Last 30 days)</span>
+          <span class="dash-tile-badge">Coming soon</span>
         </div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-value">—</div>
-          <div class="dash-tile-chart dash-tile-chart--line" id="chart-linked"></div>
+        <div class="dash-tile-body dash-tile-placeholder-body">
+          <span class="dash-tile-placeholder-text">No data source connected yet</span>
         </div>
       </div>
 
-      <!-- Tile 8: Avg API requests per customer -->
-      <div class="dash-tile" data-tile-id="apireqs" draggable="true">
+      <!-- Tile 9: Placeholder -->
+      <div class="dash-tile dash-tile--placeholder" data-tile-id="usage3" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Avg API requests per customer</span>
-          <span class="dash-tile-source">PostHog</span>
+          <span class="dash-tile-title">Active Users (Last 30 days)</span>
+          <span class="dash-tile-badge">Coming soon</span>
         </div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-value">—</div>
-          <div class="dash-tile-chart dash-tile-chart--line" id="chart-apireqs"></div>
-        </div>
-      </div>
-
-      <!-- Tile 9: % customers with API requests -->
-      <div class="dash-tile" data-tile-id="pctapi" draggable="true">
-        <div class="dash-tile-header">
-          <span class="dash-tile-title">% customers with API requests</span>
-          <span class="dash-tile-source">PostHog</span>
-        </div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-value">—</div>
+        <div class="dash-tile-body dash-tile-placeholder-body">
+          <span class="dash-tile-placeholder-text">No data source connected yet</span>
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- Expand dialog -->
-  <dialog class="dash-expand" id="dashExpand">
-    <div class="dash-expand-header">
-      <span class="dash-expand-title" id="expandTitle"></span>
-      <button class="dash-expand-close" id="expandClose" aria-label="Close">×</button>
-    </div>
-    <div id="expandBody"></div>
-  </dialog>
-
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script>
     // ── Helpers ──────────────────────────────────────────────────────────────
     function sparkline(el, series, color) {
-      if (!el) return null;
+      if (!el || !series.length) return null;
       const chart = echarts.init(el, null, { renderer: 'canvas' });
       chart.setOption({
         animation: true,
@@ -186,87 +192,123 @@
       return chart;
     }
 
-    // ── Tile data for expand dialog ───────────────────────────────────────────
-    const TILE_DATA = {
-      accounts: { title: 'Total PLG accounts',               type: 'sparkline', color: '#00AF66' },
-      signups:  { title: 'New signups last 30 days',         type: 'sparkline', color: '#00AF66' },
-      tickets:  { title: 'Open tickets',                     type: 'donut'                       },
-      action:   { title: 'Tickets needing action',           type: 'number',    value: '4'       },
-      frt:      { title: 'Avg first response',               type: 'sparkline', color: '#7A7A7A',
-                  series: [3.2, 2.8, 3.1, 2.9, 2.7, 2.5, 2.5, 2.1]                             },
-      clicks:   { title: 'Avg clicks per customer',          type: 'sparkline', color: '#0C58AE',
-                  series: [12, 14, 13, 15, 14, 16, 15, 17]                                       },
-      linked:   { title: 'Avg linked accounts per customer', type: 'sparkline', color: '#0C58AE',
-                  series: [1.2, 1.4, 1.3, 1.5, 1.4, 1.6, 1.5, 1.7]                             },
-      apireqs:  { title: 'Avg API requests per customer',    type: 'sparkline', color: '#0C58AE',
-                  series: [800, 950, 900, 1100, 1050, 1200, 1150, 1300]                          },
-      pctapi:   { title: '% customers with API requests',    type: 'number',    value: '—'       },
-    };
-
-    // Live series updated after fetch (for expand dialog)
-    const liveExpandData = {};
-
-    // ── Load HubSpot data ─────────────────────────────────────────────────────
+    // ── Load HubSpot data (tiles 1 & 2) ─────────────────────────────────────
     fetch('./data/hubspot.json')
       .then(r => r.json())
       .then(companies => {
-        // Tile 1 — Total accounts
         const total = companies.length;
         document.getElementById('val-accounts').textContent = total;
-        const accountSeries = [45, 47, 48, 49, 50, 52, 52, total];
-        sparkline(document.getElementById('chart-accounts'), accountSeries, '#00AF66');
-        liveExpandData['accounts'] = accountSeries;
 
-        // Tile 2 — New signups last 30 days
+        // Cumulative growth: group by month, show last 8 data points
+        const byMonth = {};
+        for (const c of companies) {
+          if (!c.createdate) continue;
+          const m = c.createdate.slice(0, 7); // 'YYYY-MM'
+          byMonth[m] = (byMonth[m] || 0) + 1;
+        }
+        const months = Object.keys(byMonth).sort();
+        let cumulative = 0;
+        const growthSeries = months.map(m => { cumulative += byMonth[m]; return cumulative; });
+        sparkline(document.getElementById('chart-accounts'), growthSeries.slice(-8), '#047B43');
+
+        // New signups last 30 days
         const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
-        const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff).length;
-        document.getElementById('val-signups').textContent = recent;
-        const signupSeries = [3, 5, 4, 6, 5, 7, 6, recent];
-        sparkline(document.getElementById('chart-signups'), signupSeries, '#00AF66');
-        liveExpandData['signups'] = signupSeries;
+        const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff);
+        document.getElementById('val-signups').textContent = recent.length;
+
+        // By week within 30d window
+        const byWeek = [0, 0, 0, 0];
+        for (const c of recent) {
+          const daysAgo = (Date.now() - new Date(c.createdate).getTime()) / 86400000;
+          const idx = Math.min(3, Math.floor(daysAgo / 7));
+          byWeek[3 - idx]++;
+        }
+        sparkline(document.getElementById('chart-signups'), byWeek, '#047B43');
       })
       .catch(() => {
         document.getElementById('val-accounts').textContent = '—';
         document.getElementById('val-signups').textContent = '—';
       });
 
-    // ── Tile 3 — Open tickets donut (Pylon placeholder) ───────────────────────
-    (function () {
-      const el = document.getElementById('chart-tickets');
-      if (!el) return;
-      const chart = echarts.init(el, null, { renderer: 'canvas' });
-      chart.setOption({
-        animation: true,
-        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-        legend: { show: false },
-        graphic: [{
-          type: 'text',
-          left: 'center',
-          top: 'center',
-          style: { text: '12', font: 'bold 28px Geist, sans-serif', fill: '#222121' },
-        }],
-        series: [{
-          type: 'pie',
-          radius: ['50%', '75%'],
-          avoidLabelOverlap: false,
-          label: { show: false },
-          data: [
-            { value: 5, name: 'StackOne',    itemStyle: { color: '#96580A' } },
-            { value: 4, name: 'Customer',    itemStyle: { color: '#0C58AE' } },
-            { value: 3, name: 'Engineering', itemStyle: { color: '#7A7A7A' } },
-          ],
-        }],
+    // ── Load Pylon summary data (tiles 4, 5, 6) ───────────────────────────────
+    fetch('./data/pylon-summary.json')
+      .then(r => r.json())
+      .then(summary => {
+        const st = summary.open_by_state;
+        const total = Object.values(st).reduce((s, v) => s + v, 0);
+
+        // Tile 4 — Open tickets donut
+        const ticketEl = document.getElementById('chart-tickets');
+        if (ticketEl) {
+          const chart = echarts.init(ticketEl, null, { renderer: 'canvas' });
+          chart.setOption({
+            animation: true,
+            tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+            legend: { show: false },
+            graphic: [{
+              type: 'group',
+              left: 'center',
+              top: 'center',
+              children: [
+                {
+                  type: 'text',
+                  style: {
+                    text: String(total),
+                    font: '600 28px Geist, system-ui, sans-serif',
+                    fill: '#222121',
+                    textAlign: 'center',
+                  },
+                  top: -18,
+                },
+                {
+                  type: 'text',
+                  style: {
+                    text: 'open',
+                    font: '400 11px Geist, system-ui, sans-serif',
+                    fill: '#7A7A7A',
+                    textAlign: 'center',
+                  },
+                  top: 10,
+                },
+              ],
+            }],
+            series: [{
+              type: 'pie',
+              radius: ['52%', '76%'],
+              avoidLabelOverlap: false,
+              label: { show: false },
+              data: [
+                { value: st.new,                    name: 'New',                     itemStyle: { color: '#047B43' } },
+                { value: st.waiting_on_you,         name: 'On You',                  itemStyle: { color: '#96580A' } },
+                { value: st.waiting_on_customer,    name: 'On Customer',             itemStyle: { color: '#0C58AE' } },
+                { value: st.waiting_on_engineering, name: 'Waiting on Engineering',  itemStyle: { color: '#4D4EBA' } },
+              ].filter(d => d.value > 0),
+            }],
+          });
+          window.addEventListener('resize', () => chart.resize());
+        }
+
+        // Tile 5 — Tickets needing action
+        document.getElementById('val-action').textContent = summary.needing_action;
+
+        // Tile 6 — Avg first response sparkline
+        const frtWeeks = summary.frt_weekly ?? [];
+        if (frtWeeks.length) {
+          const latestHours = frtWeeks[frtWeeks.length - 1].avg_hours;
+          const label = latestHours >= 24
+            ? `${(latestHours / 24).toFixed(1)}d`
+            : `${latestHours}h`;
+          document.getElementById('val-frt').textContent = label;
+          sparkline(
+            document.getElementById('chart-frt'),
+            frtWeeks.map(w => w.avg_hours),
+            '#7A7A7A'
+          );
+        }
+      })
+      .catch(() => {
+        // Pylon summary not yet available — tiles stay at —
       });
-      window.addEventListener('resize', () => chart.resize());
-    })();
-
-    // ── Tile 5 — Avg first response line (Pylon placeholder) ─────────────────
-    sparkline(document.getElementById('chart-frt'), [3.2, 2.8, 3.1, 2.9, 2.7, 2.5, 2.5, 2.1], '#7A7A7A');
-
-    // ── Tiles 6–8 — PostHog lines (placeholder) ──────────────────────────────
-    sparkline(document.getElementById('chart-clicks'),  [12, 14, 13, 15, 14, 16, 15, 17],                  '#0C58AE');
-    sparkline(document.getElementById('chart-linked'),  [1.2, 1.4, 1.3, 1.5, 1.4, 1.6, 1.5, 1.7],         '#0C58AE');
-    sparkline(document.getElementById('chart-apireqs'), [800, 950, 900, 1100, 1050, 1200, 1150, 1300],      '#0C58AE');
 
     // ── Drag to rearrange ─────────────────────────────────────────────────────
     const STORAGE_KEY = 'plg_tile_order';
@@ -330,121 +372,13 @@
 
     applyStoredOrder();
 
-    // ── Click to expand / navigate ────────────────────────────────────────────
-    const dialog       = document.getElementById('dashExpand');
-    const expandTitle  = document.getElementById('expandTitle');
-    const expandBody   = document.getElementById('expandBody');
-    let expandChart    = null;
-
-    function closeDashExpand() {
-      dialog.close();
-      if (expandChart) { expandChart.dispose(); expandChart = null; }
-      expandBody.innerHTML = '';
-    }
-
-    document.getElementById('expandClose').addEventListener('click', closeDashExpand);
-
-    dialog.addEventListener('click', e => {
-      if (e.target === dialog) closeDashExpand();
-    });
-
+    // ── Click to navigate (tiles with data-href) ──────────────────────────────
     grid.addEventListener('click', e => {
       if (e.target.tagName === 'A') return;
-
       const tile = e.target.closest('.dash-tile');
       if (!tile) return;
-
       const href = tile.dataset.href;
-      if (href) {
-        window.open(href, '_blank', 'noopener');
-        return;
-      }
-
-      const id = tile.dataset.tileId;
-      const td = TILE_DATA[id];
-      if (!td) return;
-
-      expandTitle.textContent = td.title;
-      expandBody.innerHTML = '';
-
-      if (td.type === 'number') {
-        const div = document.createElement('div');
-        div.className = 'dash-expand-value';
-        div.textContent = liveExpandData[id] ?? td.value ?? '—';
-        expandBody.appendChild(div);
-
-      } else if (td.type === 'sparkline') {
-        const series = liveExpandData[id] ?? td.series ?? [];
-        const div = document.createElement('div');
-        div.className = 'dash-expand-chart';
-        expandBody.appendChild(div);
-        expandChart = echarts.init(div, null, { renderer: 'canvas' });
-        expandChart.setOption({
-          animation: true,
-          grid: { top: 8, right: 8, bottom: 24, left: 40, containLabel: false },
-          xAxis: {
-            type: 'category',
-            data: series.map((_, i) => `W${i + 1}`),
-            boundaryGap: false,
-            axisLine: { lineStyle: { color: '#E0DEDC' } },
-            axisLabel: { color: '#7A7A7A', fontSize: 11 },
-          },
-          yAxis: {
-            type: 'value',
-            axisLine: { show: false },
-            splitLine: { lineStyle: { color: '#EBE9E7' } },
-            axisLabel: { color: '#7A7A7A', fontSize: 11 },
-          },
-          series: [{
-            type: 'line',
-            data: series,
-            smooth: 0.4,
-            symbol: 'circle',
-            symbolSize: 4,
-            lineStyle: { color: td.color, width: 2 },
-            itemStyle: { color: td.color },
-            areaStyle: {
-              color: {
-                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-                colorStops: [
-                  { offset: 0, color: td.color + '28' },
-                  { offset: 1, color: td.color + '00' },
-                ],
-              },
-            },
-          }],
-        });
-
-      } else if (td.type === 'donut') {
-        const div = document.createElement('div');
-        div.className = 'dash-expand-chart';
-        expandBody.appendChild(div);
-        expandChart = echarts.init(div, null, { renderer: 'canvas' });
-        expandChart.setOption({
-          animation: true,
-          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-          legend: { bottom: 0, textStyle: { color: '#4C4B4B', fontSize: 12 } },
-          graphic: [{
-            type: 'text',
-            left: 'center',
-            top: 'center',
-            style: { text: '12', font: 'bold 36px Geist, sans-serif', fill: '#222121' },
-          }],
-          series: [{
-            type: 'pie',
-            radius: ['50%', '72%'],
-            avoidLabelOverlap: false,
-            label: { show: false },
-            data: [
-              { value: 5, name: 'StackOne',    itemStyle: { color: '#96580A' } },
-              { value: 4, name: 'Customer',    itemStyle: { color: '#0C58AE' } },
-              { value: 3, name: 'Engineering', itemStyle: { color: '#7A7A7A' } },
-            ],
-          }],
-        });
-      }
-
-      dialog.showModal();
+      if (href) window.open(href, '_blank', 'noopener');
     });
   </script>
 </body>
