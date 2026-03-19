@@ -1,5 +1,23 @@
 [
   {
+    "hubspot_id": "261697621201",
+    "name": "Amiqus",
+    "domain": "amiqus.co",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Slow churn as they have reduced dev resource. Asked for reduced contract value, which has been shared 2nd March. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.520Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261697621201",
+    "updated_at": "2026-03-19T07:53:49.577Z",
+    "contact": {
+      "name": "Jira W",
+      "email": "jira@amiqus.co"
+    },
+    "last_contact": "2026-03-16T00:00:00.000Z"
+  },
+  {
     "hubspot_id": "411466041590",
     "name": "Antonio Perez, CPA, P.A.",
     "domain": "antoniocpa.com",
@@ -72,22 +90,58 @@
     "last_contact": "2026-02-17T20:57:47.429Z"
   },
   {
+    "hubspot_id": "238869897440",
+    "name": "Attensi",
+    "domain": "attensi.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "They are still discussing our plan internally, and should be making a decision by the end of this week (w/c 09/03). CM to book a call w/c 16th. \n\n.Positive relationship, sentiment is OK. Disappointed we're moving away from unification, as this is what they bought. \n\nWe're fairly embedded. 8 linked accounts across four connectors. \n\nAttensi are currently testing Falcon to inform their decision. They have a capable development team and a skilled CTO. \n\nThere's also a potential expansion of their use case into documents. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-17T11:15:16.464Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/238869897440",
+    "updated_at": "2026-03-18T09:48:43.168Z",
+    "contact": {
+      "name": "Caitlin Moran",
+      "email": "caitlin.moran@attensi.com"
+    },
+    "last_contact": "2026-03-18T00:00:00.000Z"
+  },
+  {
     "hubspot_id": "415908711663",
     "name": "BantecUSA",
     "domain": "mycashq.com",
     "org_id": "YMjYBS25esqW8Er9o0esf4Rzr91VMpH6",
     "tier": "Free",
-    "notes": "alex@mycashq.com\n",
+    "notes": "No activity. Cm msg 19/03.\n\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-06T05:25:29.387Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/415908711663",
-    "updated_at": "2026-03-19T10:42:43.519Z",
+    "updated_at": "2026-03-19T11:15:06.911Z",
     "contact": {
       "name": "ALEX VORONOVICH",
       "email": "alex@mycashq.com"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "360665426112",
+    "name": "Birdie",
+    "domain": "birdie.care",
+    "org_id": "Hz9patr6jLLakeOhcJB3osVK2keNZjyN",
+    "tier": "Free",
+    "notes": "2 auth configs. 1 connector, gong. No API requests.",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-09-23T10:46:08.817Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/360665426112",
+    "updated_at": "2026-03-18T15:15:57.098Z",
+    "contact": {
+      "name": null,
+      "email": "aiteam@birdie.care"
+    },
+    "last_contact": "2026-03-17T09:20:38.113Z"
   },
   {
     "hubspot_id": "386213542102",
@@ -167,12 +221,12 @@
     "domain": "candidatehub.io",
     "org_id": "PQfvzDrSdUL7xEReYV35ZaRrAphWTmqV",
     "tier": "Free",
-    "notes": "CM msg 19/03 ____ Lever config done but not connected",
+    "notes": "Lever config done but not connected. CM msg 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2025-10-19T18:23:56.032Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264826313955",
-    "updated_at": "2026-03-19T09:23:54.983Z",
+    "updated_at": "2026-03-19T11:18:30.916Z",
     "contact": {
       "name": "Brad DiPaolo",
       "email": "brad@candidatehub.io"
@@ -196,6 +250,42 @@
       "email": "vandb@cloud-ace.com"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "243150087366",
+    "name": "Codility",
+    "domain": "codility.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Renewal upcoming, meeting booked Weds 4th.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-24T08:35:25.696Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/243150087366",
+    "updated_at": "2026-03-17T16:52:42.358Z",
+    "contact": {
+      "name": "Tomasz Sobolewski",
+      "email": "tomasz.sobolewski@codility.com"
+    },
+    "last_contact": "2026-03-04T10:30:00.000Z"
+  },
+  {
+    "hubspot_id": "264826326255",
+    "name": "Cognexo",
+    "domain": "cognexo.com",
+    "org_id": null,
+    "tier": null,
+    "notes": null,
+    "welcome_email_sent": false,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-19T18:24:05.069Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264826326255",
+    "updated_at": "2026-03-18T19:45:17.888Z",
+    "contact": {
+      "name": "Jamie",
+      "email": "jamie@cognexo.com"
+    },
+    "last_contact": "2026-03-18T19:44:56.038Z"
   },
   {
     "hubspot_id": "394265558217",
@@ -252,6 +342,42 @@
     "last_contact": "2026-02-13T08:57:00.280Z"
   },
   {
+    "hubspot_id": "242578802915",
+    "name": "Drata",
+    "domain": "drata.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Get renewal signed as top priority, flat renewal\n\nFalcon: Demo complete on Agentic Architecture. Exploring POC for compliance automation. \n\nPolicies/Docs of interest, no commit yet\n\nContinue with IAM linked account expansion and LMS expansion. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-23T15:26:09.607Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/242578802915",
+    "updated_at": "2026-03-18T11:27:46.217Z",
+    "contact": {
+      "name": "Rose Mcguigan",
+      "email": "rosemcguigan@drata.com"
+    },
+    "last_contact": "2026-03-12T20:00:00.000Z"
+  },
+  {
+    "hubspot_id": "264826312953",
+    "name": "Employ",
+    "domain": "pillar.hr",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Slow churn\n",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:55.484Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264826312953",
+    "updated_at": "2026-03-06T13:31:53.172Z",
+    "contact": {
+      "name": null,
+      "email": "jordan.sherer@pillar.hr"
+    },
+    "last_contact": "2025-04-16T23:00:00.000Z"
+  },
+  {
     "hubspot_id": "405919011002",
     "name": "eon.io",
     "domain": "eon.io",
@@ -280,7 +406,7 @@
     "type": "Customer - PLG",
     "createdate": "2025-09-24T13:23:09.943Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361973674233",
-    "updated_at": "2026-03-19T10:52:19.027Z",
+    "updated_at": "2026-03-19T11:30:01.757Z",
     "contact": {
       "name": "Adam Shuaib",
       "email": "adam@episode1.com"
@@ -288,22 +414,112 @@
     "last_contact": "2026-02-26T15:30:00.000Z"
   },
   {
+    "hubspot_id": "252132490477",
+    "name": "Ethico",
+    "domain": "ethico.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Likely slow churn.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-03T18:27:17.171Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/252132490477",
+    "updated_at": "2026-03-06T13:31:18.755Z",
+    "contact": {
+      "name": "Michelle Zychowski",
+      "email": "mzychowski@ethico.com"
+    },
+    "last_contact": "2026-03-10T00:00:00.000Z"
+  },
+  {
     "hubspot_id": "417252380911",
     "name": "Ficell",
     "domain": "zohomail.in",
     "org_id": "8tae5w9xNexfbiDJIe6qnzBbGVKcMjFf",
     "tier": "Free",
-    "notes": "paragpakhrani@zohomail.in\n\nCHECK IF DOCUSIGN\n",
+    "notes": "No activity, Pylon tickets, Cm chase 19/03. \n\n\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-06T12:58:15.812Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/417252380911",
-    "updated_at": "2026-03-19T10:43:13.432Z",
+    "updated_at": "2026-03-19T11:29:42.689Z",
     "contact": {
       "name": "Parag Pakhrani",
       "email": "paragpakhrani@zohomail.in"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "415062087913",
+    "name": "Fluidlabs",
+    "domain": "fluidlabs.com",
+    "org_id": "RoNaSuj4qlpxEFMQsmzdcrJJTuZUIkQG",
+    "tier": "Free",
+    "notes": "0",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2026-03-04T17:45:12.920Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/415062087913",
+    "updated_at": "2026-03-18T15:16:53.018Z",
+    "contact": {
+      "name": "Shamil Malachiyev",
+      "email": "shamil@fluidlabs.com"
+    },
+    "last_contact": "2026-03-17T06:32:04.548Z"
+  },
+  {
+    "hubspot_id": "238915855578",
+    "name": "Fuse Universal",
+    "domain": "fuseuniversal.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Meeting booked 7th April. Goal - get feedback on their approach for Falcon (agentic use case). Start to schedule in a migration window. \n\n_______\n\nOngoing issue with Go1 connector. \n\nFuse understands Falcon capabilities — can build connectors faster, but still need internal workflow development, especially for Agent/Managed RAG.  \n\nArchitectural decision needed — whether to:                                                                             \n    - Commit dev resources to N8N + StackOne integration                                                                     \n    - Focus on current use case only                                                                                         \n    - Plan transition away from StackOne                    \n\n",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-17T13:56:39.748Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/238915855578",
+    "updated_at": "2026-03-19T07:54:28.966Z",
+    "contact": {
+      "name": "Terri Abrahamse",
+      "email": "terri.abrahamse@fuseuniversal.com"
+    },
+    "last_contact": "2026-02-12T15:53:23.037Z"
+  },
+  {
+    "hubspot_id": "261728158909",
+    "name": "G-P",
+    "domain": "g-p.com",
+    "org_id": "8eBvRwVQZcZlj01hR3KPMQsBj29ZKhY1",
+    "tier": "Free",
+    "notes": "CM: Reached out to Kelsey & Mithun 18th March \n__\n\nLooks as though Gia team are trialling other connectors. GP is split into two sections. Gia (agentic, now in prod with 4 accounts), using Documents, and EOR (18 linked accounts, 5 live connectors).\n\nWe have a strong relationship with Mithun at EOR, who is excited to see a Falcon demo. This has been delayed due to their internal resource as well as ours. The EOR branch has exciting plans to expand their use cases, whether it's for time off into ATS connectors or into accounting connectors. Therefore, our toolkit would be helpful for them to expand without relying on StackOne. \n",
+    "welcome_email_sent": true,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.618Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261728158909",
+    "updated_at": "2026-03-19T07:43:14.174Z",
+    "contact": {
+      "name": "ezra schneier",
+      "email": null
+    },
+    "last_contact": "2026-03-19T00:00:00.000Z"
+  },
+  {
+    "hubspot_id": "265810073833",
+    "name": "Gaia (Socially Recruited)",
+    "domain": "iamgaia.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Renewal upcoming, charlie has chased. Making a decision.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:59.005Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265810073833",
+    "updated_at": "2026-03-19T15:32:32.802Z",
+    "contact": {
+      "name": "oliver",
+      "email": "oliver@iamgaia.com"
+    },
+    "last_contact": "2026-02-06T17:39:11.484Z"
   },
   {
     "hubspot_id": "387722095824",
@@ -324,6 +540,42 @@
     "last_contact": "2026-02-17T20:55:32.821Z"
   },
   {
+    "hubspot_id": "265903902923",
+    "name": "Getabstract",
+    "domain": "getabstract.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Testing Falcon to inform their decision",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:04.287Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265903902923",
+    "updated_at": "2026-03-06T13:31:24.446Z",
+    "contact": {
+      "name": "Anonymous Visitors",
+      "email": null
+    },
+    "last_contact": "2026-01-22T15:00:00.000Z"
+  },
+  {
+    "hubspot_id": "265903904979",
+    "name": "Getflip",
+    "domain": "getflip.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Next step: \n\n- Compile Flip agentic contract \n______\n\nCompleted a PoC of Falcon. Gave product feedback which we've responded to and implemented. \n\nAlso recently deployed Payslip download for Workday / ADP. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:05.717Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265903904979",
+    "updated_at": "2026-03-19T07:48:26.382Z",
+    "contact": {
+      "name": "Luke Boshoff",
+      "email": "luke.boshoff@getflip.com"
+    },
+    "last_contact": "2026-03-17T00:00:00.000Z"
+  },
+  {
     "hubspot_id": "421275455721",
     "name": "Glorious",
     "domain": "gloriousgaming.com",
@@ -340,6 +592,42 @@
       "email": "shannon.s@gloriousgaming.com"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "261724561633",
+    "name": "GoGlobal",
+    "domain": "goglobal.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "CM check in on progress 18th March\n\nStrong partner. CTO Marcus committed \"100% StackOne for platform integrations.\" GG goal is 100% agentic by end of year. Successfully demoed unification for UKGReady Feb 27. \nCurrently building this out. Also wants Sapien: propose to move to usage based pricing at renewal in April. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.457Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261724561633",
+    "updated_at": "2026-03-19T07:41:18.550Z",
+    "contact": {
+      "name": null,
+      "email": "joseph.fleury@goglobal.com"
+    },
+    "last_contact": "2026-03-13T13:14:57.193Z"
+  },
+  {
+    "hubspot_id": "264733263048",
+    "name": "GoodHabitz",
+    "domain": "goodhabitz.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Wants to chat commercials for Falcon.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:55.368Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264733263048",
+    "updated_at": "2026-03-19T15:31:38.505Z",
+    "contact": {
+      "name": null,
+      "email": "eng-integrations@goodhabitz.com"
+    },
+    "last_contact": "2026-02-10T15:30:00.000Z"
   },
   {
     "hubspot_id": "264769275123",
@@ -432,6 +720,24 @@
     "last_contact": null
   },
   {
+    "hubspot_id": "264857157827",
+    "name": "Hone",
+    "domain": "honehq.com",
+    "org_id": "27wWaLJcsjiGf70bkgDvedbFGVxxBtfH",
+    "tier": "Free",
+    "notes": null,
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-19T18:24:03.668Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264857157827",
+    "updated_at": "2026-03-19T15:31:21.092Z",
+    "contact": {
+      "name": "Jason Lock",
+      "email": "jason@honehq.com"
+    },
+    "last_contact": "2026-03-18T18:39:06.724Z"
+  },
+  {
     "hubspot_id": "264767473892",
     "name": "Hownow Technologies Pvt Ltd",
     "domain": "gethownow.com",
@@ -486,6 +792,60 @@
     "last_contact": "2026-03-09T12:23:50.351Z"
   },
   {
+    "hubspot_id": "264858980547",
+    "name": "Humaans",
+    "domain": "humaans.io",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Testing MCP connectors - CM to arrange facetime, training, goal capturing. Mini-workshop with Sean/Karolis/Angus. Msged on 18th.\n\nStrategic customer, who are also very low touch. 30 linked accounts across 4 or 5 HRIS/ATS.\n\nPrime candidate to move to Falcon. \n\nWe discussed managed RAG, but they've now gone with a different provider for this. \n\nMain issue we face is getting FaceTime with their CTO or commitment to test out Falcon. The CTO tried testing it out but did not make any progress. \n",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:59.637Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264858980547",
+    "updated_at": "2026-03-18T09:39:38.443Z",
+    "contact": {
+      "name": null,
+      "email": "bartosz@humaans.io"
+    },
+    "last_contact": "2026-02-05T14:58:45.502Z"
+  },
+  {
+    "hubspot_id": "363593805046",
+    "name": "Incubane",
+    "domain": "virtualresource.org",
+    "org_id": "4D9xZppwL7QHtClqlxwIImTbDLMFZfpC",
+    "tier": "Free",
+    "notes": "Romain's recommendation - Elena requested warm intros to managing partners from https://www.linkedin.com/in/oliver-david-jackson/ \n ",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-12-15T12:26:54.831Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/363593805046",
+    "updated_at": "2026-03-19T13:15:07.593Z",
+    "contact": {
+      "name": "Matt Komendolowicz",
+      "email": "matt.komendolowicz@incubane.com"
+    },
+    "last_contact": "2026-03-19T13:14:46.578Z"
+  },
+  {
+    "hubspot_id": "264767465691",
+    "name": "Instructure",
+    "domain": "masteryconnect.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "We've demoed Falcon and shared pricing. Charlie reached out to Aaron 10.03 to schedule a meeting.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:59.474Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264767465691",
+    "updated_at": "2026-03-11T16:00:14.698Z",
+    "contact": {
+      "name": "Arpad Kozma",
+      "email": "arpad.kozma@instructure.com"
+    },
+    "last_contact": null
+  },
+  {
     "hubspot_id": "421230393554",
     "name": "Intellibricks Inc.",
     "domain": "intellibricks.app",
@@ -502,6 +862,42 @@
       "email": "support@intellibricks.app"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "264733274350",
+    "name": "IRIS / Staffology / CascadeHR",
+    "domain": "iris.co.uk",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "No response to multiple outreach.\n\n____\n\nInformed about new engine but no technical deep dive yet. Evaluating contract options. Need detailed technical session to clarify capabilities, timelines, and use cases.\n\nPhase 1 work deprioritised.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:04.381Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264733274350",
+    "updated_at": "2026-03-11T14:01:50.241Z",
+    "contact": {
+      "name": "Anonymous Visitors",
+      "email": null
+    },
+    "last_contact": "2026-01-08T10:30:00.000Z"
+  },
+  {
+    "hubspot_id": "264725814491",
+    "name": "Jack&Jill",
+    "domain": "jackandjill.ai",
+    "org_id": "R5qrQ3rcEiDkSwnnTUl6GPbGAjbX9PNQ",
+    "tier": "Free",
+    "notes": "0",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-19T18:24:05.838Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264725814491",
+    "updated_at": "2026-03-19T16:32:01.754Z",
+    "contact": {
+      "name": "Ben Piggin",
+      "email": "ben.piggin@jackandjill.ai"
+    },
+    "last_contact": "2026-03-19T16:30:00.000Z"
   },
   {
     "hubspot_id": "264733275352",
@@ -522,6 +918,24 @@
     "last_contact": "2025-02-26T00:00:00.000Z"
   },
   {
+    "hubspot_id": "261610566896",
+    "name": "Kinfolk",
+    "domain": "kinfolkhq.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Meeting with Jeet & Kim to outline what is possible on Falcon now and what isn't.\n\n______\n\nKey issues: Notion API disconnects, need better documentation of connector limitations. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.599Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261610566896",
+    "updated_at": "2026-03-19T15:32:27.653Z",
+    "contact": {
+      "name": "sam",
+      "email": "sam@kinfolkhq.com"
+    },
+    "last_contact": "2026-03-17T14:00:00.000Z"
+  },
+  {
     "hubspot_id": "380418439393",
     "name": "Kingsleygate",
     "domain": "kingsleygate.com",
@@ -540,17 +954,89 @@
     "last_contact": "2026-02-09T19:31:51.943Z"
   },
   {
+    "hubspot_id": "261703009487",
+    "name": "Localyze",
+    "domain": "localyzeapp.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "We pitched Falcon w/c 9th March. Interested in the integration builder and potentially agentic capabilities.\n\n-------\n\nCurrently have 12 linked accounts.\n\nDavid, Snr PM has been interested in StackOne disfacing merge at Boundless. Given the pivot, this was put off. \n\nThey have specific connector requirements which we can now meet using the builder, such as Rippling. \n\nPartnership opportunity with Gusto, who are potentially a partner or customer of theirs. \n\nDemo booked for w/c 10th of March. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.459Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261703009487",
+    "updated_at": "2026-03-18T09:49:37.851Z",
+    "contact": {
+      "name": null,
+      "email": "carolina@localyze.com"
+    },
+    "last_contact": "2025-10-06T23:00:00.000Z"
+  },
+  {
+    "hubspot_id": "261679663306",
+    "name": "Mind Tools for Business",
+    "domain": "mindtools.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Slow churn confirmed. CM to share new reduced contract. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.463Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261679663306",
+    "updated_at": "2026-03-06T13:31:45.629Z",
+    "contact": {
+      "name": null,
+      "email": "psmith@mindtools.com"
+    },
+    "last_contact": "2026-02-10T11:52:50.441Z"
+  },
+  {
+    "hubspot_id": "264936725725",
+    "name": "Mindset.ai",
+    "domain": "mindset.ai",
+    "org_id": null,
+    "tier": "Core",
+    "notes": "CM reached out to Maddie & Jack on Slack on 18th March to understand where they are at. \n_____\n\nStack One integration ON PAUSE - team focused on other priorities. \n\nPlan: build relationship with Maddie and Jack, what are their objectives with StackOne, what are other priorities.\n\nJC (Jonathan) was working on Teams connector but unclear on progress. Biweekly meetings suspended until work resumes.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:02.634Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264936725725",
+    "updated_at": "2026-03-19T07:44:04.884Z",
+    "contact": {
+      "name": "Jonathan Cecil",
+      "email": "jonathan@mindset.ai"
+    },
+    "last_contact": "2026-02-26T15:00:00.000Z"
+  },
+  {
+    "hubspot_id": "264716801225",
+    "name": "Mintago",
+    "domain": "mintago.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Increased support queries coming through",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:02.660Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264716801225",
+    "updated_at": "2026-03-11T13:58:15.663Z",
+    "contact": {
+      "name": null,
+      "email": "jack.patten@mintago.com"
+    },
+    "last_contact": "2026-01-06T13:00:00.000Z"
+  },
+  {
     "hubspot_id": "381624286440",
     "name": "n/a",
     "domain": "pjwstk.edu.pl",
     "org_id": "sHOw3EYWpY4QXds7QXWHUihUKY3qlByc",
     "tier": "Free",
-    "notes": "???",
+    "notes": "No users 19/03",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-01-29T20:27:06.741Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/381624286440",
-    "updated_at": "2026-03-12T19:34:39.266Z",
+    "updated_at": "2026-03-19T11:18:36.050Z",
     "contact": {
       "name": "Hlib Davydov",
       "email": "s19208@pjwstk.edu.pl"
@@ -612,6 +1098,24 @@
     "last_contact": null
   },
   {
+    "hubspot_id": "361977263339",
+    "name": "O'Reilly",
+    "domain": "oreilly.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "They are just in the process of getting a Skillsoft sandbox and API keys, to test Falcon. \n\nThen, Charlie to discuss next steps with Pascal/Simon, offering managed service. \n\n________\n\nDemo complete, as well as a detailed run-through of how to build a specific connector on Falcon (Skillsoft), on the 3rd of March. \n\nSenitment is poor, but justified. They have had a poor experience since joining, due to the pivot, as well as other issues:\n\n- Cornerstone not supported on Unified or Falcon\n- Other connectors not supported for their use case on Falcon, as we do not support batch upload\n- They also faced issues with sandboxes",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-19T17:34:45.499Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361977263339",
+    "updated_at": "2026-03-19T15:31:29.685Z",
+    "contact": {
+      "name": "Hforoudastan Foroudastan",
+      "email": "hforoudastan@oreilly.com"
+    },
+    "last_contact": "2026-02-16T10:02:42.048Z"
+  },
+  {
     "hubspot_id": "421409266923",
     "name": "Omnigon",
     "domain": "omnigon.biz",
@@ -628,6 +1132,24 @@
       "email": "oleg.kvyatkovskiy@omnigon.biz"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "361917119689",
+    "name": "Otherside at Work",
+    "domain": "othersideatwork.nl",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Churning",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:56.223Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361917119689",
+    "updated_at": "2026-03-11T13:58:30.890Z",
+    "contact": {
+      "name": "Maarten Peters",
+      "email": "maarten.peters@othersideatwork.com"
+    },
+    "last_contact": "2026-01-26T11:28:48.814Z"
   },
   {
     "hubspot_id": "265837209829",
@@ -684,6 +1206,24 @@
     "last_contact": "2026-02-17T21:21:15.451Z"
   },
   {
+    "hubspot_id": "264733263087",
+    "name": "Pera People Science B.V.",
+    "domain": "getpera.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Churning",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:55.681Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264733263087",
+    "updated_at": "2026-03-09T16:56:06.811Z",
+    "contact": {
+      "name": null,
+      "email": "shan.xie@getpera.com"
+    },
+    "last_contact": "2026-02-06T16:45:57.713Z"
+  },
+  {
     "hubspot_id": "264787456206",
     "name": "PG:AI",
     "domain": "getpg.ai",
@@ -720,6 +1260,78 @@
     "last_contact": null
   },
   {
+    "hubspot_id": "265875643579",
+    "name": "Pinpoint",
+    "domain": "pinpointhq.com",
+    "org_id": "YBe1fHD0TRQVrBmqDNTpJ0tVK6huGKBy",
+    "tier": "Free",
+    "notes": "Gmail, erroring.\n\n______\n\nuses Kombo, Romain wasted a lot of time on him. Will give me 3 months updates and only doing effort if he wants to change. ",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-19T18:23:56.652Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265875643579",
+    "updated_at": "2026-03-18T15:16:06.027Z",
+    "contact": {
+      "name": "Adam Mazur",
+      "email": "adam.mazur@pinpointhq.com"
+    },
+    "last_contact": "2026-02-24T11:16:01.034Z"
+  },
+  {
+    "hubspot_id": "264974961889",
+    "name": "Platformed",
+    "domain": "platformed.com",
+    "org_id": "K4zLwa6pK1eAxLkX9jifiFSEda2h9vj8",
+    "tier": "Free",
+    "notes": "0",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-19T18:23:56.670Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264974961889",
+    "updated_at": "2026-03-12T19:32:41.169Z",
+    "contact": {
+      "name": "Ella Cheney",
+      "email": "ella.cheney@platformed.com"
+    },
+    "last_contact": "2026-03-12T17:01:55.868Z"
+  },
+  {
+    "hubspot_id": "265875658976",
+    "name": "Popp",
+    "domain": "joinpopp.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "17th March - built Dayforce connector with Ilyes.\n\n________\n\nSuspect that Kombo are going after Popp. Currently paying us 97k. Speaking with Sam w/c 16th. \n\nHe's asked about DayForce, Mercury, Rippling, all of which will be able to be unlocked by Falcon. Also meeting Ilyes to show how to add unification. Pair session to build a new connector. Show migration plan. \n\nThey need to wait for Webhooks.\n\nThey have a high volume of unique connectors enabled and linked accounts. \n\nThey have faced significant issues, however, mainly around webhooks. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:07.061Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265875658976",
+    "updated_at": "2026-03-18T15:04:31.653Z",
+    "contact": {
+      "name": "Ehab Reda",
+      "email": "ehab@joinpopp.com"
+    },
+    "last_contact": "2026-03-18T15:00:00.000Z"
+  },
+  {
+    "hubspot_id": "265447780541",
+    "name": "Proppl",
+    "domain": "proppl.io",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Not informed yet, as StackOne project has been put on hold due to internal resource ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:00.667Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/265447780541",
+    "updated_at": "2026-03-10T07:06:13.663Z",
+    "contact": {
+      "name": null,
+      "email": "francois@proppl.io"
+    },
+    "last_contact": "2025-04-13T23:00:00.000Z"
+  },
+  {
     "hubspot_id": "388018528465",
     "name": "Quellist",
     "domain": "quellist.com",
@@ -736,6 +1348,24 @@
       "email": "jon@quellist.com"
     },
     "last_contact": "2026-02-12T20:45:34.416Z"
+  },
+  {
+    "hubspot_id": "237760617688",
+    "name": "Reachdesk",
+    "domain": "reachdesk.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Testing Falcon to inform their decision",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-15T18:23:45.228Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/237760617688",
+    "updated_at": "2026-03-06T13:31:57.067Z",
+    "contact": {
+      "name": null,
+      "email": "rafael.batalha@reachdesk.com"
+    },
+    "last_contact": "2026-01-12T10:00:00.000Z"
   },
   {
     "hubspot_id": "402004098238",
@@ -774,6 +1404,78 @@
     "last_contact": "2025-07-09T23:00:00.000Z"
   },
   {
+    "hubspot_id": "260983524568",
+    "name": "RSight",
+    "domain": "rsight.com",
+    "org_id": "RclT76EHJ3YxLANB25VVZ1BGnkBeXAaM",
+    "tier": "Free",
+    "notes": "0",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-10-14T09:50:47.476Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/260983524568",
+    "updated_at": "2026-03-18T15:16:02.049Z",
+    "contact": {
+      "name": "Anonymous Visitors",
+      "email": null
+    },
+    "last_contact": "2026-03-18T11:22:49.008Z"
+  },
+  {
+    "hubspot_id": "264826325181",
+    "name": "Screenloop",
+    "domain": "screenloop.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Renewal end of March. Addendum sent. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:03.576Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264826325181",
+    "updated_at": "2026-03-17T14:44:49.731Z",
+    "contact": {
+      "name": null,
+      "email": "maria@screenloop.com"
+    },
+    "last_contact": "2026-02-10T00:00:00.000Z"
+  },
+  {
+    "hubspot_id": "264974969029",
+    "name": "Shazamme",
+    "domain": "shazamme.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Informed and making a decision ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:24:01.124Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264974969029",
+    "updated_at": "2026-03-06T13:32:09.129Z",
+    "contact": {
+      "name": "Rick Mare",
+      "email": "rick@shazamme.com"
+    },
+    "last_contact": "2026-01-12T09:00:00.000Z"
+  },
+  {
+    "hubspot_id": "324983118048",
+    "name": "Socialtalent",
+    "domain": "socialtalent.com",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Negative feedback on Falcon from their engineering team. Tristam is going to collect the feedback and share it with us so we can address this. \n\nMeeting with Lead Dev 5th March to discuss Falcon following some testing from their team. Otherwise, very positive sentiment following the ATS implementation. Slow adoption of LMS remains. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-10T18:04:54.232Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/324983118048",
+    "updated_at": "2026-03-19T07:50:51.900Z",
+    "contact": {
+      "name": null,
+      "email": "marisa.barron@socialtalent.com"
+    },
+    "last_contact": "2026-01-13T13:30:00.000Z"
+  },
+  {
     "hubspot_id": "417688846540",
     "name": "Soulseer",
     "domain": "soulseer.app",
@@ -792,22 +1494,112 @@
     "last_contact": null
   },
   {
+    "hubspot_id": "239585720529",
+    "name": "Sparkwise",
+    "domain": "sparkwise.co",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Informed and making a decision ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-18T20:26:44.238Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/239585720529",
+    "updated_at": "2026-03-17T16:50:30.069Z",
+    "contact": {
+      "name": "Anonymous Visitors",
+      "email": null
+    },
+    "last_contact": "2026-01-16T16:00:00.000Z"
+  },
+  {
+    "hubspot_id": "248262201589",
+    "name": "Spottedzebra",
+    "domain": "spottedzebra.co.uk",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Churned - Charlie to check this, as apparently they're also using Kombo. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-30T10:09:23.826Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/248262201589",
+    "updated_at": "2026-03-13T14:39:58.749Z",
+    "contact": {
+      "name": null,
+      "email": "brad.smith@spottedzebra.co.uk"
+    },
+    "last_contact": "2026-01-30T10:26:58.061Z"
+  },
+  {
+    "hubspot_id": "264769277158",
+    "name": "StaffCircle",
+    "domain": "staffcircle.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Informed and Making a Decision also requested a demo. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-19T18:23:59.356Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/264769277158",
+    "updated_at": "2026-03-06T13:32:13.097Z",
+    "contact": {
+      "name": null,
+      "email": "sian.lawlor@staffcircle.com"
+    },
+    "last_contact": "2026-01-12T14:00:00.000Z"
+  },
+  {
     "hubspot_id": "411796039873",
     "name": "SuperOrgs",
     "domain": "superorgs.com",
     "org_id": "iowb2hERys1kWaqVbSeFQckwm3otXWD8",
     "tier": "Free",
-    "notes": "CHECK 2 auth configured, no connectors or API requests. Bamboo and Gusto. Discussion on Pylon.",
+    "notes": "CM msg 19/03. \n\nAuth configured, no connectors or API requests. Bamboo and Gusto. Discussion on Pylon.\n\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-02T11:00:17.760Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/411796039873",
-    "updated_at": "2026-03-19T10:39:14.828Z",
+    "updated_at": "2026-03-19T11:29:50.205Z",
     "contact": {
       "name": "Osama Inayat",
       "email": "osama@superorgs.com"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "261726358756",
+    "name": "Support Room",
+    "domain": "supportroom.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Not informed",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.476Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261726358756",
+    "updated_at": "2026-03-06T13:32:14.290Z",
+    "contact": {
+      "name": "Ash Vipani",
+      "email": "ash@supportroom.com"
+    },
+    "last_contact": "2025-05-06T23:00:00.000Z"
+  },
+  {
+    "hubspot_id": "261610566895",
+    "name": "Synthesia",
+    "domain": "synthesia.io",
+    "org_id": null,
+    "tier": "Enterpise",
+    "notes": "Workshop on HRIS connectors successful. Hub embedded. Positive sentiment. Working through snagging list - Max compiling bug/roadmap requests. Key asks: semantic versioning for connectors, dashboard improvements.",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.480Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261610566895",
+    "updated_at": "2026-03-19T08:21:15.791Z",
+    "contact": {
+      "name": "Nick Thompson",
+      "email": "nick.thompson@synthesia.io"
+    },
+    "last_contact": "2026-03-05T16:36:50.420Z"
   },
   {
     "hubspot_id": "390450566392",
@@ -900,6 +1692,24 @@
     "last_contact": null
   },
   {
+    "hubspot_id": "361886629065",
+    "name": "UJJI",
+    "domain": "ujji.co.uk",
+    "org_id": null,
+    "tier": "Growth",
+    "notes": "Demo of Falcon on Friday, led by Alex. \n\nStill in implementation, embedding file picker. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-09-24T12:05:43.025Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361886629065",
+    "updated_at": "2026-03-19T13:05:17.621Z",
+    "contact": {
+      "name": "Gustavo Mainchein",
+      "email": "gmainchein@ujji.co.uk"
+    },
+    "last_contact": "2026-03-19T13:00:00.000Z"
+  },
+  {
     "hubspot_id": "269887455441",
     "name": "Unmask",
     "domain": "tryunmask.ai",
@@ -923,12 +1733,12 @@
     "domain": "uibel.dev",
     "org_id": "zsYOBjOH7iaOqT1m0hAPfNKrjSer7ob4",
     "tier": "Free",
-    "notes": "CHECK",
+    "notes": "No activity. Cm msg 19/03.\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-03-05T12:36:07.276Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/416054478072",
-    "updated_at": "2026-03-19T10:42:30.500Z",
+    "updated_at": "2026-03-19T11:15:32.775Z",
     "contact": {
       "name": "Vince Uibel",
       "email": "vince@uibel.dev"
@@ -941,17 +1751,53 @@
     "domain": "saferrecruit.com",
     "org_id": "hvi9Ad6kgwN9FuiGVNmIfn1Hd0hmxFoB",
     "tier": "Free",
-    "notes": "admin@saferrecruit.com\n",
+    "notes": "No activity. Cm msg 19/03.\n",
     "welcome_email_sent": true,
     "type": "Customer - PLG",
     "createdate": "2026-02-27T16:23:53.955Z",
     "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/409199484100",
-    "updated_at": "2026-03-19T10:41:56.301Z",
+    "updated_at": "2026-03-19T11:18:32.680Z",
     "contact": {
       "name": "Calebb Ndlovu",
       "email": "admin@saferrecruit.com"
     },
     "last_contact": null
+  },
+  {
+    "hubspot_id": "261726358757",
+    "name": "Vizzy",
+    "domain": "vizzy.com",
+    "org_id": null,
+    "tier": "Accelerate",
+    "notes": "Demo booked Monday 16th, with Chris/Joe. Offer managed service (?)\n\nVizzy has been quiet, as of late (in terms of support/unified growth). Joe, CPO, has asked to see a demo - in the process of organizing this. Suggest we put them on a discounted managed service offer where we migrate for them, and then they can build connectors themselves. ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.521Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261726358757",
+    "updated_at": "2026-03-17T14:44:35.815Z",
+    "contact": {
+      "name": "Freddie Woodward",
+      "email": "freddie@vizzy.com"
+    },
+    "last_contact": "2026-02-19T09:15:00.000Z"
+  },
+  {
+    "hubspot_id": "361877642429",
+    "name": "Wisq Inc.",
+    "domain": "wisq.com",
+    "org_id": "jQKUMgVnGOTsGXcd77MRZuvIr9sMwQhX",
+    "tier": "Free",
+    "notes": "Richard deal.",
+    "welcome_email_sent": true,
+    "type": "Customer - SLG",
+    "createdate": "2025-09-18T16:17:52.705Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/361877642429",
+    "updated_at": "2026-03-19T09:23:39.295Z",
+    "contact": {
+      "name": "Nick Bloch",
+      "email": "nick@wisq.com"
+    },
+    "last_contact": "2026-03-19T09:23:07.149Z"
   },
   {
     "hubspot_id": "398628372669",
@@ -970,6 +1816,24 @@
       "email": "lily@woflow.com"
     },
     "last_contact": "2026-03-11T09:42:56.341Z"
+  },
+  {
+    "hubspot_id": "261624920269",
+    "name": "WorkPro",
+    "domain": "casltd.com",
+    "org_id": null,
+    "tier": "Starter",
+    "notes": "Informed that making a decision is not a priority for us to migrate this customer ",
+    "welcome_email_sent": false,
+    "type": "Customer",
+    "createdate": "2025-10-14T09:50:47.572Z",
+    "hubspot_url": "https://app-eu1.hubspot.com/contacts/146796234/record/0-2/261624920269",
+    "updated_at": "2026-03-17T15:07:32.187Z",
+    "contact": {
+      "name": null,
+      "email": "simon.crookston@casltd.com"
+    },
+    "last_contact": "2026-02-13T14:51:09.454Z"
   },
   {
     "hubspot_id": "421713469677",
