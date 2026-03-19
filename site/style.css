@@ -1191,6 +1191,55 @@ a:hover {
   box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
 }
 
+/* CRM — contact link */
+.crm-contact-link {
+  color: var(--so-text-body);
+  text-decoration: none;
+  font-size: 14px;
+}
+.crm-contact-link:hover {
+  color: var(--so-green-dark);
+  text-decoration: underline;
+}
+
+/* CRM — pin/freeze button */
+.crm-pin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin-right: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--so-neutral-30);
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.crm-table th:hover .crm-pin-btn,
+.crm-pin-btn--active {
+  opacity: 1;
+}
+.crm-pin-btn--active {
+  color: var(--so-primary);
+}
+
+/* CRM — frozen column indicator */
+.crm-th--frozen {
+  background: var(--so-white) !important;
+  border-right: 2px solid var(--so-neutral-10);
+}
+.crm-td--frozen {
+  background: var(--so-white);
+}
+.crm-table tr:hover .crm-td--frozen {
+  background: var(--so-foreground);
+}
+
 /* CRM — column resize handle */
 .crm-resize-handle {
   position: absolute;

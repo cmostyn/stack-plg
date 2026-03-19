@@ -85,19 +85,28 @@
       last_call:     130,
     };
 
+    function thHtml(col, label) {
+      const pinned = frozenCols.has(col);
+      return `<th data-col="${col}" draggable="${!pinned}"${pinned ? ' class="crm-th--frozen"' : ''}>` +
+        `<button class="crm-pin-btn${pinned ? ' crm-pin-btn--active' : ''}" data-pin="${col}" title="${pinned ? 'Unfreeze column' : 'Freeze column'}">` +
+        `<svg viewBox="0 0 12 16" width="9" height="13" fill="currentColor"><path d="M9 1H3v2.5L5 6.5V11l-2 2h6l-2-2V6.5L9 3.5V1z"/><rect x="5.5" y="11" width="1" height="4"/></svg>` +
+        `</button>` +
+        `${label}<div class="crm-resize-handle"></div></th>`;
+    }
+
     const COL_HEADERS = {
-      name:          () => `<th data-col="name" draggable="true">Name<div class="crm-resize-handle"></div></th>`,
-      contact:       () => `<th data-col="contact" draggable="true">Primary contact<div class="crm-resize-handle"></div></th>`,
-      notes:         () => `<th data-col="notes" draggable="true">Notes<div class="crm-resize-handle"></div></th>`,
-      last_contact:  () => `<th data-col="last_contact" draggable="true">Last contact<div class="crm-resize-handle"></div></th>`,
-      account:       () => `<th data-col="account" draggable="true">Pylon account<div class="crm-resize-handle"></div></th>`,
-      integrations:  () => `<th data-col="integrations" draggable="true">Integrations<div class="crm-resize-handle"></div></th>`,
-      clicks:        () => `<th data-col="clicks" draggable="true">Clicks<div class="crm-resize-handle"></div></th>`,
-      api_requests:  () => `<th data-col="api_requests" draggable="true">API requests<div class="crm-resize-handle"></div></th>`,
-      tickets_total: () => `<th data-col="tickets_total" draggable="true">Tickets (30d)<div class="crm-resize-handle"></div></th>`,
-      open_tickets:  () => `<th data-col="open_tickets" draggable="true">Open tickets<div class="crm-resize-handle"></div></th>`,
-      cs_actions:    () => `<th data-col="cs_actions" draggable="true">CS actions<div class="crm-resize-handle"></div></th>`,
-      last_call:     () => `<th data-col="last_call" draggable="true">Last call<div class="crm-resize-handle"></div></th>`,
+      name:          () => thHtml('name', 'Name'),
+      contact:       () => thHtml('contact', 'Primary contact'),
+      notes:         () => thHtml('notes', 'Notes'),
+      last_contact:  () => thHtml('last_contact', 'Last contact'),
+      account:       () => thHtml('account', 'Pylon account'),
+      integrations:  () => thHtml('integrations', 'Integrations'),
+      clicks:        () => thHtml('clicks', 'Clicks'),
+      api_requests:  () => thHtml('api_requests', 'API requests'),
+      tickets_total: () => thHtml('tickets_total', 'Tickets (30d)'),
+      open_tickets:  () => thHtml('open_tickets', 'Open tickets'),
+      cs_actions:    () => thHtml('cs_actions', 'CS actions'),
+      last_call:     () => thHtml('last_call', 'Last call'),
     };
 
     const CELLS = {
@@ -109,14 +118,12 @@
       },
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
-        if (!c) return PLACEHOLDER_CELL;
+        if (!c || !c.name) return PLACEHOLDER_CELL;
         const mailtoUrl = c.email ? `mailto:${c.email}` : null;
-        return `<td>
-          <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
-          ${mailtoUrl
-            ? `<div class="crm-contact-email"><a href="${mailtoUrl}" class="crm-mailto">${escHtml(c.email)}</a></div>`
-            : ''}
-        </td>`;
+        const name = escHtml(c.name);
+        return `<td>${mailtoUrl
+          ? `<a href="${mailtoUrl}" class="crm-contact-link">${name}</a>`
+          : name}</td>`;
       },
       notes: company => {
         const n = company.notes;
@@ -174,8 +181,9 @@
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
-    let colOrder = loadColOrder();
-    let colWidths = loadColWidths();
+    let colOrder   = loadColOrder();
+    let colWidths  = loadColWidths();
+    let frozenCols = loadFrozenCols();
 
     // --- Helpers ---
 
@@ -246,12 +254,54 @@
       localStorage.setItem('plg_crm_col_widths', JSON.stringify(colWidths));
     }
 
+    function loadFrozenCols() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('plg_crm_frozen') ?? '[]');
+        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : []);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function saveFrozenCols() {
+      localStorage.setItem('plg_crm_frozen', JSON.stringify([...frozenCols]));
+    }
+
+    // Frozen columns first, then the rest in colOrder sequence
+    function getEffectiveOrder() {
+      const frozen = colOrder.filter(c => frozenCols.has(c));
+      const rest   = colOrder.filter(c => !frozenCols.has(c));
+      return [...frozen, ...rest];
+    }
+
     function applyColWidths() {
       const cg = document.getElementById('crm-colgroup');
       if (!cg) return;
-      cg.innerHTML = colOrder.map(col =>
+      const order = getEffectiveOrder();
+      cg.innerHTML = order.map(col =>
         `<col data-col="${col}" style="width:${colWidths[col] ?? DEFAULT_COL_WIDTHS[col]}px">`
       ).join('');
+    }
+
+    function applyFrozenStyles() {
+      const table = document.querySelector('.crm-table');
+      const thead = table.querySelector('thead');
+      const tbody = table.querySelector('tbody');
+      const order = getEffectiveOrder();
+      let offset = 0;
+      order.forEach((col, colIdx) => {
+        const frozen = frozenCols.has(col);
+        const w = colWidths[col] ?? DEFAULT_COL_WIDTHS[col];
+        if (frozen) {
+          const th = thead.querySelector(`th[data-col="${col}"]`);
+          if (th) { th.style.position = 'sticky'; th.style.left = offset + 'px'; th.style.zIndex = '3'; }
+          tbody.querySelectorAll('tr').forEach(row => {
+            const td = row.cells[colIdx];
+            if (td) { td.style.position = 'sticky'; td.style.left = offset + 'px'; td.style.zIndex = '1'; td.classList.add('crm-td--frozen'); }
+          });
+          offset += w;
+        }
+      });
     }
 
     function relativeTime(iso) {
@@ -330,17 +380,19 @@
       );
       const display    = sortedRows(filtered);
 
-      thead.innerHTML = `<tr>${colOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
+      const effectiveOrder = getEffectiveOrder();
+      thead.innerHTML = `<tr>${effectiveOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
 
       thead.querySelectorAll('th[data-col]').forEach(th => th.removeAttribute('aria-sort'));
       const activeTh = thead.querySelector(`th[data-col="${sortKey}"]`);
       if (activeTh) activeTh.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 
       tbody.innerHTML = display.map(company =>
-        `<tr>${colOrder.map(col => CELLS[col](company)).join('')}</tr>`
+        `<tr>${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`
       ).join('');
 
       applyColWidths();
+      applyFrozenStyles();
 
       const total = allRows.length;
       const shown = display.length;
@@ -390,6 +442,7 @@
     document.getElementById('crm-save-layout').addEventListener('click', () => {
       localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
       saveColWidths();
+      saveFrozenCols();
       const btn = document.getElementById('crm-save-layout');
       btn.textContent = 'Saved ✓';
       btn.classList.add('crm-layout-btn--saved');
@@ -400,18 +453,31 @@
     });
 
     document.getElementById('crm-reset-layout').addEventListener('click', () => {
-      colOrder = [...DEFAULT_COL_ORDER];
+      colOrder  = [...DEFAULT_COL_ORDER];
       colWidths = { ...DEFAULT_COL_WIDTHS };
+      frozenCols.clear();
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
+      localStorage.removeItem('plg_crm_frozen');
       render();
     });
 
-    // --- Sort + click on headers ---
+    // --- Sort + freeze + click on headers ---
     const crmTable = document.querySelector('.crm-table');
 
     crmTable.addEventListener('click', e => {
       if (e.target.closest('.crm-resize-handle')) return;
+
+      // Pin / freeze toggle
+      const pinBtn = e.target.closest('.crm-pin-btn');
+      if (pinBtn) {
+        e.stopPropagation();
+        const col = pinBtn.dataset.pin;
+        if (frozenCols.has(col)) { frozenCols.delete(col); } else { frozenCols.add(col); }
+        render();
+        return;
+      }
+
       const th = e.target.closest('th[data-col]');
       if (!th) return;
       const col = th.dataset.col;
