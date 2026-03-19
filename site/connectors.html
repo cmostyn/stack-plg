@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connectors — StackOne CS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="index.html" class="site-logo">
+        <span class="logo-dot"></span>
+        CS Analytics
+      </a>
+      <nav class="site-nav">
+        <a href="dashboard.html" class="site-nav-link">PLG Motion</a>
+        <a href="connectors.html" class="site-nav-link site-nav-link--active">Connectors</a>
+        <a href="index.html" class="site-nav-link">Support Digests</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <h1 class="page-heading">Data connectors</h1>
+    <p class="page-subheading">Status and capabilities of each data source powering this dashboard.</p>
+
+    <div class="connectors-grid" id="connectors-grid">
+      <!-- Cards rendered by JS -->
+    </div>
+  </main>
+
+  <script>
+    const CONNECTORS = [
+      {
+        id: 'hubspot',
+        name: 'HubSpot',
+        iconColor: '#FF7A59',
+        iconLetter: 'H',
+        description: 'Companies, deal pipelines, customer tiers, and custom properties for all PLG accounts.',
+        chips: (s) => [`${s.records ?? 0} companies`],
+      },
+      {
+        id: 'pylon',
+        name: 'Pylon',
+        iconColor: '#4D4EBA',
+        iconLetter: 'P',
+        description: 'Support tickets, open issues, and account-level activity across all PLG customers.',
+        chips: (s) => [`${s.records ?? 0} accounts`, `${s.open_tickets ?? 0} open tickets`],
+      },
+      {
+        id: 'posthog',
+        name: 'PostHog',
+        iconColor: '#F54E00',
+        iconLetter: 'P',
+        description: 'Product usage events, active users, pageviews, and API request volume per org.',
+        chips: (s) => [`${s.records ?? 0} orgs tracked`],
+      },
+      {
+        id: 'fireflies',
+        name: 'Fireflies',
+        iconColor: '#EB4646',
+        iconLetter: 'F',
+        description: 'Meeting transcripts and call recordings from customer and team meetings.',
+        chips: (s) => [`${s.records ?? 0} transcripts (30d)`],
+      },
+      {
+        id: 'googledrive',
+        name: 'Google Drive',
+        iconColor: '#4285F4',
+        iconLetter: 'G',
+        description: 'Files and documents in the connected Google Drive.',
+        chips: (s) => [`${s.records ?? 0} files`],
+      },
+      {
+        id: 'gmail',
+        name: 'Gmail',
+        iconColor: null,
+        iconLetter: 'M',
+        description: 'Inbound and outbound email threads, labels, and contact history.',
+        chips: () => [],
+      },
+    ];
+
+    function timeAgo(isoString) {
+      if (!isoString) return null;
+      const diff = Date.now() - new Date(isoString).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 2) return 'just now';
+      if (mins < 60) return `${mins} minutes ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs === 1 ? '1 hour' : hrs + ' hours'} ago`;
+      const days = Math.floor(hrs / 24);
+      return `${days === 1 ? '1 day' : days + ' days'} ago`;
+    }
+
+    function statusLabel(status) {
+      if (status === 'ok') return 'Connected';
+      if (status === 'error') return 'Error';
+      if (status === 'not_configured') return 'Not configured';
+      return 'Not yet fetched';
+    }
+
+    function renderCard(connector, statusData) {
+      const status = statusData?.status ?? 'pending';
+      const isMuted = status === 'not_configured' || status === 'pending';
+      const chips = (status === 'ok') ? connector.chips(statusData) : [];
+      const lastFetch = statusData?.last_fetch ? timeAgo(statusData.last_fetch) : null;
+
+      const iconClass = isMuted ? 'connector-icon connector-icon--muted' : 'connector-icon';
+      const iconStyle = (!isMuted && connector.iconColor)
+        ? `style="background:${connector.iconColor}"`
+        : '';
+
+      return `
+        <div class="connector-card${isMuted ? ' connector-card--muted' : ''}">
+          <div class="connector-card-header">
+            <div class="connector-card-identity">
+              <div class="${iconClass}" ${iconStyle}>${connector.iconLetter}</div>
+              <span class="connector-name">${connector.name}</span>
+            </div>
+            <div class="connector-status connector-status--${status}">
+              <span class="connector-status-dot"></span>
+              ${statusLabel(status)}
+            </div>
+          </div>
+          <p class="connector-description">${connector.description}</p>
+          ${chips.length ? `<div class="connector-chips">${chips.map(c => `<span class="connector-chip">${c}</span>`).join('')}</div>` : ''}
+          ${lastFetch ? `<div class="connector-last-fetch">Last fetched ${lastFetch}</div>` : ''}
+        </div>
+      `;
+    }
+
+    async function loadStatus(id) {
+      try {
+        const res = await fetch(`data/status-${id}.json`);
+        if (!res.ok) return { status: 'pending' };
+        return await res.json();
+      } catch (e) {
+        return { status: 'pending' };
+      }
+    }
+
+    async function init() {
+      const grid = document.getElementById('connectors-grid');
+      try {
+        const statuses = await Promise.all(CONNECTORS.map(c => loadStatus(c.id)));
+        grid.innerHTML = CONNECTORS.map((c, i) => renderCard(c, statuses[i])).join('');
+      } catch (e) {
+        console.error('Connector status load failed:', e);
+        grid.innerHTML = CONNECTORS.map(c => renderCard(c, { status: 'pending' })).join('');
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
