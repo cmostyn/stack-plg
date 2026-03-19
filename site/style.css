@@ -536,7 +536,9 @@ a:hover {
 }
 
 .crm-search:focus {
-  border-color: var(--so-neutral-30);
+  border-color: rgba(0, 175, 102, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
 }
 
 .crm-count {
@@ -569,7 +571,6 @@ a:hover {
   padding: 10px 16px;
   border-bottom: 1px solid var(--so-neutral-10);
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
 }
 
@@ -587,6 +588,7 @@ a:hover {
   padding: 12px 16px;
   border-bottom: 1px solid var(--so-neutral-5);
   vertical-align: top;
+  transition: background 0.12s;
 }
 
 .crm-table tr:last-child td {
@@ -616,6 +618,64 @@ a:hover {
   text-align: center;
   font-size: 14px;
   color: var(--so-text-tag);
+}
+
+/* CRM — drag-to-reorder */
+.crm-table th[draggable="true"] {
+  cursor: grab;
+}
+.crm-table th[draggable="true"]:active {
+  cursor: grabbing;
+}
+/* Sortable columns — placed after grab so pointer wins via cascade */
+.crm-table th[data-col="name"],
+.crm-table th[data-col="contact"],
+.crm-table th[data-col="notes"],
+.crm-table th[data-col="last_contact"] {
+  cursor: pointer;
+}
+.crm-th--dragging {
+  opacity: 0.4;
+}
+.crm-th--drag-over {
+  outline: 2px dashed var(--so-primary);
+  outline-offset: -2px;
+}
+
+/* CRM — notes cell */
+.crm-notes {
+  font-size: 13px;
+  color: var(--so-text-body);
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CRM — date cell */
+.crm-date {
+  font-size: 13px;
+  color: var(--so-text-body);
+  white-space: nowrap;
+}
+
+/* CRM — Gmail compose link */
+.crm-mailto {
+  color: var(--so-green-dark);
+  text-decoration: none;
+  font-size: 12px;
+}
+.crm-mailto:hover {
+  text-decoration: underline;
+}
+
+/* CRM — row fade-in */
+@keyframes crmRowIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.crm-table tbody tr {
+  animation: crmRowIn 0.12s ease;
 }
 
 /* ============================================================
