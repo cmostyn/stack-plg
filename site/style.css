@@ -1785,6 +1785,28 @@ a:hover {
   text-overflow: ellipsis;
 }
 
+.link-card-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: var(--so-radius-sm);
+  background: var(--so-neutral-5);
+  color: var(--so-neutral-40);
+  font-family: var(--so-font-tag);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  white-space: nowrap;
+}
+
+.link-card-badge--wip {
+  background: #FFF3EB;
+  color: var(--so-orange-dark);
+}
+
 .link-card-arrow {
   width: 11px;
   height: 11px;
