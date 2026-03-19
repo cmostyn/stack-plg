@@ -617,3 +617,168 @@ a:hover {
   font-size: 14px;
   color: var(--so-text-tag);
 }
+
+/* ============================================================
+   Dashboard Tiles
+   ============================================================ */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 1099px) {
+  .dash-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 599px) {
+  .dash-grid { grid-template-columns: 1fr; }
+}
+
+.dash-tile {
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  transition: border-color 0.15s;
+  position: relative;
+}
+
+.dash-tile--clickable {
+  cursor: pointer;
+}
+
+.dash-tile--clickable:hover {
+  border-color: var(--so-neutral-20);
+}
+
+.dash-tile--dragging {
+  opacity: 0.4;
+}
+
+.dash-tile--drag-over {
+  border: 2px dashed var(--so-primary);
+}
+
+.dash-tile-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.dash-tile-title {
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-tag);
+  line-height: 1.4;
+}
+
+.dash-tile-source {
+  font-family: var(--so-font-tag);
+  font-size: 11px;
+  color: var(--so-neutral-40);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dash-tile-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dash-tile-value {
+  font-family: var(--so-font-heading);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  color: var(--so-text-header);
+  margin-bottom: 4px;
+}
+
+.dash-tile-chart {
+  width: 100%;
+  flex: 1;
+  min-height: 80px;
+}
+
+.dash-tile-chart--donut {
+  min-height: 140px;
+}
+
+.dash-tile-chart--line {
+  min-height: 100px;
+}
+
+/* ============================================================
+   Expand Dialog
+   ============================================================ */
+
+.dash-expand {
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  padding: 28px;
+  width: min(640px, 90vw);
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.dash-expand::backdrop {
+  background: rgba(0,0,0,0.3);
+}
+
+.dash-expand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.dash-expand-title {
+  font-family: var(--so-font-heading);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: var(--so-text-header);
+}
+
+.dash-expand-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--so-text-tag);
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--so-radius-sm);
+  transition: background 0.12s;
+}
+
+.dash-expand-close:hover {
+  background: var(--so-foreground);
+  color: var(--so-text-header);
+}
+
+.dash-expand-chart {
+  width: 100%;
+  height: 280px;
+}
+
+.dash-expand-value {
+  font-family: var(--so-font-heading);
+  font-size: 64px;
+  font-weight: 400;
+  letter-spacing: -4px;
+  color: var(--so-text-header);
+  text-align: center;
+  padding: 32px 0;
+}
