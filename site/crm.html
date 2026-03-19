@@ -50,13 +50,75 @@
   <script>
     // --- Constants ---
     const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
-    const PLACEHOLDER_COLS = 7; // columns 3–9
+
+    const DEFAULT_COL_ORDER = [
+      'name', 'contact', 'notes', 'last_contact',
+      'account', 'integrations', 'api_requests',
+      'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
+    ];
+
+    const COL_HEADERS = {
+      name:          () => `<th data-col="name" draggable="true">Name</th>`,
+      contact:       () => `<th data-col="contact" draggable="true">Primary contact (HubSpot)</th>`,
+      notes:         () => `<th data-col="notes" draggable="true">Notes (HubSpot)</th>`,
+      last_contact:  () => `<th data-col="last_contact" draggable="true">Last contact (HubSpot)</th>`,
+      account:       () => `<th data-col="account" draggable="true">Account (Pylon)</th>`,
+      integrations:  () => `<th data-col="integrations" draggable="true">Connected integrations (PostHog)</th>`,
+      api_requests:  () => `<th data-col="api_requests" draggable="true">API requests (PostHog)</th>`,
+      tickets_total: () => `<th data-col="tickets_total" draggable="true">Tickets total (Pylon)</th>`,
+      open_tickets:  () => `<th data-col="open_tickets" draggable="true">Open tickets (Pylon)</th>`,
+      cs_actions:    () => `<th data-col="cs_actions" draggable="true">Open CS actions</th>`,
+      last_call:     () => `<th data-col="last_call" draggable="true">Last call (Fireflies)</th>`,
+    };
+
+    const CELLS = {
+      name: company => {
+        const display = company.name ?? company.hubspot_id;
+        const href    = safeHref(company.hubspot_url);
+        return `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a></td>`;
+      },
+      contact: company => {
+        const c = isContactObj(company.contact) ? company.contact : null;
+        if (!c) return PLACEHOLDER_CELL;
+        const gmailUrl = c.email
+          ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`
+          : null;
+        return `<td>
+          <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
+          ${gmailUrl
+            ? `<div class="crm-contact-email"><a href="${escHtml(gmailUrl)}" target="_blank" rel="noopener" class="crm-mailto">${escHtml(c.email)}</a></div>`
+            : ''}
+        </td>`;
+      },
+      notes: company => {
+        const n = company.notes;
+        if (!n) return PLACEHOLDER_CELL;
+        const truncated = n.length > 80 ? n.slice(0, 80) + '…' : n;
+        return `<td class="crm-notes" title="${escHtml(n)}">${escHtml(truncated)}</td>`;
+      },
+      last_contact: company => {
+        const rel = relativeTime(company.last_contact);
+        if (!rel) return PLACEHOLDER_CELL;
+        const abs = new Date(company.last_contact).toLocaleDateString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric',
+        });
+        return `<td class="crm-date" title="${escHtml(abs)}">${escHtml(rel)}</td>`;
+      },
+      account:       () => PLACEHOLDER_CELL,
+      integrations:  () => PLACEHOLDER_CELL,
+      api_requests:  () => PLACEHOLDER_CELL,
+      tickets_total: () => PLACEHOLDER_CELL,
+      open_tickets:  () => PLACEHOLDER_CELL,
+      cs_actions:    () => PLACEHOLDER_CELL,
+      last_call:     () => PLACEHOLDER_CELL,
+    };
 
     // --- State ---
     let allRows  = [];
     let sortKey  = 'name';  // 'name' | 'contact'
     let sortDir  = 'asc';   // 'asc' | 'desc'
-    let clickCounts = { name: 1, contact: 0 }; // name starts at 1 (already asc)
+    let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0 }; // name starts at 1 (already asc)
+    let colOrder = loadColOrder();
 
     // --- Helpers ---
 
@@ -89,20 +151,35 @@
       return (last + (first ? ' ' + first : '')).toLowerCase();
     }
 
-    function renderRow(company) {
-      const displayName = company.name ?? company.hubspot_id;
-      const href        = safeHref(company.hubspot_url);
-      const nameCell    = `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(displayName)}</a></td>`;
+    function loadColOrder() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('plg_crm_col_order'));
+        const valid =
+          Array.isArray(parsed) &&
+          parsed.length === DEFAULT_COL_ORDER.length &&
+          new Set(parsed).size === DEFAULT_COL_ORDER.length &&
+          DEFAULT_COL_ORDER.every(k => parsed.includes(k));
+        return valid ? parsed : [...DEFAULT_COL_ORDER];
+      } catch {
+        return [...DEFAULT_COL_ORDER];
+      }
+    }
 
-      const c = isContactObj(company.contact) ? company.contact : null;
-      const contactCell = c
-        ? `<td>
-            <div class="crm-contact-name">${escHtml(c.name ?? '')}</div>
-            ${c.email ? `<div class="crm-contact-email">${escHtml(c.email)}</div>` : ''}
-           </td>`
-        : `<td class="crm-placeholder">—</td>`;
-
-      return `<tr>${nameCell}${contactCell}${PLACEHOLDER_CELL.repeat(PLACEHOLDER_COLS)}</tr>`;
+    function relativeTime(iso) {
+      if (!iso) return null;
+      const diff = Date.now() - new Date(iso).getTime();
+      if (isNaN(diff) || diff < 0) return 'Today';
+      const days = Math.floor(diff / 86400000);
+      if (days === 0)  return 'Today';
+      if (days === 1)  return 'Yesterday';
+      if (days < 7)    return `${days} days ago`;
+      const weeks = Math.floor(days / 7);
+      if (weeks < 8)   return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+      const months = Math.floor(days / 30);
+      if (months < 2)  return `${weeks} weeks ago`;
+      if (months < 24) return `${months} months ago`;
+      const years = Math.floor(days / 365);
+      return `${years} ${years === 1 ? 'year' : 'years'} ago`;
     }
 
     function searchMatch(company, query) {
@@ -112,16 +189,41 @@
         (company.name   ?? '').toLowerCase().includes(q) ||
         (company.domain ?? '').toLowerCase().includes(q) ||
         (c?.name  ?? '').toLowerCase().includes(q) ||
-        (c?.email ?? '').toLowerCase().includes(q)
+        (c?.email ?? '').toLowerCase().includes(q) ||
+        (company.notes ?? '').toLowerCase().includes(q)
       );
+    }
+
+    function lastContactSortValue(company, dir) {
+      if (!company.last_contact) return dir === 'asc' ? Infinity : -Infinity;
+      const t = new Date(company.last_contact).getTime();
+      return isNaN(t) ? (dir === 'asc' ? Infinity : -Infinity) : t;
     }
 
     function sortedRows(rows) {
       return [...rows].sort((a, b) => {
         const dir = sortDir === 'asc' ? 1 : -1;
+
         if (sortKey === 'contact') {
           return dir * contactSortValue(a).localeCompare(contactSortValue(b));
         }
+
+        if (sortKey === 'notes') {
+          // Nulls always sort last in both directions
+          if (!a.notes && !b.notes) return 0;
+          if (!a.notes) return 1;
+          if (!b.notes) return -1;
+          return dir * a.notes.toLowerCase().localeCompare(b.notes.toLowerCase());
+        }
+
+        if (sortKey === 'last_contact') {
+          const va = lastContactSortValue(a, sortDir);
+          const vb = lastContactSortValue(b, sortDir);
+          if (va === vb) return 0;
+          return va > vb ? dir : -dir;
+        }
+
+        // Default: name
         return dir * (a.name ?? '').localeCompare(b.name ?? '');
       });
     }
@@ -129,11 +231,25 @@
     // --- Render ---
 
     function render() {
+      const table    = document.querySelector('.crm-table');
+      const thead    = table.querySelector('thead');
+      const tbody    = table.querySelector('tbody');
       const query    = document.getElementById('crm-search').value.trim();
       const filtered = query ? allRows.filter(c => searchMatch(c, query)) : allRows;
       const display  = sortedRows(filtered);
 
-      document.getElementById('crm-tbody').innerHTML = display.map(renderRow).join('');
+      // Rebuild thead from colOrder
+      thead.innerHTML = `<tr>${colOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
+
+      // Set aria-sort on the active sort column
+      thead.querySelectorAll('th[data-col]').forEach(th => th.removeAttribute('aria-sort'));
+      const activeTh = thead.querySelector(`th[data-col="${sortKey}"]`);
+      if (activeTh) activeTh.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+
+      // Rebuild tbody from colOrder
+      tbody.innerHTML = display.map(company =>
+        `<tr>${colOrder.map(col => CELLS[col](company)).join('')}</tr>`
+      ).join('');
 
       const total = allRows.length;
       const shown = display.length;
@@ -159,16 +275,8 @@
       } else {
         // Third click: reset to global default (name A→Z)
         sortKey = 'name'; sortDir = 'asc';
-        clickCounts = { name: 1, contact: 0 };
+        clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0 };
       }
-
-      // Update aria-sort on sortable headers
-      const thName    = document.getElementById('th-name');
-      const thContact = document.getElementById('th-contact');
-      thName.removeAttribute('aria-sort');
-      thContact.removeAttribute('aria-sort');
-      const activeEl = sortKey === 'contact' ? thContact : thName;
-      activeEl.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 
       render();
     }
@@ -187,6 +295,54 @@
       });
 
     document.getElementById('crm-search').addEventListener('input', render);
+
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const th = e.target.closest('th[data-col]');
+      if (!th) return;
+      const col = th.dataset.col;
+      if (['name', 'contact', 'notes', 'last_contact'].includes(col)) {
+        setSort(col);
+      }
+    });
+
+    // --- Drag-to-reorder ---
+    let dragSrcCol = null;
+    const crmTable = document.querySelector('.crm-table');
+
+    crmTable.addEventListener('dragstart', e => {
+      const th = e.target.closest('th[data-col]');
+      if (!th) return;
+      dragSrcCol = th.dataset.col;
+      th.classList.add('crm-th--dragging');
+    });
+
+    crmTable.addEventListener('dragover', e => {
+      e.preventDefault();
+      const th = e.target.closest('th');
+      if (!th) return;
+      document.querySelectorAll('.crm-table thead th').forEach(el => el.classList.remove('crm-th--drag-over'));
+      th.classList.add('crm-th--drag-over');
+    });
+
+    crmTable.addEventListener('dragend', () => {
+      document.querySelectorAll('.crm-table thead th').forEach(el => {
+        el.classList.remove('crm-th--dragging');
+        el.classList.remove('crm-th--drag-over');
+      });
+      dragSrcCol = null;
+    });
+
+    crmTable.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetCol = e.target.closest('th[data-col]')?.dataset.col;
+      if (!dragSrcCol || !targetCol || dragSrcCol === targetCol) return;
+      const srcIdx = colOrder.indexOf(dragSrcCol);
+      const tgtIdx = colOrder.indexOf(targetCol);
+      if (srcIdx === -1 || tgtIdx === -1) return;
+      [colOrder[srcIdx], colOrder[tgtIdx]] = [colOrder[tgtIdx], colOrder[srcIdx]];
+      localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
+      render();
+    });
   </script>
 
 </body>
