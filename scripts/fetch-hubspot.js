@@ -165,20 +165,14 @@ async function main() {
     company.contact = pickPrimaryContact(ids, contactMap);
 
     // Derive last_contact: most recent notes_last_contacted across all contacts
-    const contacts = ids.map(id => contactMap.get(id)).filter(Boolean);
-    if (contacts.length > 0) {
-      const dates = contacts
-        .map(c => c.notes_last_contacted ? new Date(c.notes_last_contacted).getTime() : 0)
-        .filter(t => t > 0);
-      if (dates.length > 0) {
-        const maxTime = Math.max(...dates);
-        company.last_contact = new Date(maxTime).toISOString();
-      } else {
-        company.last_contact = null;
-      }
-    } else {
-      company.last_contact = null;
-    }
+    const timestamps = ids
+      .map(id => contactMap.get(id)?.notes_last_contacted)
+      .filter(Boolean)
+      .map(ts => new Date(ts).getTime())
+      .filter(t => !isNaN(t));
+    company.last_contact = timestamps.length > 0
+      ? new Date(Math.max(...timestamps)).toISOString()
+      : null;
   }
 
   companies.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
