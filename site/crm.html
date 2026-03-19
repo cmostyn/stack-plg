@@ -59,6 +59,9 @@
 
   </main>
 
+  <div id="card-overlay" class="card-overlay"></div>
+  <div id="inline-add-popover" class="inline-add-popover"></div>
+
   <script>
     // --- Constants ---
     const PLACEHOLDER_CELL = '<td class="crm-placeholder" title="Coming soon">—</td>';
@@ -113,8 +116,12 @@
       name: company => {
         const display = company.name ?? company.hubspot_id;
         const href    = safeHref(company.hubspot_url);
+        const hid     = escHtml(String(company.hubspot_id ?? ''));
         const badge   = typeBadge(company.type);
-        return `<td><a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}</td>`;
+        return `<td class="crm-name-cell">
+          <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+          <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
+        </td>`;
       },
       contact: company => {
         const c = isContactObj(company.contact) ? company.contact : null;
@@ -169,7 +176,20 @@
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
         return py ? `<td class="crm-num">${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
       },
-      cs_actions: () => PLACEHOLDER_CELL,
+      cs_actions: company => {
+        const actions = actionsMap.get(String(company.hubspot_id ?? '')) ?? [];
+        const open    = actions.filter(a => !a.done);
+        const pills   = open.slice(0, 2).map(a =>
+          `<span class="action-pill ${escHtml(a.priority)}">${escHtml(a.name)}</span>`
+        ).join('');
+        const hid = escHtml(String(company.hubspot_id ?? ''));
+        return `<td>
+          <div class="actions-cell">
+            ${pills}
+            <button class="add-action-btn" data-hubspot-id="${hid}">+ Add</button>
+          </div>
+        </td>`;
+      },
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
@@ -179,10 +199,13 @@
     };
 
     // --- State ---
-    let allRows      = [];
-    let posthogMap   = new Map();
-    let firefliesMap = new Map();
-    let pylonMap     = new Map();
+    let allRows             = [];
+    let posthogMap          = new Map();
+    let firefliesMap        = new Map();  // domain → most-recent call (for Last call column)
+    let firefliesActionsMap = new Map();  // domain → all calls sorted desc (for card)
+    let pylonMap            = new Map();  // hubspot_id → pylon account
+    let actionsMap          = new Map();  // hubspot_id (string) → action[]
+    let openCardId          = null;       // hubspot_id of the open card, or null
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = { name: 1, contact: 0, notes: 0, last_contact: 0, clicks: 0 };
@@ -429,10 +452,36 @@
       fetch('./data/posthog.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/fireflies.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([hubspot, posthog, fireflies, pylon]) => {
-      posthogMap   = new Map(posthog.map(r => [normName(r.org_name), r]));
-      firefliesMap = new Map(fireflies.map(r => [r.domain, r]));
-      pylonMap     = new Map(pylon.map(r => [String(r.hubspot_id), r]));
+      fetch(`${WORKER_URL}/actions`).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog, fireflies, pylon, actions]) => {
+      posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
+      pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
+
+      // firefliesMap: domain → most-recent call (used by Last call column)
+      firefliesMap = new Map();
+      for (const entry of fireflies) {
+        if (!firefliesMap.has(entry.domain) || entry.date > firefliesMap.get(entry.domain).date) {
+          firefliesMap.set(entry.domain, entry);
+        }
+      }
+
+      // firefliesActionsMap: domain → all calls sorted most-recent first (used by card)
+      firefliesActionsMap = new Map();
+      for (const entry of fireflies) {
+        if (!firefliesActionsMap.has(entry.domain)) firefliesActionsMap.set(entry.domain, []);
+        firefliesActionsMap.get(entry.domain).push(entry);
+      }
+      for (const [, calls] of firefliesActionsMap) {
+        calls.sort((a, b) => b.date.localeCompare(a.date));
+      }
+
+      // actionsMap: hubspot_id (string) → action[]
+      actionsMap = new Map();
+      for (const action of actions) {
+        if (!actionsMap.has(action.hubspot_id)) actionsMap.set(action.hubspot_id, []);
+        actionsMap.get(action.hubspot_id).push(action);
+      }
+
       allRows = hubspot;
       render();
     }).catch(() => {
