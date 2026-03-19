@@ -148,21 +148,26 @@
         const pylonUrl = `https://app.usepylon.com/accounts/${py.pylon_account_id}`;
         return `<td><a href="${escHtml(pylonUrl)}" target="_blank" rel="noopener">${escHtml(py.name)}</a></td>`;
       },
-      integrations: () => PLACEHOLDER_CELL,
+      integrations: company => {
+        const ph = posthogMap.get(normName(company.name));
+        return ph != null
+          ? `<td class="crm-num">${ph.linked_accounts.toLocaleString()}</td>`
+          : PLACEHOLDER_CELL;
+      },
       clicks: company => {
         const ph = posthogMap.get(normName(company.name));
         return ph != null
-          ? `<td>${ph.click_interactions.toLocaleString()}</td>`
+          ? `<td class="crm-num">${ph.click_interactions.toLocaleString()}</td>`
           : PLACEHOLDER_CELL;
       },
       api_requests:  () => PLACEHOLDER_CELL,
       tickets_total: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td>${py.issues_last_30d.total}</td>` : PLACEHOLDER_CELL;
+        return py ? `<td class="crm-num">${py.issues_last_30d.total}</td>` : PLACEHOLDER_CELL;
       },
       open_tickets: company => {
         const py = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
-        return py ? `<td>${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
+        return py ? `<td class="crm-num">${py.open_tickets_live ?? py.issues_last_30d.open}</td>` : PLACEHOLDER_CELL;
       },
       cs_actions: () => PLACEHOLDER_CELL,
       last_call: company => {
@@ -294,7 +299,7 @@
         const w = colWidths[col] ?? DEFAULT_COL_WIDTHS[col];
         if (frozen) {
           const th = thead.querySelector(`th[data-col="${col}"]`);
-          if (th) { th.style.position = 'sticky'; th.style.left = offset + 'px'; th.style.zIndex = '3'; }
+          if (th) { th.style.position = 'sticky'; th.style.left = offset + 'px'; th.style.zIndex = '5'; }
           tbody.querySelectorAll('tr').forEach(row => {
             const td = row.cells[colIdx];
             if (td) { td.style.position = 'sticky'; td.style.left = offset + 'px'; td.style.zIndex = '1'; td.classList.add('crm-td--frozen'); }

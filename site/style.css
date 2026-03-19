@@ -145,8 +145,8 @@ a:hover {
   align-items: center;
   gap: 8px;
   font-family: var(--so-font-heading);
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 500;
   color: var(--so-text-header);
   letter-spacing: -0.5px;
   text-decoration: none;
@@ -489,11 +489,12 @@ a:hover {
 }
 
 .site-nav-link {
-  font-family: var(--so-font-tag);
-  font-size: 13px;
-  color: var(--so-text-tag);
+  font-family: var(--so-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--so-text-body);
   text-decoration: none;
-  padding: 5px 10px;
+  padding: 6px 11px;
   border-radius: var(--so-radius);
   transition: background 0.12s, color 0.12s;
 }
@@ -507,6 +508,7 @@ a:hover {
 .site-nav-link--active {
   background: var(--so-foreground);
   color: var(--so-text-header);
+  font-weight: 500;
 }
 
 /* ============================================================
@@ -564,15 +566,19 @@ a:hover {
 }
 
 .crm-table th {
-  font-family: var(--so-font-tag);
+  font-family: var(--so-font-body);
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--so-text-tag);
   text-align: left;
-  padding: 10px 16px;
+  padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-10);
   white-space: nowrap;
   user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--so-white);
 }
 
 .crm-table th:hover {
@@ -584,11 +590,11 @@ a:hover {
 
 .crm-table td {
   font-family: var(--so-font-body);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--so-text-body);
-  padding: 12px 16px;
+  padding: 9px 14px;
   border-bottom: 1px solid var(--so-neutral-5);
-  vertical-align: top;
+  vertical-align: middle;
   transition: background 0.12s;
 }
 
@@ -601,7 +607,13 @@ a:hover {
 }
 
 .crm-placeholder {
-  color: var(--so-neutral-40);
+  color: var(--so-neutral-20);
+  font-size: 12px;
+}
+
+.crm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .crm-contact-name {
@@ -1115,13 +1127,13 @@ a:hover {
 }
 
 .crm-type-badge--plg {
-  background: rgba(0, 175, 102, 0.1);
-  color: var(--so-green-dark);
+  background: rgba(12, 88, 174, 0.1);
+  color: var(--so-blue-dark);
 }
 
 .crm-type-badge--slg {
-  background: rgba(12, 88, 174, 0.1);
-  color: var(--so-blue-dark);
+  background: rgba(150, 88, 10, 0.12);
+  color: var(--so-orange-dark);
 }
 
 .crm-type-badge--cust {
