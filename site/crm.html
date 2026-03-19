@@ -1100,8 +1100,8 @@
       saveColWidths();
     });
 
-    // Inline edit for local_notes cells
-    document.querySelector('.crm-table').addEventListener('dblclick', e => {
+    // Inline edit for local_notes cells — single click to edit
+    document.querySelector('.crm-table').addEventListener('click', e => {
       const td = e.target.closest('.crm-local-notes-cell');
       if (!td || td.querySelector('input')) return;
       const hid  = td.dataset.hubspotId;
@@ -1110,12 +1110,15 @@
       input.type = 'text';
       input.value = note;
       input.className = 'crm-local-notes-input';
-      input.style.cssText = 'width:100%;font:inherit;padding:2px 4px;border:1px solid #00AF66;border-radius:4px;outline:none;background:#fff;';
+      input.style.cssText = 'width:100%;font:inherit;font-size:13px;padding:2px 4px;border:1px solid #00AF66;border-radius:4px;outline:none;background:#fff;box-sizing:border-box;';
       td.innerHTML = '';
       td.appendChild(input);
       input.focus();
       input.select();
+      let saved = false;
       const save = () => {
+        if (saved) return;
+        saved = true;
         const val = input.value.trim();
         if (val) localNotes[hid] = val;
         else delete localNotes[hid];
@@ -1125,7 +1128,7 @@
       input.addEventListener('blur', save);
       input.addEventListener('keydown', e2 => {
         if (e2.key === 'Enter') { e2.preventDefault(); save(); }
-        if (e2.key === 'Escape') { e2.stopPropagation(); render(); }
+        if (e2.key === 'Escape') { saved = true; e2.stopPropagation(); render(); }
       });
     });
   </script>

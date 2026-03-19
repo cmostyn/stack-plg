@@ -515,9 +515,13 @@ a:hover {
 }
 
 .site-nav-link--active {
-  background: var(--so-foreground);
-  color: var(--so-text-header);
+  background: rgba(0, 175, 102, 0.1);
+  color: var(--so-green-dark);
   font-weight: 500;
+}
+.site-nav-link--active:hover {
+  background: rgba(0, 175, 102, 0.15);
+  color: var(--so-green-dark);
 }
 
 .nav-coming-soon {
@@ -1076,7 +1080,9 @@ a:hover {
 }
 
 .dash-tile-chart--donut {
+  height: 140px;
   min-height: 140px;
+  flex: none;
 }
 
 .dash-tile-chart--line {
@@ -1312,7 +1318,7 @@ a:hover {
 
 .crm-pill--active {
   background: var(--so-white);
-  color: var(--so-text-header);
+  color: var(--so-green-dark);
   font-weight: 500;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
@@ -1815,14 +1821,15 @@ a:hover {
 }
 
 .dash-filter-pill--active {
-  background: var(--so-text-header, #222121);
-  color: #FFFFFF;
-  border-color: var(--so-text-header, #222121);
+  background: rgba(0, 175, 102, 0.12);
+  color: var(--so-green-dark);
+  border-color: rgba(0, 175, 102, 0.3);
+  font-weight: 600;
 }
 
 .dash-filter-pill--active:hover {
-  background: var(--so-text-header, #222121);
-  color: #FFFFFF;
+  background: rgba(0, 175, 102, 0.18);
+  color: var(--so-green-dark);
 }
 
 /* ============================================================

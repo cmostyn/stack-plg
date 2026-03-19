@@ -318,7 +318,8 @@
       if (!el) return;
       const existing = miniCharts[el.id];
       if (existing) existing.dispose();
-      const chart = echarts.init(el, null, { renderer: 'canvas' });
+      const h = Math.max(el.offsetHeight, 140);
+      const chart = echarts.init(el, null, { renderer: 'canvas', height: h });
       chart.setOption({
         animation: false,
         tooltip: { trigger: 'item', formatter: '{b}: {c}' },
@@ -342,6 +343,7 @@
           ].filter(d => d.value > 0),
         }],
       });
+      requestAnimationFrame(() => chart.resize());
       miniCharts[el.id] = chart;
     }
 
