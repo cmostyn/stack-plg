@@ -32,14 +32,13 @@ async function rpc(action, body) {
   return res.json();
 }
 
-// Fetch all PLG accounts (paginated)
-async function fetchPLGAccounts() {
+async function fetchAccountsByType(type) {
   const accounts = [];
   let cursor = undefined;
 
   while (true) {
     const body = {
-      filter: { field: 'account.hubspot.type', operator: 'equals', value: 'Customer - PLG' },
+      filter: { field: 'account.hubspot.type', operator: 'equals', value: type },
       limit: 1000,
     };
     if (cursor) body.cursor = cursor;
@@ -56,7 +55,6 @@ async function fetchPLGAccounts() {
   return accounts;
 }
 
-// Fetch all issues in a window (max 30 days per Pylon limit)
 async function fetchIssues(startTime, endTime) {
   const res = await fetch('https://api.stackone.com/actions/rpc', {
     method: 'POST',
@@ -84,82 +82,18 @@ function isoWeekMonday(dateStr) {
   return monday.toISOString().slice(0, 10);
 }
 
-async function main() {
-  console.log('[pylon] Fetching PLG accounts...');
-  const accounts = await fetchPLGAccounts();
-  console.log(`[pylon] Found ${accounts.length} PLG accounts`);
-
-  const now           = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sixtyDaysAgo  = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-  const fmt = d => d.toISOString().replace(/\.\d+Z$/, 'Z');
-
-  // Fetch 90 days in three 30-day windows for FRT sparkline
-
-  console.log(`[pylon] Fetching issues (90 days in 3 windows)...`);
-  const [issues60_90, issues30_60, allIssues] = await Promise.all([
-    fetchIssues(fmt(ninetyDaysAgo), fmt(sixtyDaysAgo)),
-    fetchIssues(fmt(sixtyDaysAgo), fmt(thirtyDaysAgo)),
-    fetchIssues(fmt(thirtyDaysAgo), fmt(now)),
-  ]);
-  const allIssues90d = [...issues60_90, ...issues30_60, ...allIssues];
-  console.log(`[pylon] Found ${allIssues.length} issues (last 30d), ${allIssues90d.length} total (90d)`);
-
-  // Index issues by account ID
-  const issuesByAccount = {};
-  for (const issue of allIssues) {
-    const aid = issue.account?.id;
-    if (!aid) continue;
-    if (!issuesByAccount[aid]) issuesByAccount[aid] = [];
-    issuesByAccount[aid].push(issue);
-  }
-
-  const output = accounts.map(account => {
-    const issues = issuesByAccount[account.id] ?? [];
-    const open   = issues.filter(i => i.state !== 'closed').length;
-    const closed = issues.filter(i => i.state === 'closed').length;
-
-    const cf = account.custom_fields ?? {};
-    const orgId           = cf['account.hubspot.org_id']?.value ?? null;
-    const tier            = cf['tier']?.value ?? null;
-    const openTicketCount = cf['count_of_open_tickets']?.value
-      ? parseInt(cf['count_of_open_tickets'].value, 10)
-      : null;
-
-    const hubspotId = (account.crm_settings?.details ?? [])
-      .find(d => d.source === 'hubspot')?.id ?? null;
-
-    return {
-      pylon_account_id:  account.id,
-      name:              account.name,
-      domain:            account.primary_domain ?? null,
-      org_id:            orgId,
-      hubspot_id:        hubspotId,
-      tier,
-      open_tickets_live: openTicketCount,
-      issues_last_30d: {
-        total:  issues.length,
-        open,
-        closed,
-      },
-      updated_at: account.latest_customer_activity_time ?? null,
-    };
-  });
-
-  output.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
-
-  // Global open ticket breakdown (from last 30d issues)
-  const openByState = { new: 0, waiting_on_you: 0, waiting_on_customer: 0, waiting_on_engineering: 0 };
-  for (const issue of allIssues) {
+function buildSummary(issues30d, issues90d, accounts) {
+  const OPEN_STATES = { new: 0, waiting_on_you: 0, waiting_on_customer: 0, waiting_on_engineering: 0 };
+  const openByState = { ...OPEN_STATES };
+  for (const issue of issues30d) {
     if (issue.state in openByState) openByState[issue.state]++;
   }
-  const totalOpen = output.reduce((n, a) => n + (a.open_tickets_live ?? 0), 0);
+
+  const totalOpenLive = accounts.reduce((n, a) => n + (a.open_tickets_live ?? 0), 0);
   const needingAction = openByState.new + openByState.waiting_on_you + openByState.waiting_on_engineering;
 
-  // Weekly avg FRT in business hours (90d)
   const weekMap = {};
-  for (const issue of allIssues90d) {
+  for (const issue of issues90d) {
     const secs = issue.business_hours_first_response_seconds;
     if (!secs || secs <= 0) continue;
     const week = isoWeekMonday(issue.created_at);
@@ -173,21 +107,102 @@ async function main() {
       avg_hours: Math.round(vals.reduce((s, v) => s + v, 0) / vals.length * 10) / 10,
     }));
 
+  return { open_by_state: openByState, total_open_live: totalOpenLive, needing_action: needingAction, frt_weekly: frtWeekly };
+}
+
+function mapAccount(account, issues30dByAccountId, customerType) {
+  const issues = issues30dByAccountId[account.id] ?? [];
+  const open   = issues.filter(i => i.state !== 'closed').length;
+  const closed = issues.filter(i => i.state === 'closed').length;
+
+  const cf = account.custom_fields ?? {};
+  const orgId           = cf['account.hubspot.org_id']?.value ?? null;
+  const tier            = cf['tier']?.value ?? null;
+  const openTicketCount = cf['count_of_open_tickets']?.value
+    ? parseInt(cf['count_of_open_tickets'].value, 10)
+    : null;
+
+  const hubspotId = (account.crm_settings?.details ?? [])
+    .find(d => d.source === 'hubspot')?.id ?? null;
+
+  return {
+    pylon_account_id:  account.id,
+    name:              account.name,
+    domain:            account.primary_domain ?? null,
+    org_id:            orgId,
+    hubspot_id:        hubspotId,
+    customer_type:     customerType,
+    tier,
+    open_tickets_live: openTicketCount,
+    issues_last_30d:   { total: issues.length, open, closed },
+    updated_at:        account.latest_customer_activity_time ?? null,
+  };
+}
+
+async function main() {
+  const now           = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const sixtyDaysAgo  = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+  const fmt = d => d.toISOString().replace(/\.\d+Z$/, 'Z');
+
+  console.log('[pylon] Fetching PLG + SLG accounts and 90 days of issues in parallel...');
+  const [plgRaw, slgRaw, issues60_90, issues30_60, issues30d] = await Promise.all([
+    fetchAccountsByType('Customer - PLG'),
+    fetchAccountsByType('Customer - SLG'),
+    fetchIssues(fmt(ninetyDaysAgo), fmt(sixtyDaysAgo)),
+    fetchIssues(fmt(sixtyDaysAgo), fmt(thirtyDaysAgo)),
+    fetchIssues(fmt(thirtyDaysAgo), fmt(now)),
+  ]);
+
+  console.log(`[pylon] Accounts: ${plgRaw.length} PLG, ${slgRaw.length} SLG`);
+  const allIssues90d = [...issues60_90, ...issues30_60, ...issues30d];
+  console.log(`[pylon] Issues: ${issues30d.length} (30d), ${allIssues90d.length} (90d)`);
+
+  // Build sets for issue type filtering
+  const plgIds = new Set(plgRaw.map(a => a.id));
+  const slgIds = new Set(slgRaw.map(a => a.id));
+
+  // Index 30d issues by account ID
+  const issues30dByAccountId = {};
+  for (const issue of issues30d) {
+    const aid = issue.account?.id;
+    if (!aid) continue;
+    if (!issues30dByAccountId[aid]) issues30dByAccountId[aid] = [];
+    issues30dByAccountId[aid].push(issue);
+  }
+
+  // Build per-account output
+  const plgOutput = plgRaw.map(a => mapAccount(a, issues30dByAccountId, 'plg'));
+  const slgOutput = slgRaw.map(a => mapAccount(a, issues30dByAccountId, 'slg'));
+  const output    = [...plgOutput, ...slgOutput];
+  output.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+
+  // Build summaries per type
+  const plgIssues30d = issues30d.filter(i => plgIds.has(i.account?.id));
+  const slgIssues30d = issues30d.filter(i => slgIds.has(i.account?.id));
+  const plgIssues90d = allIssues90d.filter(i => plgIds.has(i.account?.id));
+  const slgIssues90d = allIssues90d.filter(i => slgIds.has(i.account?.id));
+
+  // "all" = PLG + SLG combined (not every Pylon account type)
+  const allFilteredIssues30d = [...plgIssues30d, ...slgIssues30d];
+  const allFilteredIssues90d = [...plgIssues90d, ...slgIssues90d];
+
   const summary = {
-    open_by_state:   openByState,
-    total_open_live: totalOpen,
-    needing_action:  needingAction,
-    frt_weekly:      frtWeekly,
-    updated_at:      now.toISOString(),
+    all: buildSummary(allFilteredIssues30d, allFilteredIssues90d, output),
+    plg: buildSummary(plgIssues30d,         plgIssues90d,         plgOutput),
+    slg: buildSummary(slgIssues30d,         slgIssues90d,         slgOutput),
+    updated_at: now.toISOString(),
   };
 
   const SUMMARY_FILE = path.join(__dirname, '../site/data/pylon-summary.json');
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(output, null, 2) + '\n');
   fs.writeFileSync(SUMMARY_FILE, JSON.stringify(summary, null, 2) + '\n');
-  console.log(`[pylon] Written to ${OUT_FILE}`);
-  console.log(`[pylon] Summary: ${totalOpen} open live, ${needingAction} needing action, ${frtWeekly.length} FRT weeks`);
-  writeStatus('pylon', 'ok', { records: output.length, open_tickets: totalOpen });
+
+  const s = summary.all;
+  console.log(`[pylon] Written: ${output.length} accounts, ${s.needing_action} needing action, ${s.frt_weekly.length} FRT weeks`);
+  writeStatus('pylon', 'ok', { records: output.length, open_tickets: s.total_open_live });
 }
 
 main().catch(e => {

@@ -1607,3 +1607,55 @@ a:hover {
   color: var(--so-text-tag, #7A7A7A);
   margin-top: 4px;
 }
+
+/* ============================================================
+   Dashboard — Filter Pills
+   ============================================================ */
+
+.dash-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.dash-filter-pill {
+  font-family: var(--so-font-body, Geist, system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--so-text-tag, #7A7A7A);
+  background: var(--so-foreground, #F4F2F0);
+  border: 1px solid var(--so-neutral-10, #E0DEDC);
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  line-height: 1;
+}
+
+.dash-filter-pill:hover {
+  background: var(--so-neutral-5, #EBE9E7);
+  color: var(--so-text-body, #4C4B4B);
+}
+
+.dash-filter-pill--active {
+  background: var(--so-text-header, #222121);
+  color: #FFFFFF;
+  border-color: var(--so-text-header, #222121);
+}
+
+.dash-filter-pill--active:hover {
+  background: var(--so-text-header, #222121);
+  color: #FFFFFF;
+}
+
+/* Source link inside tile header */
+a.dash-tile-source {
+  color: var(--so-neutral-40, #A19F9E);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+a.dash-tile-source:hover {
+  color: var(--so-green-dark, #047B43);
+  text-decoration: underline;
+}

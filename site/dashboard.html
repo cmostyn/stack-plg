@@ -25,22 +25,30 @@
   </header>
 
   <main class="page-main">
+
+    <!-- Filter pills -->
+    <div class="dash-filters">
+      <button class="dash-filter-pill dash-filter-pill--active" data-filter="all">All</button>
+      <button class="dash-filter-pill" data-filter="plg">PLG</button>
+      <button class="dash-filter-pill" data-filter="slg">SLG</button>
+    </div>
+
     <div class="dash-grid" id="dashGrid">
 
       <!-- ── Row 1: Growth ── -->
       <div class="dash-section-label">Growth</div>
 
       <!-- Tile 1: Total Free Sign Ups -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="accounts"
-           data-href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
-           draggable="true">
+      <div class="dash-tile" data-tile-id="accounts" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Total Free Sign Ups</span>
-          <span class="dash-tile-source">HubSpot</span>
+          <a class="dash-tile-source"
+             href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
+             target="_blank" rel="noopener" data-source-link>HubSpot ↗</a>
         </div>
         <div class="dash-tile-body">
           <div class="dash-tile-value" id="val-accounts">—</div>
-          <div class="dash-tile-chart" id="chart-accounts"></div>
+          <div class="dash-tile-chart" id="chart-accounts" data-chart-id="accounts"></div>
         </div>
       </div>
 
@@ -48,18 +56,20 @@
       <div class="dash-tile" data-tile-id="signups" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">New Sign Ups Last 30 days</span>
-          <span class="dash-tile-source">HubSpot</span>
+          <a class="dash-tile-source"
+             href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
+             target="_blank" rel="noopener" data-source-link>HubSpot ↗</a>
         </div>
         <div class="dash-tile-body">
           <div class="dash-tile-value" id="val-signups">—</div>
-          <div class="dash-tile-chart" id="chart-signups"></div>
+          <div class="dash-tile-chart" id="chart-signups" data-chart-id="signups"></div>
         </div>
       </div>
 
       <!-- Tile 3: Conversion placeholder -->
       <div class="dash-tile dash-tile--placeholder" data-tile-id="conversion" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Sign Up → API Request Conversion</span>
+          <span class="dash-tile-title">Sign Up → API Conversion</span>
           <span class="dash-tile-badge">Coming soon</span>
         </div>
         <div class="dash-tile-body dash-tile-placeholder-body">
@@ -71,25 +81,25 @@
       <div class="dash-section-label">Support</div>
 
       <!-- Tile 4: Open Tickets donut -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="tickets"
-           data-href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
-           draggable="true">
+      <div class="dash-tile" data-tile-id="tickets" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Open Tickets</span>
-          <span class="dash-tile-source">Pylon</span>
+          <a class="dash-tile-source"
+             href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
+             target="_blank" rel="noopener" data-source-link>Pylon ↗</a>
         </div>
         <div class="dash-tile-body">
-          <div class="dash-tile-chart dash-tile-chart--donut" id="chart-tickets"></div>
+          <div class="dash-tile-chart dash-tile-chart--donut" id="chart-tickets" data-chart-id="tickets"></div>
         </div>
       </div>
 
       <!-- Tile 5: Tickets needing action -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="action"
-           data-href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
-           draggable="true">
+      <div class="dash-tile" data-tile-id="action" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Tickets Needing Action</span>
-          <span class="dash-tile-source">Pylon</span>
+          <a class="dash-tile-source"
+             href="https://app.usepylon.com/support/issues/views/1d2ef841-5bbe-4652-b8c1-193766d117bc"
+             target="_blank" rel="noopener" data-source-link>Pylon ↗</a>
         </div>
         <div class="dash-tile-body">
           <div class="dash-tile-value" id="val-action">—</div>
@@ -98,23 +108,22 @@
       </div>
 
       <!-- Tile 6: Avg First Response -->
-      <div class="dash-tile dash-tile--clickable" data-tile-id="frt"
-           data-href="https://app.usepylon.com/analytics/chart/edit/d8d83a48-5ec1-46d2-9c72-5b1d0ee81dff?dashboardID=109ccc44-4072-44f5-8ccb-04db52c933fd"
-           draggable="true">
+      <div class="dash-tile" data-tile-id="frt" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Avg First Response</span>
-          <span class="dash-tile-source">Pylon</span>
+          <a class="dash-tile-source"
+             href="https://app.usepylon.com/analytics/chart/edit/d8d83a48-5ec1-46d2-9c72-5b1d0ee81dff?dashboardID=109ccc44-4072-44f5-8ccb-04db52c933fd"
+             target="_blank" rel="noopener" data-source-link>Pylon ↗</a>
         </div>
         <div class="dash-tile-body">
           <div class="dash-tile-value" id="val-frt">—</div>
-          <div class="dash-tile-chart dash-tile-chart--line" id="chart-frt"></div>
+          <div class="dash-tile-chart dash-tile-chart--line" id="chart-frt" data-chart-id="frt"></div>
         </div>
       </div>
 
       <!-- ── Row 3: Usage ── -->
       <div class="dash-section-label">Usage</div>
 
-      <!-- Tile 7: Placeholder -->
       <div class="dash-tile dash-tile--placeholder" data-tile-id="usage1" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Connected Integrations</span>
@@ -125,7 +134,6 @@
         </div>
       </div>
 
-      <!-- Tile 8: Placeholder -->
       <div class="dash-tile dash-tile--placeholder" data-tile-id="usage2" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">API Requests (Last 30 days)</span>
@@ -136,7 +144,6 @@
         </div>
       </div>
 
-      <!-- Tile 9: Placeholder -->
       <div class="dash-tile dash-tile--placeholder" data-tile-id="usage3" draggable="true">
         <div class="dash-tile-header">
           <span class="dash-tile-title">Active Users (Last 30 days)</span>
@@ -150,169 +157,168 @@
     </div>
   </main>
 
+  <!-- Expand dialog -->
+  <dialog class="dash-expand" id="dashExpand">
+    <div class="dash-expand-header">
+      <span class="dash-expand-title" id="expandTitle"></span>
+      <button class="dash-expand-close" id="expandClose" aria-label="Close">×</button>
+    </div>
+    <div id="expandBody"></div>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script>
-    // ── Helpers ──────────────────────────────────────────────────────────────
-    function sparkline(el, series, color) {
-      if (!el || !series.length) return null;
+    // ── State ────────────────────────────────────────────────────────────────
+    let activeFilter  = 'all';
+    let allCompanies  = [];
+    let pylonSummary  = null;
+    const miniCharts  = {};   // chartId → ECharts instance
+
+    // ── Filter type → HubSpot `type` value ───────────────────────────────────
+    const TYPE_MAP = {
+      plg: 'Customer - PLG',
+      slg: 'Customer - SLG',
+    };
+
+    function filterCompanies(companies) {
+      if (activeFilter === 'all') return companies;
+      return companies.filter(c => c.type === TYPE_MAP[activeFilter]);
+    }
+
+    // ── Mini sparkline (tile) ────────────────────────────────────────────────
+    function renderSparkline(el, series, color) {
+      if (!el || !series.length) return;
+      const existing = miniCharts[el.id];
+      if (existing) existing.dispose();
       const chart = echarts.init(el, null, { renderer: 'canvas' });
       chart.setOption({
-        animation: true,
-        grid: { top: 0, right: 0, bottom: 0, left: 0, containLabel: false },
-        xAxis: {
-          type: 'category',
-          show: false,
-          data: series.map((_, i) => `W${i + 1}`),
-          boundaryGap: false,
-        },
+        animation: false,
+        grid: { top: 0, right: 0, bottom: 0, left: 0 },
+        xAxis: { type: 'category', show: false, data: series.map((_, i) => i), boundaryGap: false },
         yAxis: {
-          type: 'value',
-          show: false,
+          type: 'value', show: false,
           min: v => Math.max(0, v.min - (v.max - v.min) * 0.3),
           max: v => v.max + (v.max - v.min) * 0.15,
         },
         series: [{
-          type: 'line',
-          data: series,
-          smooth: 0.4,
-          symbol: 'none',
+          type: 'line', data: series, smooth: 0.4, symbol: 'none',
           lineStyle: { color, width: 1.5 },
-          areaStyle: {
-            color: {
-              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: color + '28' },
-                { offset: 1, color: color + '00' },
-              ],
-            },
-          },
+          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: color + '28' }, { offset: 1, color: color + '00' }] } },
         }],
       });
-      window.addEventListener('resize', () => chart.resize());
-      return chart;
+      miniCharts[el.id] = chart;
     }
 
-    // ── Load HubSpot data (tiles 1 & 2) ─────────────────────────────────────
-    fetch('./data/hubspot.json')
-      .then(r => r.json())
-      .then(companies => {
-        const total = companies.length;
-        document.getElementById('val-accounts').textContent = total;
-
-        // Cumulative growth: group by month, show last 8 data points
-        const byMonth = {};
-        for (const c of companies) {
-          if (!c.createdate) continue;
-          const m = c.createdate.slice(0, 7); // 'YYYY-MM'
-          byMonth[m] = (byMonth[m] || 0) + 1;
-        }
-        const months = Object.keys(byMonth).sort();
-        let cumulative = 0;
-        const growthSeries = months.map(m => { cumulative += byMonth[m]; return cumulative; });
-        sparkline(document.getElementById('chart-accounts'), growthSeries.slice(-8), '#047B43');
-
-        // New signups last 30 days
-        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
-        const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff);
-        document.getElementById('val-signups').textContent = recent.length;
-
-        // By week within 30d window
-        const byWeek = [0, 0, 0, 0];
-        for (const c of recent) {
-          const daysAgo = (Date.now() - new Date(c.createdate).getTime()) / 86400000;
-          const idx = Math.min(3, Math.floor(daysAgo / 7));
-          byWeek[3 - idx]++;
-        }
-        sparkline(document.getElementById('chart-signups'), byWeek, '#047B43');
-      })
-      .catch(() => {
-        document.getElementById('val-accounts').textContent = '—';
-        document.getElementById('val-signups').textContent = '—';
+    // ── Mini donut (tile) ────────────────────────────────────────────────────
+    function renderDonut(el, st, total) {
+      if (!el) return;
+      const existing = miniCharts[el.id];
+      if (existing) existing.dispose();
+      const chart = echarts.init(el, null, { renderer: 'canvas' });
+      chart.setOption({
+        animation: false,
+        tooltip: { trigger: 'item', formatter: '{b}: {c}' },
+        graphic: [{
+          type: 'group', left: 'center', top: 'center',
+          children: [
+            { type: 'text', top: -16,
+              style: { text: String(total), font: '600 26px Geist, system-ui, sans-serif', fill: '#222121', textAlign: 'center' } },
+            { type: 'text', top: 12,
+              style: { text: 'open', font: '400 11px Geist, system-ui, sans-serif', fill: '#7A7A7A', textAlign: 'center' } },
+          ],
+        }],
+        series: [{
+          type: 'pie', radius: ['50%', '74%'], avoidLabelOverlap: false,
+          label: { show: false },
+          data: [
+            { value: st.new,                    name: 'New',                    itemStyle: { color: '#047B43' } },
+            { value: st.waiting_on_you,         name: 'On You',                 itemStyle: { color: '#96580A' } },
+            { value: st.waiting_on_customer,    name: 'On Customer',            itemStyle: { color: '#0C58AE' } },
+            { value: st.waiting_on_engineering, name: 'Waiting on Engineering', itemStyle: { color: '#4D4EBA' } },
+          ].filter(d => d.value > 0),
+        }],
       });
+      miniCharts[el.id] = chart;
+    }
 
-    // ── Load Pylon summary data (tiles 4, 5, 6) ───────────────────────────────
-    fetch('./data/pylon-summary.json')
-      .then(r => r.json())
-      .then(summary => {
-        const st = summary.open_by_state;
+    // ── Render all tiles from current data + filter ──────────────────────────
+    function renderTiles() {
+      const companies = filterCompanies(allCompanies);
+      const ps = pylonSummary ? pylonSummary[activeFilter] ?? pylonSummary.all : null;
+
+      // Tile 1 — Total Free Sign Ups
+      document.getElementById('val-accounts').textContent = companies.length || '—';
+      const byMonth = {};
+      for (const c of companies) {
+        if (!c.createdate) continue;
+        const m = c.createdate.slice(0, 7);
+        byMonth[m] = (byMonth[m] || 0) + 1;
+      }
+      const months = Object.keys(byMonth).sort();
+      let cum = 0;
+      const growthSeries = months.map(m => { cum += byMonth[m]; return cum; });
+      renderSparkline(document.getElementById('chart-accounts'), growthSeries.slice(-8), '#047B43');
+
+      // Tile 2 — New Sign Ups Last 30 days
+      const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+      const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff);
+      document.getElementById('val-signups').textContent = recent.length || '0';
+      const byWeek = [0, 0, 0, 0];
+      for (const c of recent) {
+        const daysAgo = (Date.now() - new Date(c.createdate).getTime()) / 86400000;
+        byWeek[3 - Math.min(3, Math.floor(daysAgo / 7))]++;
+      }
+      renderSparkline(document.getElementById('chart-signups'), byWeek, '#047B43');
+
+      // Pylon tiles
+      if (ps) {
+        const st    = ps.open_by_state;
         const total = Object.values(st).reduce((s, v) => s + v, 0);
+        renderDonut(document.getElementById('chart-tickets'), st, total);
 
-        // Tile 4 — Open tickets donut
-        const ticketEl = document.getElementById('chart-tickets');
-        if (ticketEl) {
-          const chart = echarts.init(ticketEl, null, { renderer: 'canvas' });
-          chart.setOption({
-            animation: true,
-            tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-            legend: { show: false },
-            graphic: [{
-              type: 'group',
-              left: 'center',
-              top: 'center',
-              children: [
-                {
-                  type: 'text',
-                  style: {
-                    text: String(total),
-                    font: '600 28px Geist, system-ui, sans-serif',
-                    fill: '#222121',
-                    textAlign: 'center',
-                  },
-                  top: -18,
-                },
-                {
-                  type: 'text',
-                  style: {
-                    text: 'open',
-                    font: '400 11px Geist, system-ui, sans-serif',
-                    fill: '#7A7A7A',
-                    textAlign: 'center',
-                  },
-                  top: 10,
-                },
-              ],
-            }],
-            series: [{
-              type: 'pie',
-              radius: ['52%', '76%'],
-              avoidLabelOverlap: false,
-              label: { show: false },
-              data: [
-                { value: st.new,                    name: 'New',                     itemStyle: { color: '#047B43' } },
-                { value: st.waiting_on_you,         name: 'On You',                  itemStyle: { color: '#96580A' } },
-                { value: st.waiting_on_customer,    name: 'On Customer',             itemStyle: { color: '#0C58AE' } },
-                { value: st.waiting_on_engineering, name: 'Waiting on Engineering',  itemStyle: { color: '#4D4EBA' } },
-              ].filter(d => d.value > 0),
-            }],
-          });
-          window.addEventListener('resize', () => chart.resize());
-        }
+        document.getElementById('val-action').textContent = ps.needing_action;
 
-        // Tile 5 — Tickets needing action
-        document.getElementById('val-action').textContent = summary.needing_action;
-
-        // Tile 6 — Avg first response sparkline
-        const frtWeeks = summary.frt_weekly ?? [];
+        const frtWeeks = ps.frt_weekly ?? [];
         if (frtWeeks.length) {
-          const latestHours = frtWeeks[frtWeeks.length - 1].avg_hours;
-          const label = latestHours >= 24
-            ? `${(latestHours / 24).toFixed(1)}d`
-            : `${latestHours}h`;
-          document.getElementById('val-frt').textContent = label;
-          sparkline(
+          const latest = frtWeeks[frtWeeks.length - 1].avg_hours;
+          document.getElementById('val-frt').textContent = latest >= 24
+            ? `${(latest / 24).toFixed(1)}d` : `${latest}h`;
+          renderSparkline(
             document.getElementById('chart-frt'),
             frtWeeks.map(w => w.avg_hours),
             '#7A7A7A'
           );
         }
-      })
-      .catch(() => {
-        // Pylon summary not yet available — tiles stay at —
+      }
+    }
+
+    // ── Load data ────────────────────────────────────────────────────────────
+    Promise.all([
+      fetch('./data/hubspot.json').then(r => r.json()),
+      fetch('./data/pylon-summary.json').then(r => r.json()).catch(() => null),
+    ]).then(([companies, summary]) => {
+      allCompanies = companies;
+      pylonSummary = summary;
+      renderTiles();
+    }).catch(() => {
+      document.getElementById('val-accounts').textContent = '—';
+    });
+
+    // ── Filter pills ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.dash-filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.dash-filter-pill').forEach(p => p.classList.remove('dash-filter-pill--active'));
+        pill.classList.add('dash-filter-pill--active');
+        activeFilter = pill.dataset.filter;
+        renderTiles();
       });
+    });
 
     // ── Drag to rearrange ─────────────────────────────────────────────────────
-    const STORAGE_KEY = 'plg_tile_order';
+    const STORAGE_KEY = 'plg_tile_order_v2';
     const grid = document.getElementById('dashGrid');
+    let dragSrc = null;
 
     function saveTileOrder() {
       const ids = [...grid.querySelectorAll('.dash-tile')].map(t => t.dataset.tileId);
@@ -320,10 +326,9 @@
     }
 
     function applyStoredOrder() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return;
       try {
-        const ids = JSON.parse(stored);
+        const ids = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (!ids) return;
         ids.forEach(id => {
           const tile = grid.querySelector(`[data-tile-id="${id}"]`);
           if (tile) grid.appendChild(tile);
@@ -331,21 +336,16 @@
       } catch {}
     }
 
-    let dragSrc = null;
-
     grid.addEventListener('dragstart', e => {
       const tile = e.target.closest('.dash-tile');
       if (!tile) return;
       dragSrc = tile;
       tile.classList.add('dash-tile--dragging');
     });
-
     grid.addEventListener('dragend', e => {
-      const tile = e.target.closest('.dash-tile');
-      if (tile) tile.classList.remove('dash-tile--dragging');
+      e.target.closest('.dash-tile')?.classList.remove('dash-tile--dragging');
       grid.querySelectorAll('.dash-tile--drag-over').forEach(t => t.classList.remove('dash-tile--drag-over'));
     });
-
     grid.addEventListener('dragover', e => {
       e.preventDefault();
       const tile = e.target.closest('.dash-tile');
@@ -353,32 +353,196 @@
       grid.querySelectorAll('.dash-tile--drag-over').forEach(t => t.classList.remove('dash-tile--drag-over'));
       tile.classList.add('dash-tile--drag-over');
     });
-
     grid.addEventListener('drop', e => {
       e.preventDefault();
       const target = e.target.closest('.dash-tile');
       if (!target || !dragSrc || target === dragSrc) return;
       target.classList.remove('dash-tile--drag-over');
-      const allTiles = [...grid.querySelectorAll('.dash-tile')];
-      const srcIdx = allTiles.indexOf(dragSrc);
-      const tgtIdx = allTiles.indexOf(target);
-      if (srcIdx < tgtIdx) {
-        grid.insertBefore(dragSrc, target.nextSibling);
-      } else {
-        grid.insertBefore(dragSrc, target);
-      }
+      const all = [...grid.querySelectorAll('.dash-tile')];
+      const si = all.indexOf(dragSrc), ti = all.indexOf(target);
+      grid.insertBefore(dragSrc, si < ti ? target.nextSibling : target);
       saveTileOrder();
     });
 
     applyStoredOrder();
 
-    // ── Click to navigate (tiles with data-href) ──────────────────────────────
-    grid.addEventListener('click', e => {
-      if (e.target.tagName === 'A') return;
-      const tile = e.target.closest('.dash-tile');
-      if (!tile) return;
-      const href = tile.dataset.href;
-      if (href) window.open(href, '_blank', 'noopener');
+    // ── Expand dialog ─────────────────────────────────────────────────────────
+    const dialog     = document.getElementById('dashExpand');
+    const expandBody = document.getElementById('expandBody');
+    let expandChart  = null;
+
+    function closeExpand() {
+      dialog.close();
+      if (expandChart) { expandChart.dispose(); expandChart = null; }
+      expandBody.innerHTML = '';
+    }
+
+    document.getElementById('expandClose').addEventListener('click', closeExpand);
+    dialog.addEventListener('click', e => { if (e.target === dialog) closeExpand(); });
+
+    function openExpand(chartId, title) {
+      document.getElementById('expandTitle').textContent = title;
+      expandBody.innerHTML = '';
+      const ps = pylonSummary ? pylonSummary[activeFilter] ?? pylonSummary.all : null;
+      const companies = filterCompanies(allCompanies);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'dash-expand-chart';
+      expandBody.appendChild(wrap);
+      expandChart = echarts.init(wrap, null, { renderer: 'canvas' });
+
+      if (chartId === 'accounts') {
+        const byMonth = {};
+        for (const c of companies) {
+          if (!c.createdate) continue;
+          const m = c.createdate.slice(0, 7);
+          byMonth[m] = (byMonth[m] || 0) + 1;
+        }
+        const months = Object.keys(byMonth).sort();
+        let cum = 0;
+        const series = months.map(m => { cum += byMonth[m]; return cum; });
+        const labels = months.map(m => {
+          const [y, mo] = m.split('-');
+          return new Date(+y, +mo - 1).toLocaleString('en-GB', { month: 'short', year: '2-digit' });
+        });
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/><b>${p[0].value}</b> customers` },
+          grid: { top: 16, right: 24, bottom: 48, left: 48 },
+          xAxis: { type: 'category', data: labels,
+            axisLabel: { color: '#7A7A7A', fontSize: 11, rotate: 30 },
+            axisLine: { lineStyle: { color: '#E0DEDC' } }, axisTick: { show: false } },
+          yAxis: { type: 'value', name: 'Cumulative customers', nameTextStyle: { color: '#7A7A7A', fontSize: 11 },
+            axisLabel: { color: '#7A7A7A', fontSize: 11 },
+            splitLine: { lineStyle: { color: '#EBE9E7' } }, axisLine: { show: false } },
+          series: [{ type: 'line', data: series, smooth: 0.4, symbol: 'circle', symbolSize: 4,
+            lineStyle: { color: '#047B43', width: 2 }, itemStyle: { color: '#047B43' },
+            areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [{ offset: 0, color: '#047B4328' }, { offset: 1, color: '#047B4300' }] } } }],
+        });
+
+      } else if (chartId === 'signups') {
+        const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff);
+        const byWeek = [0, 0, 0, 0];
+        const weekLabels = [];
+        for (let i = 3; i >= 0; i--) {
+          const start = new Date(Date.now() - (i + 1) * 7 * 86400000);
+          weekLabels.push(start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }));
+        }
+        for (const c of recent) {
+          const daysAgo = (Date.now() - new Date(c.createdate).getTime()) / 86400000;
+          byWeek[3 - Math.min(3, Math.floor(daysAgo / 7))]++;
+        }
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'axis', formatter: p => `w/c ${p[0].name}<br/><b>${p[0].value}</b> sign ups` },
+          grid: { top: 16, right: 24, bottom: 48, left: 48 },
+          xAxis: { type: 'category', data: weekLabels,
+            axisLabel: { color: '#7A7A7A', fontSize: 11 }, axisLine: { lineStyle: { color: '#E0DEDC' } },
+            axisTick: { show: false } },
+          yAxis: { type: 'value', name: 'Sign ups', nameTextStyle: { color: '#7A7A7A', fontSize: 11 },
+            axisLabel: { color: '#7A7A7A', fontSize: 11 }, minInterval: 1,
+            splitLine: { lineStyle: { color: '#EBE9E7' } }, axisLine: { show: false } },
+          series: [{ type: 'bar', data: byWeek, barMaxWidth: 40,
+            itemStyle: { color: '#047B43', borderRadius: [4, 4, 0, 0] } }],
+        });
+
+      } else if (chartId === 'tickets' && ps) {
+        const st = ps.open_by_state;
+        const total = Object.values(st).reduce((s, v) => s + v, 0);
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+          legend: { bottom: 8, textStyle: { color: '#4C4B4B', fontSize: 12 },
+            formatter: name => {
+              const seg = [
+                { name: 'New', val: st.new },
+                { name: 'On You', val: st.waiting_on_you },
+                { name: 'On Customer', val: st.waiting_on_customer },
+                { name: 'Waiting on Engineering', val: st.waiting_on_engineering },
+              ].find(s => s.name === name);
+              return seg ? `${name}  (${seg.val})` : name;
+            } },
+          graphic: [{
+            type: 'group', left: 'center', top: '38%',
+            children: [
+              { type: 'text', top: -20,
+                style: { text: String(total), font: '600 40px Geist, system-ui, sans-serif', fill: '#222121', textAlign: 'center' } },
+              { type: 'text', top: 24,
+                style: { text: 'open tickets', font: '400 13px Geist, system-ui, sans-serif', fill: '#7A7A7A', textAlign: 'center' } },
+            ],
+          }],
+          series: [{
+            type: 'pie', radius: ['48%', '68%'], center: ['50%', '42%'],
+            avoidLabelOverlap: false,
+            label: { show: true, formatter: '{b}\n{c}', color: '#4C4B4B', fontSize: 11 },
+            labelLine: { length: 8, length2: 6 },
+            data: [
+              { value: st.new,                    name: 'New',                    itemStyle: { color: '#047B43' } },
+              { value: st.waiting_on_you,         name: 'On You',                 itemStyle: { color: '#96580A' } },
+              { value: st.waiting_on_customer,    name: 'On Customer',            itemStyle: { color: '#0C58AE' } },
+              { value: st.waiting_on_engineering, name: 'Waiting on Engineering', itemStyle: { color: '#4D4EBA' } },
+            ].filter(d => d.value > 0),
+          }],
+        });
+
+      } else if (chartId === 'frt' && ps) {
+        const frtWeeks = ps.frt_weekly ?? [];
+        const labels = frtWeeks.map(w => {
+          const d = new Date(w.week);
+          return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        });
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'axis', formatter: p => `w/c ${p[0].name}<br/><b>${p[0].value}h</b> avg first response` },
+          grid: { top: 16, right: 24, bottom: 48, left: 52 },
+          xAxis: { type: 'category', data: labels,
+            axisLabel: { color: '#7A7A7A', fontSize: 11, rotate: 30 },
+            axisLine: { lineStyle: { color: '#E0DEDC' } }, axisTick: { show: false } },
+          yAxis: { type: 'value', name: 'Hours (business)', nameTextStyle: { color: '#7A7A7A', fontSize: 11 },
+            axisLabel: { color: '#7A7A7A', fontSize: 11, formatter: v => `${v}h` },
+            splitLine: { lineStyle: { color: '#EBE9E7' } }, axisLine: { show: false } },
+          series: [{
+            type: 'line', data: frtWeeks.map(w => w.avg_hours),
+            smooth: 0.4, symbol: 'circle', symbolSize: 5,
+            lineStyle: { color: '#4C4B4B', width: 2 }, itemStyle: { color: '#4C4B4B' },
+            areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [{ offset: 0, color: '#4C4B4B18' }, { offset: 1, color: '#4C4B4B00' }] } },
+            markLine: {
+              silent: true, symbol: 'none',
+              data: [{ type: 'average', name: 'Avg',
+                lineStyle: { color: '#96580A', type: 'dashed' },
+                label: { formatter: p => `Avg: ${p.value.toFixed(1)}h`, color: '#96580A' } }],
+            },
+          }],
+        });
+      }
+
+      dialog.showModal();
+    }
+
+    // ── Chart click handler ───────────────────────────────────────────────────
+    const CHART_TITLES = {
+      accounts: 'Total Free Sign Ups — growth over time',
+      signups:  'New Sign Ups — last 30 days by week',
+      tickets:  'Open Tickets by status',
+      frt:      'Avg First Response — business hours, weekly',
+    };
+
+    document.querySelectorAll('[data-chart-id]').forEach(el => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = el.dataset.chartId;
+        if (CHART_TITLES[id]) openExpand(id, CHART_TITLES[id]);
+      });
+    });
+
+    // ── Resize all mini charts ────────────────────────────────────────────────
+    window.addEventListener('resize', () => {
+      Object.values(miniCharts).forEach(c => c.resize());
+      if (expandChart) expandChart.resize();
     });
   </script>
 </body>
