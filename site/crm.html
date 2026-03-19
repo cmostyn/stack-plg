@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer List — PLG-Hub</title>
   <link rel="stylesheet" href="style.css">
-  <script src="auth.js"></script>
+
 </head>
 <body>
 
@@ -44,6 +44,7 @@
       </div>
       <div class="crm-toolbar-right">
         <span id="crm-count" class="crm-count"></span>
+        <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset layout</button>
       </div>
     </div>
 
@@ -824,6 +825,16 @@
       document.querySelectorAll('#crm-type-pills .crm-pill').forEach(p =>
         p.classList.toggle('crm-pill--active', p === pill)
       );
+      render();
+    });
+
+    document.getElementById('crm-reset-layout').addEventListener('click', () => {
+      colOrder   = [...DEFAULT_COL_ORDER];
+      colWidths  = { ...DEFAULT_COL_WIDTHS };
+      frozenCols = new Set(['name']);
+      localStorage.removeItem('plg_crm_col_order');
+      localStorage.removeItem('plg_crm_col_widths');
+      localStorage.removeItem('plg_crm_frozen');
       render();
     });
 
