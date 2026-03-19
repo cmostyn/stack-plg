@@ -47,44 +47,74 @@ function externalDomains(transcript) {
   return [...domains];
 }
 
+async function fetchAllTranscripts(fromDate) {
+  const transcripts = [];
+  let skip = 0;
+  const limit = 50;
+
+  while (true) {
+    const data = await rpc('fireflies_list_transcripts', {
+      body: { variables: { fromDate, limit, skip } },
+      query: {},
+    });
+    const page = data?.data ?? [];
+    transcripts.push(...page);
+    if (page.length < limit) break;
+    skip += limit;
+  }
+
+  return transcripts;
+}
+
 async function main() {
-  const fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const fromDate = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
   console.log(`[fireflies] Fetching transcripts from ${fromDate}...`);
 
-  const data = await rpc('fireflies_list_transcripts', {
-    body: { variables: { fromDate, limit: 50 } },
-    query: {},
-  });
-
-  const transcripts = data?.data ?? [];
+  const transcripts = await fetchAllTranscripts(fromDate);
   console.log(`[fireflies] Found ${transcripts.length} transcripts`);
 
-  // Only fetch detail for transcripts that have external participants
+  // Only keep transcripts that have external participants
   const externalTranscripts = transcripts.filter(t => externalDomains(t).length > 0);
-  console.log(`[fireflies] Fetching action items for ${externalTranscripts.length} external transcripts...`);
+
+  // Build domain → most-recent transcript map (avoid fetching detail for older calls)
+  const latestByDomain = new Map();
+  for (const t of externalTranscripts) {
+    for (const domain of externalDomains(t)) {
+      const existing = latestByDomain.get(domain);
+      if (!existing || t.dateString > existing.dateString) {
+        latestByDomain.set(domain, t);
+      }
+    }
+  }
+
+  // Also keep all transcripts per domain for the card (action items)
+  // but only fetch detail for the most-recent transcript per domain
+  const toFetchDetail = new Set([...latestByDomain.values()].map(t => t.id));
+  console.log(`[fireflies] Fetching action items for ${toFetchDetail.size} most-recent transcripts (one per domain)...`);
+
+  const detailCache = new Map(); // id → actionItems[]
+  for (const t of externalTranscripts) {
+    if (!toFetchDetail.has(t.id) || detailCache.has(t.id)) continue;
+    try {
+      const detail = await rpc('fireflies_get_transcript', { path: { id: t.id } });
+      const raw = detail?.data?.summary?.action_items ?? '';
+      detailCache.set(t.id, raw.split('\n').map(s => s.trim()).filter(Boolean));
+    } catch (e) {
+      console.warn(`[fireflies] Could not fetch detail for ${t.id}: ${e.message}`);
+      detailCache.set(t.id, []);
+    }
+  }
 
   const output = [];
   for (const t of externalTranscripts) {
-    let actionItems = [];
-    try {
-      const detail = await rpc('fireflies_get_transcript', {
-        path: { id: t.id },
-      });
-      // action_items is a multi-line string inside summary; split into array
-      const raw = detail?.data?.summary?.action_items ?? '';
-      actionItems = raw.split('\n').map(s => s.trim()).filter(Boolean);
-    } catch (e) {
-      console.warn(`[fireflies] Could not fetch detail for ${t.id}: ${e.message}`);
-    }
-
     const domains = externalDomains(t);
     for (const domain of domains) {
       output.push({
         domain,
         id:           t.id,
         title:        t.title,
-        date:         t.dateString,   // ISO 8601 string — used for lexicographic sort
-        action_items: actionItems,
+        date:         t.dateString,
+        action_items: detailCache.get(t.id) ?? [],
       });
     }
   }
