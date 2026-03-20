@@ -459,6 +459,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script>
     const WORKER_URL = 'https://stack-plg-actions.charlie-9e7.workers.dev';
 
@@ -674,6 +675,108 @@
     });
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ── Animations ───────────────────────────────────────────
+    // Self-contained block. Wraps render() and openModal() — does not modify
+    // any other state. All animations guarded by prefers-reduced-motion.
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Animation 1 — task row stagger entrance ───────────────────────────
+      // Wrap render() so that after the list is rebuilt the rows stagger in.
+      // The existing CSS keyframe animation on .task-row is neutralised via JS
+      // (animation: none) before anime takes over, keeping the two systems from
+      // fighting each other. Capped at 20 rows.
+      var _tasksFirstRender = true;
+      var _originalRender = render;
+
+      render = function () {
+        _originalRender.apply(this, arguments);
+
+        var rows = Array.prototype.slice.call(
+          document.querySelectorAll('#tasks-list .task-row'),
+          0, 20
+        );
+
+        if (rows.length === 0) { _tasksFirstRender = false; return; }
+
+        if (!reduced) {
+          // Cancel the CSS keyframe so anime controls the entrance exclusively
+          rows.forEach(function (row) {
+            row.style.animation = 'none';
+            row.style.opacity   = '0';
+            row.style.transform = 'translateY(12px)';
+          });
+
+          anime({
+            targets: rows,
+            opacity:    [0, 1],
+            translateY: [12, 0],
+            duration:   350,
+            easing:     'cubicBezier(.4, 0, .2, 1)',
+            delay:      anime.stagger(40),
+          });
+        } else {
+          // Reduced motion: just make rows visible immediately
+          rows.forEach(function (row) {
+            row.style.animation = 'none';
+            row.style.opacity   = '1';
+            row.style.transform = 'none';
+          });
+        }
+
+        _tasksFirstRender = false;
+      };
+
+      // ── Animation 2 — filter / tab pulse ─────────────────────────────────
+      // Dims existing rows before the filter re-renders them. Uses capture
+      // phase so it fires before the existing listeners that call render().
+      // Skipped on the very first render (no rows exist yet).
+      function pulseRows() {
+        if (_tasksFirstRender) return;
+        if (reduced) return;
+        var rows = document.querySelectorAll('#tasks-list .task-row');
+        if (rows.length === 0) return;
+        anime({
+          targets:  rows,
+          opacity:  [1, 0.3, 1],
+          duration: 250,
+          easing:   'cubicBezier(.4, 0, .2, 1)',
+        });
+      }
+
+      document.getElementById('tasks-tabs').addEventListener('click', function (e) {
+        if (e.target.closest('.tasks-tab')) pulseRows();
+      }, true);
+
+      document.getElementById('priority-pills').addEventListener('click', function (e) {
+        if (e.target.closest('.priority-pill')) pulseRows();
+      }, true);
+
+      document.getElementById('customer-filter').addEventListener('change', pulseRows, true);
+
+      // ── Animation 3 — modal entrance ─────────────────────────────────────
+      // Wrap openModal() so the .modal panel animates in after the overlay
+      // becomes visible. Matches the crm.html pattern exactly.
+      var _originalOpenModal = openModal;
+
+      openModal = function () {
+        _originalOpenModal.apply(this, arguments);
+
+        if (!reduced) {
+          var modal = document.querySelector('#new-task-overlay .modal');
+          if (!modal) return;
+          anime({
+            targets:    modal,
+            opacity:    [0, 1],
+            translateY: [8, 0],
+            scale:      [0.97, 1],
+            duration:   250,
+            easing:     'cubicBezier(.4, 0, .2, 1)',
+          });
+        }
+      };
+    }());
 
     // ── Load ─────────────────────────────────────────────────
 
