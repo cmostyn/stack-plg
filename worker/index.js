@@ -184,6 +184,29 @@ export default {
         return json({ hubspot_id: String(hubspot_id), body: notes });
       }
 
+      // GET /settings — returns all settings as { key: value }
+      if (request.method === 'GET' && pathname === '/settings') {
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL)').run();
+        const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
+        return json(Object.fromEntries(results.map(r => [r.key, r.value])));
+      }
+
+      // POST /settings — body: { key, value }
+      if (request.method === 'POST' && pathname === '/settings') {
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL)').run();
+        let body;
+        try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
+        const { key, value } = body ?? {};
+        if (!key || typeof key !== 'string') return json({ error: 'Missing required field: key' }, 400);
+        if (typeof value !== 'string') return json({ error: 'value must be a string' }, 400);
+        const updated_at = new Date().toISOString();
+        await env.DB
+          .prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at')
+          .bind(key, value, updated_at)
+          .run();
+        return json({ key, value });
+      }
+
       return json({ error: 'Not found' }, 404);
     } catch (e) {
       return json({ error: e.message }, 500);
