@@ -93,6 +93,88 @@ if (sets.length === 0) return json({ error: 'No fields to update' }, 400);
         return new Response(null, { status: 204, headers: corsHeaders });
       }
 
+      // GET /health
+      if (request.method === 'GET' && pathname === '/health') {
+        const { results } = await env.DB
+          .prepare('SELECT hubspot_id, status FROM health ORDER BY hubspot_id')
+          .all();
+        return json(results);
+      }
+
+      // POST /health
+      if (request.method === 'POST' && pathname === '/health') {
+        let body;
+        try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
+        const { hubspot_id, status } = body ?? {};
+        if (!hubspot_id) return json({ error: 'Missing required field: hubspot_id' }, 400);
+        const updated_at = new Date().toISOString();
+        if (!status) {
+          await env.DB.prepare('DELETE FROM health WHERE hubspot_id = ?').bind(String(hubspot_id)).run();
+          return json({ hubspot_id: String(hubspot_id), status: null });
+        }
+        const validStatuses = ['risk', 'fair', 'good', 'excellent'];
+        if (!validStatuses.includes(status)) {
+          return json({ error: `status must be one of: ${validStatuses.join(', ')}` }, 400);
+        }
+        await env.DB
+          .prepare('INSERT INTO health (hubspot_id, status, updated_at) VALUES (?, ?, ?) ON CONFLICT(hubspot_id) DO UPDATE SET status = excluded.status, updated_at = excluded.updated_at')
+          .bind(String(hubspot_id), status, updated_at)
+          .run();
+        return json({ hubspot_id: String(hubspot_id), status });
+      }
+
+      // DELETE /health/:hubspot_id
+      const healthIdMatch = pathname.match(/^\/health\/([^/]+)$/);
+      if (request.method === 'DELETE' && healthIdMatch) {
+        const hid = decodeURIComponent(healthIdMatch[1]);
+        await env.DB.prepare('DELETE FROM health WHERE hubspot_id = ?').bind(hid).run();
+        return new Response(null, { status: 204, headers: corsHeaders });
+      }
+
+      // POST /health/bulk
+      if (request.method === 'POST' && pathname === '/health/bulk') {
+        let body;
+        try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
+        const updates = body?.updates;
+        if (!Array.isArray(updates) || updates.length === 0) {
+          return json({ error: 'updates must be a non-empty array' }, 400);
+        }
+        const validStatuses = ['risk', 'fair', 'good', 'excellent'];
+        const updated_at = new Date().toISOString();
+        const stmt = env.DB.prepare(
+          'INSERT INTO health (hubspot_id, status, updated_at) VALUES (?, ?, ?) ON CONFLICT(hubspot_id) DO UPDATE SET status = excluded.status, updated_at = excluded.updated_at'
+        );
+        await env.DB.batch(
+          updates
+            .filter(u => u.hubspot_id && validStatuses.includes(u.status))
+            .map(u => stmt.bind(String(u.hubspot_id), u.status, updated_at))
+        );
+        return json({ updated: updates.length });
+      }
+
+      // GET /notes
+      if (request.method === 'GET' && pathname === '/notes') {
+        const { results } = await env.DB
+          .prepare('SELECT hubspot_id, body FROM notes ORDER BY hubspot_id')
+          .all();
+        return json(results);
+      }
+
+      // POST /notes
+      if (request.method === 'POST' && pathname === '/notes') {
+        let body;
+        try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
+        const { hubspot_id, notes } = body ?? {};
+        if (!hubspot_id) return json({ error: 'Missing required field: hubspot_id' }, 400);
+        if (typeof notes !== 'string') return json({ error: 'notes must be a string' }, 400);
+        const updated_at = new Date().toISOString();
+        await env.DB
+          .prepare('INSERT INTO notes (hubspot_id, body, updated_at) VALUES (?, ?, ?) ON CONFLICT(hubspot_id) DO UPDATE SET body = excluded.body, updated_at = excluded.updated_at')
+          .bind(String(hubspot_id), notes, updated_at)
+          .run();
+        return json({ hubspot_id: String(hubspot_id), body: notes });
+      }
+
       return json({ error: 'Not found' }, 404);
     } catch (e) {
       return json({ error: e.message }, 500);
