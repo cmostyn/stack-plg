@@ -761,6 +761,8 @@ a:hover {
   color: var(--so-text-header);
 }
 
+.col-menu-item--active { color: var(--so-green-dark); font-weight: 600; }
+
 .col-menu-divider {
   height: 1px;
   background: var(--so-neutral-10);
@@ -2387,6 +2389,9 @@ a.dash-tile-source:hover {
 .health--fair      .health-dot { background: #F59E0B; }
 .health--risk      { background: rgba(196, 62, 62, 0.10); color: #C43E3E; }
 .health--risk      .health-dot { background: #C43E3E; }
+
+.crm-health-cell--clickable { cursor: pointer; }
+.crm-health-cell--clickable:hover { background: var(--so-foreground); }
 
 /* Expandable row */
 .notes-chevron {
