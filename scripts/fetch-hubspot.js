@@ -138,10 +138,10 @@ async function fetchTypeHistory(companies) {
         );
         const history = data?.result?.propertiesWithHistory?.type
           ?? data?.propertiesWithHistory?.type ?? [];
-        // Most recent entry where value matches the company's current type
+        // First time this type value was assigned
         const entry = history
           .filter(h => h.value === c.type)
-          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+          .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
         if (entry) result.set(c.hubspot_id, entry.timestamp);
       } catch (e) {
         console.warn(`[hubspot] type history unavailable for ${c.hubspot_id}: ${e.message}`);
