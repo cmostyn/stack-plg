@@ -2617,6 +2617,42 @@ a.dash-tile-source:hover {
 }
 .crm-bulk-clear-btn:hover { color: #fff; }
 
+.crm-strategic-wrap { position: relative; }
+
+.crm-pill-chevron { font-size: 10px; margin-left: 3px; }
+
+.crm-strategic-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  padding: 4px;
+  z-index: 50;
+  min-width: 160px;
+}
+.crm-strategic-dropdown--open { display: block; }
+
+.crm-strategic-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 12px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-body);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.crm-strategic-opt:hover { background: var(--so-foreground); }
+.crm-strategic-opt--active { color: var(--so-green-dark); font-weight: 600; }
+
 /* Purpose banner */
 .plg-purpose-banner {
   background: #fff;

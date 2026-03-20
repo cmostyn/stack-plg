@@ -38,14 +38,19 @@
           <button class="crm-pill crm-pill--active" data-type="">All</button>
           <button class="crm-pill" data-type="Customer - PLG">PLG</button>
           <button class="crm-pill" data-type="Customer - SLG">SLG</button>
-          <button class="crm-pill" data-type="Customer">Cust</button>
+          <button class="crm-pill" data-type="Customer">Customers</button>
         </div>
-        <div class="crm-type-pills crm-strategic-pills" id="crm-strategic-pills">
-          <button class="crm-pill crm-pill--active" data-strategic="">All accounts</button>
-          <button class="crm-pill" data-strategic="Yes - Agentic">Agentic</button>
-          <button class="crm-pill" data-strategic="Yes - Non Agentic">Non-agentic</button>
-          <button class="crm-pill" data-strategic="Managed Service Candidate">Managed svc</button>
-          <button class="crm-pill" data-strategic="No">Non-strategic</button>
+        <div class="crm-strategic-wrap" id="crm-strategic-wrap">
+          <button class="crm-pill" id="crm-strategic-btn">
+            All accounts <span class="crm-pill-chevron">▾</span>
+          </button>
+          <div class="crm-strategic-dropdown" id="crm-strategic-dropdown">
+            <button class="crm-strategic-opt crm-strategic-opt--active" data-strategic="">All accounts</button>
+            <button class="crm-strategic-opt" data-strategic="Yes - Agentic">Agentic</button>
+            <button class="crm-strategic-opt" data-strategic="Yes - Non Agentic">Non-agentic</button>
+            <button class="crm-strategic-opt" data-strategic="Managed Service Candidate">Managed svc</button>
+            <button class="crm-strategic-opt" data-strategic="No">Non-strategic</button>
+          </div>
         </div>
       </div>
       <div class="crm-toolbar-right">
@@ -984,13 +989,32 @@
       render();
     });
 
-    document.getElementById('crm-strategic-pills').addEventListener('click', e => {
-      const pill = e.target.closest('.crm-pill');
-      if (!pill) return;
-      strategicFilter = pill.dataset.strategic;
-      document.querySelectorAll('#crm-strategic-pills .crm-pill').forEach(p =>
-        p.classList.toggle('crm-pill--active', p === pill)
+    // Strategic filter dropdown
+    const strategicBtn = document.getElementById('crm-strategic-btn');
+    const strategicDropdown = document.getElementById('crm-strategic-dropdown');
+
+    strategicBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      strategicDropdown.classList.toggle('crm-strategic-dropdown--open');
+    });
+
+    document.addEventListener('click', () => {
+      strategicDropdown.classList.remove('crm-strategic-dropdown--open');
+    });
+
+    strategicDropdown.addEventListener('click', e => {
+      const opt = e.target.closest('.crm-strategic-opt');
+      if (!opt) return;
+      strategicFilter = opt.dataset.strategic;
+      // Update label on trigger button
+      strategicBtn.innerHTML = escHtml(opt.textContent.trim()) + ' <span class="crm-pill-chevron">▾</span>';
+      // Update active state
+      strategicDropdown.querySelectorAll('.crm-strategic-opt').forEach(o =>
+        o.classList.toggle('crm-strategic-opt--active', o === opt)
       );
+      // Mark button as active if not "All accounts"
+      strategicBtn.classList.toggle('crm-pill--active', !!strategicFilter);
+      strategicDropdown.classList.remove('crm-strategic-dropdown--open');
       render();
     });
 
@@ -1001,6 +1025,12 @@
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
       localStorage.removeItem('plg_crm_frozen');
+      strategicFilter = '';
+      strategicBtn.innerHTML = 'All accounts <span class="crm-pill-chevron">▾</span>';
+      strategicBtn.classList.remove('crm-pill--active');
+      strategicDropdown.querySelectorAll('.crm-strategic-opt').forEach((o, i) =>
+        o.classList.toggle('crm-strategic-opt--active', i === 0)
+      );
       render();
     });
 
@@ -1507,8 +1537,8 @@
       document.getElementById('crm-type-pills').addEventListener('click', function (e) {
         if (e.target.closest('.crm-pill')) pulseRows();
       }, true);
-      document.getElementById('crm-strategic-pills').addEventListener('click', function (e) {
-        if (e.target.closest('.crm-pill')) pulseRows();
+      document.getElementById('crm-strategic-dropdown').addEventListener('click', function (e) {
+        if (e.target.closest('.crm-strategic-opt')) pulseRows();
       }, true);
 
       // ── Animation 3 — modal/card entrance ────────────────────────────────────
