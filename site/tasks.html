@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Tasks — PLG-Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="http://go/plg-hub" class="site-logo">
+        <svg class="site-logo-svg" viewBox="6 2 28 38" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M20 4 C12 4 8 10 8 16 L8 28 C8 34 12 38 18 38 L22 38 C28 38 32 34 32 28 L32 14 C32 10 29 8 26 8 L24 8 C21 8 18 10 18 14 L18 26 C18 28 20 30 22 30 L24 30 C26 30 28 28 28 26 L28 14"/></svg>
+        PLG-Hub
+      </a>
+      <nav class="site-nav">
+        <a href="dashboard.html" class="site-nav-link">Dashboard</a>
+        <a href="crm.html" class="site-nav-link">Customer List</a>
+        <a href="index.html" class="site-nav-link">Customer Support <span class="nav-coming-soon">soon</span></a>
+        <a href="tasks.html" class="site-nav-link site-nav-link--active">CS Tasks</a>
+        <a href="connectors.html" class="site-nav-link">Connectors</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <!-- Toolbar -->
+    <div class="tasks-toolbar">
+      <div class="tasks-toolbar-left">
+        <!-- Tab pills -->
+        <div class="tasks-tabs" id="tasks-tabs">
+          <button class="tasks-tab tasks-tab--active" data-tab="upcoming">Upcoming <span class="tasks-tab-count" id="count-upcoming"></span></button>
+          <button class="tasks-tab" data-tab="overdue">Overdue <span class="tasks-tab-count tasks-tab-count--overdue" id="count-overdue"></span></button>
+          <button class="tasks-tab" data-tab="completed">Completed <span class="tasks-tab-count" id="count-completed"></span></button>
+        </div>
+      </div>
+      <div class="tasks-toolbar-right">
+        <!-- Priority filter -->
+        <div class="crm-type-pills" id="priority-pills">
+          <button class="crm-pill crm-pill--active" data-priority="">All</button>
+          <button class="crm-pill" data-priority="high">High</button>
+          <button class="crm-pill" data-priority="med">Med</button>
+          <button class="crm-pill" data-priority="low">Low</button>
+        </div>
+        <!-- Customer filter -->
+        <select id="customer-filter" class="tasks-customer-filter">
+          <option value="">All customers</option>
+        </select>
+        <!-- New task button -->
+        <button class="crm-layout-btn crm-layout-btn--save" id="new-task-btn">+ New task</button>
+      </div>
+    </div>
+
+    <!-- Task list -->
+    <div class="tasks-card">
+      <div id="tasks-list" class="tasks-list">
+        <div class="crm-placeholder" style="padding:32px;text-align:center">Loading…</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- New task modal -->
+  <div id="new-task-overlay" class="card-overlay">
+    <div class="card-modal" style="max-width:440px">
+      <div class="card-modal-header">
+        <div class="card-modal-company">New task</div>
+        <button class="card-modal-close" id="new-task-close">×</button>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Task name</div>
+          <input type="text" id="nt-name" class="card-action-input" style="width:100%;font-size:14px;padding:8px 10px" placeholder="What needs to be done?" maxlength="200">
+        </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Customer</div>
+          <select id="nt-customer" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
+            <option value="">Select customer…</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div style="flex:1">
+            <div class="field-label" style="margin-bottom:6px">Priority</div>
+            <select id="nt-priority" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
+              <option value="high">High</option>
+              <option value="med" selected>Med</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <div class="field-label" style="margin-bottom:6px">Due date</div>
+            <input type="date" id="nt-due" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+          <button class="card-action-cancel" id="nt-cancel">Cancel</button>
+          <button class="card-action-save" id="nt-save" style="padding:8px 20px;font-size:14px">Add task</button>
+        </div>
+        <div id="nt-error" style="font-size:12px;color:#C43E3E;min-height:16px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://stack-plg-actions.charlie-9e7.workers.dev';
+
+    let allActions  = [];
+    let companyMap  = new Map(); // hubspot_id → name
+    let activeTab   = 'upcoming';
+    let activePriority = '';
+    let activeCustomer = '';
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
+    function isOverdue(action) {
+      return !action.done && action.due_date && action.due_date < today;
+    }
+
+    function tabFor(action) {
+      if (action.done) return 'completed';
+      if (isOverdue(action)) return 'overdue';
+      return 'upcoming';
+    }
+
+    function priorityLabel(p) {
+      return { high: 'High', med: 'Med', low: 'Low' }[p] ?? p;
+    }
+
+    function priorityClass(p) {
+      return { high: 'priority-high', med: 'priority-med', low: 'priority-low' }[p] ?? '';
+    }
+
+    function filteredActions() {
+      return allActions.filter(a => {
+        if (tabFor(a) !== activeTab) return false;
+        if (activePriority && a.priority !== activePriority) return false;
+        if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+        return true;
+      });
+    }
+
+    function updateCounts() {
+      const tabs = ['upcoming', 'overdue', 'completed'];
+      tabs.forEach(tab => {
+        const count = allActions.filter(a => {
+          if (tabFor(a) !== tab) return false;
+          if (activePriority && a.priority !== activePriority) return false;
+          if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+          return true;
+        }).length;
+        const el = document.getElementById(`count-${tab}`);
+        if (el) el.textContent = count > 0 ? count : '';
+      });
+    }
+
+    function render() {
+      const list = document.getElementById('tasks-list');
+      const rows = filteredActions();
+      updateCounts();
+
+      if (rows.length === 0) {
+        list.innerHTML = `<div class="ff-empty" style="padding:40px;text-align:center">No ${activeTab} tasks${activePriority ? ` · ${priorityLabel(activePriority)} priority` : ''}${activeCustomer ? ` · ${escHtml(companyMap.get(activeCustomer) ?? '')}` : ''}</div>`;
+        return;
+      }
+
+      list.innerHTML = rows.map(a => {
+        const customerName = companyMap.get(String(a.hubspot_id)) ?? '—';
+        const dueDateStr   = a.due_date ? formatDate(a.due_date) : '';
+        const overdue      = isOverdue(a);
+        return `
+          <div class="task-row${a.done ? ' task-row--done' : ''}${overdue ? ' task-row--overdue' : ''}" data-id="${escHtml(a.id)}">
+            <button class="task-check${a.done ? ' done' : ''}" data-id="${escHtml(a.id)}" aria-label="${a.done ? 'Mark open' : 'Mark done'}">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="${a.done ? '' : 'display:none'}"><polyline points="2,6 5,9 10,3"/></svg>
+            </button>
+            <div class="task-name">${escHtml(a.name)}</div>
+            <div class="task-customer">${escHtml(customerName)}</div>
+            <span class="priority-badge ${priorityClass(a.priority)}">${priorityLabel(a.priority)}</span>
+            <div class="task-due${overdue ? ' task-due--overdue' : ''}">${escHtml(dueDateStr)}</div>
+            <button class="task-delete" data-id="${escHtml(a.id)}" aria-label="Delete">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function populateCustomerFilter() {
+      // Collect all customers that have at least one action
+      const seen = new Map();
+      for (const a of allActions) {
+        const hid  = String(a.hubspot_id);
+        if (!seen.has(hid)) seen.set(hid, companyMap.get(hid) ?? hid);
+      }
+      const sorted = [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+
+      const sel = document.getElementById('customer-filter');
+      const current = sel.value;
+      sel.innerHTML = '<option value="">All customers</option>' +
+        sorted.map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === current ? ' selected' : ''}>${escHtml(name)}</option>`).join('');
+
+      // Also populate new task modal
+      const ntSel = document.getElementById('nt-customer');
+      const ntCurrent = ntSel.value;
+      ntSel.innerHTML = '<option value="">Select customer…</option>' +
+        [...companyMap.entries()]
+          .sort((a, b) => a[1].localeCompare(b[1]))
+          .map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === ntCurrent ? ' selected' : ''}>${escHtml(name)}</option>`).join('');
+    }
+
+    // --- API ---
+
+    async function toggleDone(id) {
+      const action = allActions.find(a => a.id === id);
+      if (!action) return;
+      const newDone = !action.done;
+      try {
+        const res = await fetch(`${WORKER_URL}/actions/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: newDone }),
+        });
+        if (!res.ok) throw new Error();
+        action.done = newDone ? 1 : 0;
+        render();
+      } catch { /* silent */ }
+    }
+
+    async function deleteAction(id) {
+      try {
+        const res = await fetch(`${WORKER_URL}/actions/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        allActions = allActions.filter(a => a.id !== id);
+        render();
+        populateCustomerFilter();
+      } catch { /* silent */ }
+    }
+
+    async function createAction(hubspot_id, name, priority, due_date) {
+      const body = { hubspot_id: String(hubspot_id), name, priority };
+      if (due_date) body.due_date = due_date;
+      const res = await fetch(`${WORKER_URL}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    // --- Event delegation ---
+
+    document.getElementById('tasks-list').addEventListener('click', async e => {
+      const checkBtn = e.target.closest('.task-check');
+      if (checkBtn) { await toggleDone(checkBtn.dataset.id); return; }
+
+      const delBtn = e.target.closest('.task-delete');
+      if (delBtn) { await deleteAction(delBtn.dataset.id); return; }
+    });
+
+    document.getElementById('tasks-tabs').addEventListener('click', e => {
+      const tab = e.target.closest('.tasks-tab');
+      if (!tab) return;
+      activeTab = tab.dataset.tab;
+      document.querySelectorAll('.tasks-tab').forEach(t =>
+        t.classList.toggle('tasks-tab--active', t === tab)
+      );
+      render();
+    });
+
+    document.getElementById('priority-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      activePriority = pill.dataset.priority;
+      document.querySelectorAll('#priority-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
+      render();
+    });
+
+    document.getElementById('customer-filter').addEventListener('change', e => {
+      activeCustomer = e.target.value;
+      render();
+    });
+
+    // --- New task modal ---
+    function openNewTask() {
+      document.getElementById('new-task-overlay').classList.add('card-overlay--open');
+      document.getElementById('nt-name').focus();
+    }
+    function closeNewTask() {
+      document.getElementById('new-task-overlay').classList.remove('card-overlay--open');
+      document.getElementById('nt-name').value = '';
+      document.getElementById('nt-due').value = '';
+      document.getElementById('nt-error').textContent = '';
+    }
+
+    document.getElementById('new-task-btn').addEventListener('click', openNewTask);
+    document.getElementById('new-task-close').addEventListener('click', closeNewTask);
+    document.getElementById('nt-cancel').addEventListener('click', closeNewTask);
+    document.getElementById('new-task-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('new-task-overlay')) closeNewTask();
+    });
+
+    document.getElementById('nt-save').addEventListener('click', async () => {
+      const name      = document.getElementById('nt-name').value.trim();
+      const hubspot_id = document.getElementById('nt-customer').value;
+      const priority  = document.getElementById('nt-priority').value;
+      const due_date  = document.getElementById('nt-due').value || null;
+      const errEl     = document.getElementById('nt-error');
+
+      if (!name)        { errEl.textContent = 'Enter a task name.'; document.getElementById('nt-name').focus(); return; }
+      if (!hubspot_id)  { errEl.textContent = 'Select a customer.'; document.getElementById('nt-customer').focus(); return; }
+      errEl.textContent = '';
+
+      try {
+        const action = await createAction(hubspot_id, name, priority, due_date);
+        allActions.unshift(action);
+        populateCustomerFilter();
+        // Switch to the right tab
+        activeTab = tabFor(action);
+        document.querySelectorAll('.tasks-tab').forEach(t =>
+          t.classList.toggle('tasks-tab--active', t.dataset.tab === activeTab)
+        );
+        closeNewTask();
+        render();
+      } catch (e) {
+        errEl.textContent = "Couldn't save — try again.";
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeNewTask();
+    });
+
+    // --- Load ---
+    Promise.all([
+      fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(8000) }).then(r => r.json()),
+      fetch('./data/hubspot.json').then(r => r.json()),
+    ]).then(([actions, companies]) => {
+      allActions = actions;
+      companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
+      populateCustomerFilter();
+      render();
+    }).catch(() => {
+      document.getElementById('tasks-list').innerHTML =
+        '<p class="crm-error">Tasks couldn\'t be loaded. Try refreshing.</p>';
+    });
+  </script>
+</body>
+</html>
