@@ -91,6 +91,7 @@
   <div id="card-overlay" class="card-overlay"></div>
   <div id="inline-add-popover" class="inline-add-popover"></div>
   <div id="col-menu" class="col-menu"></div>
+  <div id="health-menu" class="col-menu"></div>
 
   <script>
     // --- Constants ---
@@ -979,6 +980,10 @@
 
       // notesMap: hubspot_id (string) → note body string
       notesMap = new Map(notesData.map(n => [String(n.hubspot_id), n.body]));
+      // Merge localStorage notes as fallback for any hid not yet on the server
+      Object.entries(localNotes).forEach(([hid, body]) => {
+        if (body && !notesMap.has(hid)) notesMap.set(hid, body);
+      });
 
       allRows = hubspot;
       render();
@@ -1127,6 +1132,13 @@
         const colToShow = item.dataset.col;
         if (colToShow) { hiddenCols.delete(colToShow); saveHiddenCols(); render(); }
       }
+      closeColMenu();
+    });
+
+    document.getElementById('health-menu').addEventListener('click', e => {
+      const item = e.target.closest('.col-menu-item');
+      if (!item) return;
+      const action = item.dataset.action;
       if (action === 'set-health') {
         const hid   = item.dataset.hid;
         const value = item.dataset.value;
@@ -1140,15 +1152,19 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ hubspot_id: hid, status: value || null }),
         }).catch(() => {});
-        closeColMenu();
+        const menu = document.getElementById('health-menu');
+        menu.classList.remove('col-menu--open');
+        menu.dataset.hid = '';
         render();
-        return;
       }
-      closeColMenu();
     });
 
     document.addEventListener('click', e => {
       if (!e.target.closest('#col-menu') && !e.target.closest('th[data-col]')) closeColMenu();
+      if (!e.target.closest('#health-menu') && !e.target.closest('td.crm-health-cell--clickable')) {
+        const hm = document.getElementById('health-menu');
+        if (hm) { hm.classList.remove('col-menu--open'); hm.dataset.hid = ''; }
+      }
     }, true);
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeColMenu(); });
@@ -1328,8 +1344,14 @@
       const hid = String(td.dataset.hubspotId ?? '');
       if (!hid) return;
 
-      const menu = document.getElementById('col-menu');
-      activeMenuCol = `__health__${hid}`;
+      // Close if same cell clicked again
+      const menu = document.getElementById('health-menu');
+      if (menu.dataset.hid === hid && menu.classList.contains('col-menu--open')) {
+        menu.classList.remove('col-menu--open');
+        menu.dataset.hid = '';
+        return;
+      }
+
       const current = healthMap.get(hid) ?? '';
       const opts = [
         { value: 'excellent', label: 'Excellent' },
@@ -1341,6 +1363,7 @@
       menu.innerHTML = opts.map(o =>
         `<button class="col-menu-item${o.value === current ? ' col-menu-item--active' : ''}" data-action="set-health" data-hid="${escHtml(hid)}" data-value="${escHtml(o.value)}">${escHtml(o.label)}</button>`
       ).join('');
+      menu.dataset.hid = hid;
       const rect = td.getBoundingClientRect();
       menu.style.top  = `${rect.bottom + window.scrollY}px`;
       menu.style.left = `${rect.left  + window.scrollX}px`;
