@@ -5,6 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Tasks — PLG-Hub</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .task-row--new {
+      background: #F9F9F8;
+      border-bottom: 1px solid #E0DEDC;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+    .int-input {
+      font-size: 13px;
+      padding: 5px 8px;
+      border: 1px solid #E0DEDC;
+      border-radius: 6px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .int-input:focus { border-color: #00AF66; }
+    .int-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #E0DEDC;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .int-dropdown-item {
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #222121;
+    }
+    .int-dropdown-item:hover,
+    .int-dropdown-item:focus {
+      background: #F0FDF4;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -59,41 +103,6 @@
     </div>
 
   </main>
-
-  <!-- New task modal -->
-  <div id="new-task-overlay" class="card-overlay">
-    <div class="card-modal" style="max-width:440px">
-      <div class="card-modal-header">
-        <div class="card-modal-company">New task</div>
-        <button class="card-modal-close" id="new-task-close">×</button>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
-        <div>
-          <div class="field-label" style="margin-bottom:6px">Task name</div>
-          <input type="text" id="nt-name" class="card-action-input" style="width:100%;font-size:14px;padding:8px 10px" placeholder="What needs to be done?" maxlength="200">
-        </div>
-        <div>
-          <div class="field-label" style="margin-bottom:6px">Customer</div>
-          <select id="nt-customer" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
-            <option value="">Select customer…</option>
-          </select>
-        </div>
-        <div>
-          <div class="field-label" style="margin-bottom:6px">Priority</div>
-          <select id="nt-priority" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
-            <option value="high">High</option>
-            <option value="med" selected>Med</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
-          <button class="card-action-cancel" id="nt-cancel">Cancel</button>
-          <button class="card-action-save" id="nt-save" style="padding:8px 20px;font-size:14px">Add task</button>
-        </div>
-        <div id="nt-error" style="font-size:12px;color:#C43E3E;min-height:16px"></div>
-      </div>
-    </div>
-  </div>
 
   <script>
     const WORKER_URL = 'https://stack-plg-actions.charlie-9e7.workers.dev';
@@ -197,18 +206,6 @@
       }).join('');
     }
 
-    function populateCustomerFilter() {
-      // Customer filter select removed; handled by inline typeahead (added in next task)
-
-      // Populate new task modal
-      const ntSel = document.getElementById('nt-customer');
-      const ntCurrent = ntSel.value;
-      ntSel.innerHTML = '<option value="">Select customer…</option>' +
-        [...companyMap.entries()]
-          .sort((a, b) => a[1].localeCompare(b[1]))
-          .map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === ntCurrent ? ' selected' : ''}>${escHtml(name)}</option>`).join('');
-    }
-
     // --- API ---
 
     async function toggleDone(id) {
@@ -233,7 +230,6 @@
         if (!res.ok) throw new Error();
         allActions = allActions.filter(a => a.id !== id);
         render();
-        populateCustomerFilter();
       } catch { /* silent */ }
     }
 
@@ -283,60 +279,112 @@
       render();
     });
 
-    // --- New task modal ---
-    function openNewTask() {
-      document.getElementById('new-task-overlay').classList.add('card-overlay--open');
-      document.getElementById('nt-name').focus();
+    // --- Inline new task ---
+
+    function openInlineNewTask() {
+      if (document.getElementById('inline-new-task-row')) return;
+
+      const customers = [...companyMap.entries()]
+        .sort((a, b) => a[1].localeCompare(b[1]));
+
+      const row = document.createElement('div');
+      row.id = 'inline-new-task-row';
+      row.className = 'task-row task-row--new';
+      row.innerHTML = `
+        <span style="width:20px;flex-shrink:0"></span>
+        <input id="int-name" type="text" class="card-action-input int-input" placeholder="Task name…" maxlength="200" style="flex:2;min-width:0">
+        <div style="position:relative;flex:1;min-width:0">
+          <input id="int-customer" type="text" class="card-action-input int-input" placeholder="Customer…" autocomplete="off" style="width:100%">
+          <div id="int-customer-dropdown" class="int-dropdown" style="display:none"></div>
+        </div>
+        <span class="priority-badge priority-med" style="flex-shrink:0">Med</span>
+        <span style="font-size:11px;color:#A19F9E;flex-shrink:0">Enter to save · Esc to cancel</span>
+      `;
+
+      const list = document.getElementById('tasks-list');
+      list.insertBefore(row, list.firstChild);
+      document.getElementById('int-name').focus();
+
+      const custInput = document.getElementById('int-customer');
+      const custDropdown = document.getElementById('int-customer-dropdown');
+
+      custInput.addEventListener('input', () => {
+        const q = custInput.value.toLowerCase().trim();
+        if (!q) { custDropdown.style.display = 'none'; return; }
+        const matches = customers.filter(([, name]) => name.toLowerCase().includes(q)).slice(0, 8);
+        if (matches.length === 0) { custDropdown.style.display = 'none'; return; }
+        custDropdown.innerHTML = matches
+          .map(([hid, name]) => `<div class="int-dropdown-item" data-hid="${escHtml(hid)}">${escHtml(name)}</div>`)
+          .join('');
+        custDropdown.style.display = 'block';
+      });
+
+      custDropdown.addEventListener('click', e => {
+        const item = e.target.closest('.int-dropdown-item');
+        if (!item) return;
+        custInput.value = item.textContent;
+        custInput.dataset.selectedHid = item.dataset.hid;
+        custDropdown.style.display = 'none';
+        document.getElementById('int-name').focus();
+      });
     }
-    function closeNewTask() {
-      document.getElementById('new-task-overlay').classList.remove('card-overlay--open');
-      document.getElementById('nt-name').value = '';
-      document.getElementById('nt-error').textContent = '';
+
+    function closeInlineNewTask() {
+      const row = document.getElementById('inline-new-task-row');
+      if (row) row.remove();
     }
 
-    document.getElementById('new-task-btn').addEventListener('click', openNewTask);
-    document.getElementById('new-task-close').addEventListener('click', closeNewTask);
-    document.getElementById('nt-cancel').addEventListener('click', closeNewTask);
-    document.getElementById('new-task-overlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('new-task-overlay')) closeNewTask();
-    });
+    document.getElementById('tasks-list').addEventListener('keydown', async e => {
+      const row = document.getElementById('inline-new-task-row');
+      if (!row) return;
 
-    document.getElementById('nt-save').addEventListener('click', async () => {
-      const name      = document.getElementById('nt-name').value.trim();
-      const hubspot_id = document.getElementById('nt-customer').value;
-      const priority  = document.getElementById('nt-priority').value;
-      const errEl     = document.getElementById('nt-error');
+      if (e.key === 'Escape') { closeInlineNewTask(); return; }
 
-      if (!name)        { errEl.textContent = 'Enter a task name.'; document.getElementById('nt-name').focus(); return; }
-      if (!hubspot_id)  { errEl.textContent = 'Select a customer.'; document.getElementById('nt-customer').focus(); return; }
-      errEl.textContent = '';
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const name = document.getElementById('int-name').value.trim();
+        const custInput = document.getElementById('int-customer');
+        let hubspot_id = custInput.dataset.selectedHid ?? '';
+        if (!hubspot_id) {
+          const q = custInput.value.toLowerCase().trim();
+          const match = [...companyMap.entries()].find(([, n]) => n.toLowerCase() === q);
+          if (match) hubspot_id = match[0];
+        }
+        if (!name) { document.getElementById('int-name').focus(); return; }
+        if (!hubspot_id) { custInput.focus(); return; }
+        try {
+          const action = await createAction(hubspot_id, name, 'med');
+          allActions.unshift(action);
+          activeTab = 'outstanding';
+          document.querySelectorAll('.tasks-tab').forEach(t =>
+            t.classList.toggle('tasks-tab--active', t.dataset.tab === 'outstanding')
+          );
+          closeInlineNewTask();
+          render();
+        } catch {
+          document.getElementById('int-name').style.borderColor = '#C43E3E';
+        }
+      }
 
-      try {
-        const action = await createAction(hubspot_id, name, priority);
-        allActions.unshift(action);
-        populateCustomerFilter();
-        // Switch to the right tab
-        activeTab = tabFor(action);
-        document.querySelectorAll('.tasks-tab').forEach(t =>
-          t.classList.toggle('tasks-tab--active', t.dataset.tab === activeTab)
-        );
-        closeNewTask();
-        render();
-      } catch (e) {
-        errEl.textContent = "Couldn't save — try again.";
+      if (e.key === 'ArrowDown' && e.target === document.getElementById('int-customer')) {
+        const first = document.querySelector('.int-dropdown-item');
+        if (first) { e.preventDefault(); first.focus(); }
       }
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeNewTask();
+      if (e.key === 'Escape' && document.getElementById('inline-new-task-row')) {
+        closeInlineNewTask();
+      }
     });
+
+    document.getElementById('new-task-btn').addEventListener('click', openInlineNewTask);
 
     // --- Load ---
     // Load companies independently so the customer dropdown always works
     fetch('./data/hubspot.json').then(r => r.json()).then(companies => {
       companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
       companyTypeMap = new Map(companies.map(c => [String(c.hubspot_id), c.type ?? '']));
-      populateCustomerFilter();
     }).catch(() => {});
 
     // Load actions separately
@@ -345,7 +393,6 @@
       .then(actions => {
         if (!Array.isArray(actions)) throw new Error('bad response');
         allActions = actions;
-        populateCustomerFilter();
         render();
       })
       .catch(() => {
