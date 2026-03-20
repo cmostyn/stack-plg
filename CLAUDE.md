@@ -181,6 +181,13 @@ CLOUDFLARE_API_TOKEN=
 - Before any terminal command, explain in plain English what it does
 - After each section: show how to preview locally before committing
 - When Charlie says "looks good" → commit and push to preview branch
-- Before saying the preview is ready, open the Cloudflare preview URL in the browser: `open https://[branch-name].stack-plg.pages.dev` (replace `[branch-name]` with the actual branch name, dots converted to hyphens)
+- Before saying the preview is ready, get the real Cloudflare preview URL and open it:
+  ```
+  PREVIEW=$(gh api repos/cmostyn/stack-plg/commits/$(git rev-parse HEAD)/check-runs \
+    --jq '.check_runs[] | select(.name=="Cloudflare Pages") | .output.summary' \
+    | grep -o "https://[a-z0-9-]*\.stack-plg\.pages\.dev" | tail -1) \
+    && open "$PREVIEW"
+  ```
+  Wait for the check to complete if it hasn't yet (status will be `in_progress`). Do not guess the URL — always fetch it from the check run output.
 - When Charlie says "ship it" → merge to main
 - If something breaks → explain what went wrong before fixing it
