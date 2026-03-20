@@ -5,8 +5,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer List — PLG-Hub</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .page-main--crm { padding: 0; }
 
+    /* ── Toolbar ─────────────────────────────────────────────── */
+    .crm-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px 16px; gap: 12px; flex-wrap: wrap;
+    }
+    .crm-toolbar-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .crm-toolbar-right { display: flex; align-items: center; gap: 10px; }
 
+    .crm-search-wrap { position: relative; display: flex; align-items: center; }
+    .crm-search-icon { position: absolute; left: 10px; color: var(--so-neutral-30); pointer-events: none; }
+    .crm-search {
+      height: 34px; padding: 0 12px 0 32px;
+      border: 1px solid var(--so-neutral-10); border-radius: var(--so-radius);
+      font-family: var(--so-font-body); font-size: 13px; color: var(--so-text-body);
+      background: #fff; outline: none; width: 220px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .crm-search:focus { border-color: rgba(0,175,102,0.5); box-shadow: 0 0 0 3px rgba(0,175,102,0.08); }
+
+    .crm-type-pills { display: flex; gap: 4px; }
+    .crm-pill {
+      background: none; border: 1px solid var(--so-neutral-10); border-radius: var(--so-radius-xl);
+      padding: 5px 12px; font-size: 13px; font-weight: 500; color: var(--so-text-tag);
+      cursor: pointer; font-family: var(--so-font-body); transition: all 0.15s; white-space: nowrap;
+    }
+    .crm-pill:hover { border-color: var(--so-neutral-15); color: var(--so-text-body); }
+    .crm-pill--active { background: var(--so-text-header); border-color: var(--so-text-header); color: #fff; }
+
+    .crm-count { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); }
+    .crm-layout-btn--reset {
+      height: 32px; padding: 0 12px; background: none;
+      border: 1px solid var(--so-neutral-10); border-radius: var(--so-radius);
+      font-family: var(--so-font-body); font-size: 13px; color: var(--so-text-tag); cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .crm-layout-btn--reset:hover { border-color: var(--so-neutral-15); color: var(--so-text-body); }
+
+    /* ── Table card ──────────────────────────────────────────── */
+    .crm-card {
+      margin: 0 28px 28px; background: #fff;
+      border: 1px solid var(--so-neutral-10); border-radius: var(--so-radius-lg);
+      box-shadow: var(--so-shadow-card); overflow: hidden;
+    }
+    .crm-table-wrap { overflow-x: auto; }
+
+    .crm-table thead th {
+      padding: 10px 14px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--so-neutral-40); font-family: var(--so-font-tag);
+      background: var(--so-background); border-bottom: 1px solid var(--so-neutral-5);
+      white-space: nowrap; position: relative;
+    }
+    .crm-table td {
+      padding: 11px 14px; color: var(--so-text-body);
+      font-size: 13px; font-family: var(--so-font-body); vertical-align: middle;
+    }
+    .crm-table tbody tr {
+      border-bottom: 1px solid var(--so-neutral-5);
+      opacity: 0; animation: crmRowIn 0.22s ease forwards;
+    }
+    .crm-table tbody tr:last-child { border-bottom: none; }
+    .crm-table tbody tr:hover { background: var(--so-neutral-5); }
+    .crm-table tbody tr:hover .crm-row-actions { opacity: 1 !important; }
+    @keyframes crmRowIn { to { opacity: 1; } }
+    .crm-table tbody tr:nth-child(1)  { animation-delay: 0.02s; }
+    .crm-table tbody tr:nth-child(2)  { animation-delay: 0.05s; }
+    .crm-table tbody tr:nth-child(3)  { animation-delay: 0.08s; }
+    .crm-table tbody tr:nth-child(4)  { animation-delay: 0.11s; }
+    .crm-table tbody tr:nth-child(5)  { animation-delay: 0.14s; }
+    .crm-table tbody tr:nth-child(6)  { animation-delay: 0.17s; }
+    .crm-table tbody tr:nth-child(7)  { animation-delay: 0.20s; }
+    .crm-table tbody tr:nth-child(8)  { animation-delay: 0.23s; }
+    .crm-table tbody tr:nth-child(9)  { animation-delay: 0.26s; }
+    .crm-table tbody tr:nth-child(10) { animation-delay: 0.29s; }
+
+    .crm-name-cell { min-width: 180px; }
+    .crm-name-cell a { font-weight: 500; color: var(--so-text-header); font-size: 13px; text-decoration: none; }
+    .crm-name-cell a:hover { color: var(--so-primary); }
+    .crm-row-actions { opacity: 0 !important; transition: opacity 0.15s; }
+
+    .crm-type-badge {
+      display: inline-flex; align-items: center; padding: 2px 6px;
+      border-radius: var(--so-radius-sm); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase; font-family: var(--so-font-tag);
+    }
+    .crm-type-badge--plg  { background: rgba(0,175,102,0.10); color: var(--so-green-dark); }
+    .crm-type-badge--slg  { background: rgba(62,119,255,0.10); color: #0C58AE; }
+    .crm-type-badge--cust { background: var(--so-neutral-5); color: var(--so-text-tag); }
+
+    .health-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: var(--so-radius-xl);
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .health-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+    .health--excellent { background: rgba(0,175,102,0.10); color: #047B43; }
+    .health--excellent .health-dot { background: #00AF66; }
+    .health--good      { background: rgba(202,138,4,0.10);  color: #854D0E; }
+    .health--good      .health-dot { background: #CA8A04; }
+    .health--fair      { background: rgba(245,158,11,0.10); color: #92400E; }
+    .health--fair      .health-dot { background: #F59E0B; }
+    .health--risk      { background: rgba(196,62,62,0.10);  color: #C43E3E; }
+    .health--risk      .health-dot { background: #C43E3E; }
+
+    .crm-contact-cell { display: flex; flex-direction: column; gap: 1px; }
+    .crm-contact-name-link { font-size: 13px; font-weight: 500; color: var(--so-text-header); text-decoration: none; }
+    .crm-contact-name-link:hover { color: var(--so-primary); }
+    .crm-contact-email { font-size: 11px; color: var(--so-text-tag); }
+
+    .crm-date { color: var(--so-text-tag); white-space: nowrap; font-size: 13px; }
+    .crm-num  { font-variant-numeric: tabular-nums; color: var(--so-text-body); font-size: 13px; }
+    .crm-call-link { font-size: 12px; font-weight: 500; color: var(--so-primary); text-decoration: none; }
+    .crm-call-link:hover { text-decoration: underline; }
+
+    .crm-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-top: 1px solid var(--so-neutral-5);
+      background: var(--so-background);
+    }
+    .crm-footer-count { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); }
+  </style>
 </head>
 <body>
 
@@ -56,6 +178,7 @@
       </div>
     </div>
 
+    <div class="crm-card">
     <div id="crm-table-wrap" class="crm-table-wrap">
       <table class="crm-table" id="crm-table">
         <colgroup id="crm-colgroup"></colgroup>
@@ -64,6 +187,8 @@
           <tr><td colspan="12" class="crm-placeholder" style="text-align:center;padding:32px">Loading…</td></tr>
         </tbody>
       </table>
+    </div>
+      <div class="crm-footer"><span class="crm-footer-count" id="crm-footer-count"></span></div>
     </div>
 
   </main>
@@ -204,14 +329,10 @@
         const hid    = String(company.hubspot_id ?? '');
         const status = healthMap.get(hid) ?? null;
         if (!status) return '<td class="crm-health-cell"></td>';
-        const cfg = {
-          risk:      { label: 'Risk',      bg: '#FEE2E2', color: '#C43E3E', dot: '#C43E3E' },
-          fair:      { label: 'Fair',      bg: '#FFF7ED', color: '#92400E', dot: '#F59E0B' },
-          good:      { label: 'Good',      bg: '#FEF9C3', color: '#854D0E', dot: '#CA8A04' },
-          excellent: { label: 'Excellent', bg: '#F0FDF4', color: '#15803D', dot: '#00AF66' },
-        }[status] ?? null;
-        if (!cfg) return '<td class="crm-health-cell"></td>';
-        return `<td class="crm-health-cell"><span class="health-badge" style="background:${cfg.bg};color:${cfg.color}"><span class="health-dot" style="background:${cfg.dot}"></span>${cfg.label}</span></td>`;
+        const labels = { risk: 'Risk', fair: 'Fair', good: 'Good', excellent: 'Excellent' };
+        const label  = labels[status];
+        if (!label) return '<td class="crm-health-cell"></td>';
+        return `<td class="crm-health-cell"><span class="health-badge health--${escHtml(status)}"><span class="health-dot"></span>${label}</span></td>`;
       },
       last_contact: company => {
         const rel = relativeTime(company.last_contact);
@@ -909,8 +1030,10 @@
 
       const total = allRows.length;
       const shown = display.length;
-      document.getElementById('crm-count').textContent =
-        (query || typeFilter || strategicFilter) ? `${shown} of ${total} customers` : `${total} customers`;
+      const countText = (query || typeFilter || strategicFilter) ? `Showing ${shown} of ${total} customers` : `${total} customers`;
+      document.getElementById('crm-count').textContent = countText;
+      const footerEl = document.getElementById('crm-footer-count');
+      if (footerEl) footerEl.textContent = countText;
 
       const bar = document.getElementById('crm-bulk-bar');
       const count = selectedRows.size;
