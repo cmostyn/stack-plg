@@ -62,9 +62,10 @@ async function fetchAllTranscripts(fromDate) {
 
   while (true) {
     // Don't include skip on the first request (skip: 0 triggers different API behaviour)
+    const PAGE_SIZE = 50; // API hard cap
     const variables = skip === 0
-      ? { fromDate, limit: 500 }
-      : { fromDate, limit: 500, skip };
+      ? { fromDate, limit: PAGE_SIZE }
+      : { fromDate, limit: PAGE_SIZE, skip };
     const data = await rpc('fireflies_list_transcripts', {
       body: { variables },
       query: {},
@@ -72,8 +73,8 @@ async function fetchAllTranscripts(fromDate) {
     const page = data?.result?.data ?? data?.data ?? [];
     if (!page.length) break;
     transcripts.push(...page);
-    skip += page.length; // advance by however many we got (API may cap per-page)
-    if (page.length < 500) break; // fewer than requested = last page
+    skip += page.length;
+    if (page.length < PAGE_SIZE) break;
   }
 
   return transcripts;
