@@ -1,4 +1,4 @@
-/* PLG-Hub — client-side password gate */
+/* CS-Hub — client-side password gate */
 (function () {
   'use strict';
 
@@ -16,7 +16,7 @@
     overlay.id = 'auth-overlay';
     overlay.innerHTML = [
       '<div class="auth-card">',
-        '<div class="auth-logo"><span class="logo-dot"></span>PLG-Hub</div>',
+        '<div class="auth-logo"><span class="logo-dot"></span>CS-Hub</div>',
         '<p class="auth-subtitle">StackOne internal dashboard</p>',
         '<form id="auth-form" class="auth-form" autocomplete="off">',
           '<input type="password" id="auth-input" class="auth-input" placeholder="Password" autocomplete="current-password">',

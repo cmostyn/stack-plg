@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — PLG-Hub</title>
+  <title>Dashboard — CS-Hub</title>
   <link rel="stylesheet" href="style.css">
 
 </head>
@@ -13,7 +13,7 @@
     <div class="site-header-inner">
       <span class="site-logo">
         <svg width="20" height="20" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#so-logo-clip)"><path d="M85.334 103.111H170.667V53.333H129.906C105.289 53.333 85.334 53.333 85.334 79.4353V103.111Z" fill="url(#so-logo-g1)"/><path d="M170.667 152.888H85.334V202.665H126.095C150.712 202.665 170.667 202.665 170.667 176.563V152.888Z" fill="url(#so-logo-g2)"/><path d="M170.667 53.333H85.6178H0L4.17922e-06 152.889H85.6178V103.12L85.6059 101.011C85.4556 74.7235 106.724 53.333 133.012 53.333H170.667Z" fill="#00AF66"/><path d="M85.334 202.666H170.383H256.001V103.11H170.383V152.879L170.395 154.988C170.545 181.275 149.276 202.666 122.988 202.666H85.334Z" fill="#00AF66"/></g><defs><linearGradient id="so-logo-g1" x1="170.667" y1="78.2219" x2="85.334" y2="78.2219" gradientUnits="userSpaceOnUse"><stop stop-color="#00AF66"/><stop offset="1" stop-color="#285C4D"/></linearGradient><linearGradient id="so-logo-g2" x1="85.334" y1="177.777" x2="170.667" y2="177.777" gradientUnits="userSpaceOnUse"><stop stop-color="#00AF66"/><stop offset="1" stop-color="#285C4D"/></linearGradient><clipPath id="so-logo-clip"><rect width="256" height="149.333" fill="white" transform="translate(0 53.333)"/></clipPath></defs></svg>
-        PLG-Hub
+        CS-Hub
       </span>
       <nav class="site-nav">
         <a href="dashboard.html" class="site-nav-link site-nav-link--active">Dashboard</a>
@@ -30,21 +30,27 @@
     <div class="plg-purpose-banner">
       <button class="plg-purpose-toggle" id="purpose-toggle" aria-expanded="false">
         <svg class="plg-purpose-chevron" viewBox="0 0 10 10" width="10" height="10" fill="currentColor"><path d="M2 3l3 4 3-4"/></svg>
-        <span class="plg-purpose-title">What is PLG Hub?</span>
+        <span class="plg-purpose-title" id="purpose-title" contenteditable="true" spellcheck="false">What is CS-Hub?</span>
       </button>
       <div class="plg-purpose-body" id="purpose-body" hidden>
-        <div class="plg-purpose-editable" id="purpose-text" contenteditable="true" spellcheck="false">PLG Hub is the CS team's live view of StackOne's product-led growth motion — who's signing up, how customers are using the product, where support is needed, and what actions to take next. Data refreshes automatically from HubSpot, PostHog, Pylon, and Fireflies.</div>
+        <div class="plg-purpose-editable" id="purpose-text" contenteditable="true" spellcheck="false">CS-Hub is the CS team's live view of StackOne's product-led growth motion — who's signing up, how customers are using the product, where support is needed, and what actions to take next. Data refreshes automatically from HubSpot, PostHog, Pylon, and Fireflies.</div>
       </div>
     </div>
     <script>
       (function() {
-        const STORAGE_KEY = 'plg_purpose_text';
-        const OPEN_KEY    = 'plg_purpose_open';
+        const STORAGE_KEY  = 'plg_purpose_text';
+        const TITLE_KEY    = 'plg_purpose_title';
+        const OPEN_KEY     = 'plg_purpose_open';
         const toggle   = document.getElementById('purpose-toggle');
         const body     = document.getElementById('purpose-body');
         const editable = document.getElementById('purpose-text');
+        const titleEl  = document.getElementById('purpose-title');
 
-        // Restore saved text
+        // Restore saved title
+        const savedTitle = localStorage.getItem(TITLE_KEY);
+        if (savedTitle !== null) titleEl.textContent = savedTitle;
+
+        // Restore saved body text
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved !== null) editable.textContent = saved;
 
@@ -55,7 +61,9 @@
           toggle.classList.add('plg-purpose-toggle--open');
         }
 
-        toggle.addEventListener('click', () => {
+        toggle.addEventListener('click', e => {
+          // Don't toggle if user clicked directly on the editable title
+          if (e.target === titleEl) return;
           const open = body.hasAttribute('hidden');
           if (open) {
             body.removeAttribute('hidden');
@@ -69,6 +77,10 @@
             toggle.classList.remove('plg-purpose-toggle--open');
             localStorage.removeItem(OPEN_KEY);
           }
+        });
+
+        titleEl.addEventListener('input', () => {
+          localStorage.setItem(TITLE_KEY, titleEl.textContent);
         });
 
         editable.addEventListener('input', () => {
@@ -90,10 +102,10 @@
       <!-- ── Row 1: Growth ── -->
       <div class="dash-section-label">Growth</div>
 
-      <!-- Tile 1: Total Free Sign Ups -->
+      <!-- Tile 1: Total sign ups -->
       <div class="dash-tile" data-tile-id="accounts" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Total Free Sign Ups</span>
+          <span class="dash-tile-title">Total sign ups</span>
           <a class="dash-tile-source"
              href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
              target="_blank" rel="noopener" data-source-link>HubSpot ↗</a>
@@ -448,7 +460,7 @@
       const companies = filterCompanies(allCompanies);
       const ps = pylonSummary ? pylonSummary[activeFilter] ?? pylonSummary.all : null;
 
-      // Tile 1 — Total Free Sign Ups (weekly cumulative)
+      // Tile 1 — Total sign ups (weekly cumulative)
       document.getElementById('val-accounts').textContent = companies.length || '—';
       const byWeekAcc = {};
       for (const c of companies) {
@@ -742,7 +754,7 @@
 
     // ── Chart click handler ───────────────────────────────────────────────────
     const CHART_TITLES = {
-      accounts: 'Total Free Sign Ups — growth over time',
+      accounts: 'Total sign ups — growth over time',
       signups:  'New Sign Ups — last 30 days by week',
       tickets:  'Open Tickets by status',
       frt:      'Avg First Response — business hours, weekly',

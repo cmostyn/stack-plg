@@ -2613,6 +2613,14 @@ a.dash-tile-source:hover {
   font-size: 13px;
   font-weight: 600;
   color: #222121;
+  outline: none;
+  border-radius: 3px;
+  padding: 1px 3px;
+  min-width: 20px;
+}
+.plg-purpose-title:focus {
+  background: #F5F4F2;
+  box-shadow: 0 0 0 1px #E0DEDC;
 }
 .plg-purpose-body {
   padding: 8px 4px 2px 21px;
