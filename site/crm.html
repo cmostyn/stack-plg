@@ -100,7 +100,7 @@
     const DEFAULT_COL_ORDER = [
       'name', 'health', 'contact', 'notes', 'local_notes', 'last_contact',
       'account', 'integrations', 'clicks', 'api_requests',
-      'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
+      'tickets_total', 'open_tickets', 'last_call',
     ];
 
     // Default widths (px) — sum ~1385px, fills a 1400px container
@@ -117,7 +117,6 @@
       api_requests:   95,
       tickets_total:  95,
       open_tickets:   95,
-      cs_actions:     95,
       last_call:     130,
     };
 
@@ -141,7 +140,6 @@
       api_requests:  () => thHtml('api_requests', 'API requests'),
       tickets_total: () => thHtml('tickets_total', 'Tickets (30d)'),
       open_tickets:  () => thHtml('open_tickets', 'Open tickets'),
-      cs_actions:    () => thHtml('cs_actions', 'CS actions'),
       last_call:     () => thHtml('last_call', 'Most recent call'),
     };
 
@@ -160,7 +158,6 @@
           href !== '#' ? `<a href="${href}" class="crm-row-action" target="_blank" rel="noopener" title="Open in HubSpot"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M1 6h14"/><path d="M6 2v4"/><path d="M10 2v4"/></svg></a>` : '',
           mailtoHref    ? `<a href="${mailtoHref}" class="crm-row-action" title="Send email"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 4l7 5 7-5"/></svg></a>` : '',
           pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
-          `<button class="crm-row-action add-action-btn" data-hubspot-id="${hid}" title="Add CS action"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg></button>`,
         ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
           <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
@@ -255,14 +252,6 @@
         const count = py.open_tickets_live ?? py.issues_last_30d.open;
         const pylonUrl = escHtml(`https://app.usepylon.com/accounts/${py.pylon_account_id}`);
         return `<td class="crm-num"><a href="${pylonUrl}" target="_blank" rel="noopener">${count}</a></td>`;
-      },
-      cs_actions: company => {
-        const hid = escHtml(String(company.hubspot_id ?? ''));
-        return `<td>
-          <div class="actions-cell">
-            <button class="add-action-btn" data-hubspot-id="${hid}">+ Add</button>
-          </div>
-        </td>`;
       },
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
@@ -520,11 +509,6 @@
             const oa = pa ? (pa.open_tickets_live ?? pa.issues_last_30d.open) : -1;
             const ob = pb ? (pb.open_tickets_live ?? pb.issues_last_30d.open) : -1;
             return dir * (oa - ob);
-          }
-          case 'cs_actions': {
-            const ca = actionsMap.get(String(a.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
-            const cb = actionsMap.get(String(b.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
-            return dir * (ca - cb);
           }
           case 'last_call': {
             const da = a.domain ? (firefliesMap.get(a.domain)?.date ?? '') : '';
@@ -1222,14 +1206,7 @@
       document.getElementById('card-action-save')?.click();
     });
 
-    // Inline add: delegated click on + Add button in CS actions column
-    document.querySelector('.crm-table').addEventListener('click', e => {
-      const btn = e.target.closest('.add-action-btn');
-      if (!btn) return;
-      openInlinePopover(btn);
-    });
-
-    // Inline popover: save on button click
+    //Inline popover: save on button click
     document.getElementById('inline-add-popover').addEventListener('click', async e => {
       if (!e.target.closest('.inline-action-save')) return;
       const p        = document.getElementById('inline-add-popover');
@@ -1259,7 +1236,7 @@
     document.addEventListener('click', e => {
       const p = document.getElementById('inline-add-popover');
       if (!p?.classList.contains('inline-add-popover--open')) return;
-      if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
+      if (!p.contains(e.target)) closeInlinePopover();
     }, true);
 
     // --- Notes popup (click) ---
