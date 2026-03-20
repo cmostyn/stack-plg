@@ -2406,19 +2406,48 @@ a.dash-tile-source:hover {
   background: #fff;
   border: 1px solid #E0DEDC;
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   margin-bottom: 20px;
   box-shadow: 0px 2px 4px rgba(0,0,0,0.08);
 }
+.plg-purpose-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  width: 100%;
+  text-align: left;
+}
+.plg-purpose-toggle:hover { background: #F5F4F2; }
+.plg-purpose-chevron {
+  color: #A19F9E;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  transform: rotate(-90deg);
+}
+.plg-purpose-toggle--open .plg-purpose-chevron { transform: rotate(0deg); }
 .plg-purpose-title {
   font-size: 13px;
   font-weight: 600;
   color: #222121;
-  margin-bottom: 4px;
 }
 .plg-purpose-body {
+  padding: 8px 4px 2px 21px;
+}
+.plg-purpose-editable {
   font-size: 13px;
   color: #4C4B4B;
   line-height: 1.6;
-  margin: 0;
+  outline: none;
+  border-radius: 4px;
+  padding: 4px 6px;
+  min-height: 1.6em;
+}
+.plg-purpose-editable:focus {
+  background: #FAFAF9;
+  box-shadow: 0 0 0 1px #E0DEDC;
 }

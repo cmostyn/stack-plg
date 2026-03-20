@@ -28,11 +28,54 @@
 
     <!-- Purpose banner -->
     <div class="plg-purpose-banner">
-      <div class="plg-purpose-banner-content">
-        <div class="plg-purpose-title">What is PLG Hub?</div>
-        <p class="plg-purpose-body">PLG Hub is the CS team's live view of StackOne's product-led growth motion — who's signing up, how customers are using the product, where support is needed, and what actions to take next. Data refreshes automatically from HubSpot, PostHog, Pylon, and Fireflies.</p>
+      <button class="plg-purpose-toggle" id="purpose-toggle" aria-expanded="false">
+        <svg class="plg-purpose-chevron" viewBox="0 0 10 10" width="10" height="10" fill="currentColor"><path d="M2 3l3 4 3-4"/></svg>
+        <span class="plg-purpose-title">What is PLG Hub?</span>
+      </button>
+      <div class="plg-purpose-body" id="purpose-body" hidden>
+        <div class="plg-purpose-editable" id="purpose-text" contenteditable="true" spellcheck="false">PLG Hub is the CS team's live view of StackOne's product-led growth motion — who's signing up, how customers are using the product, where support is needed, and what actions to take next. Data refreshes automatically from HubSpot, PostHog, Pylon, and Fireflies.</div>
       </div>
     </div>
+    <script>
+      (function() {
+        const STORAGE_KEY = 'plg_purpose_text';
+        const OPEN_KEY    = 'plg_purpose_open';
+        const toggle   = document.getElementById('purpose-toggle');
+        const body     = document.getElementById('purpose-body');
+        const editable = document.getElementById('purpose-text');
+
+        // Restore saved text
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) editable.textContent = saved;
+
+        // Restore open state
+        if (localStorage.getItem(OPEN_KEY) === '1') {
+          body.removeAttribute('hidden');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.classList.add('plg-purpose-toggle--open');
+        }
+
+        toggle.addEventListener('click', () => {
+          const open = body.hasAttribute('hidden');
+          if (open) {
+            body.removeAttribute('hidden');
+            toggle.setAttribute('aria-expanded', 'true');
+            toggle.classList.add('plg-purpose-toggle--open');
+            editable.focus();
+            localStorage.setItem(OPEN_KEY, '1');
+          } else {
+            body.setAttribute('hidden', '');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.classList.remove('plg-purpose-toggle--open');
+            localStorage.removeItem(OPEN_KEY);
+          }
+        });
+
+        editable.addEventListener('input', () => {
+          localStorage.setItem(STORAGE_KEY, editable.textContent);
+        });
+      })();
+    </script>
 
     <!-- Filter pills -->
     <div class="dash-filters">
