@@ -225,7 +225,7 @@
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
         const dateStr = new Date(ff.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        const href = ff.id ? escHtml(`https://app.fireflies.ai/view/call::${ff.id}`) : 'https://app.fireflies.ai/';
+        const href = ff.id ? escHtml(`https://app.fireflies.ai/view/${ff.id}`) : 'https://app.fireflies.ai/';
         return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link">${escHtml(ff.title)}</a><div class="crm-contact-email">${escHtml(dateStr)}</div></td>`;
       },
     };
@@ -491,16 +491,18 @@
         ? new Date(company.last_contact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         : null;
 
-      const ffHtml = calls.length === 0
+      const recentCalls = calls.slice(0, 5);
+      const ffHtml = recentCalls.length === 0
         ? '<p class="ff-empty">No calls on record.</p>'
-        : calls.map(call => {
+        : recentCalls.map(call => {
             const callDate = new Date(call.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const callHref = call.id ? `https://app.fireflies.ai/view/${call.id}` : 'https://app.fireflies.ai/';
             const items = call.action_items ?? [];
             const itemsHtml = items.length === 0
-              ? '<div class="ff-empty">No action items.</div>'
+              ? ''
               : items.map(item => `<div class="ff-action"><span class="ff-dot"></span>${escHtml(item)}</div>`).join('');
             return `<div class="ff-item">
-              <div class="ff-call">${escHtml(call.title)} · ${escHtml(callDate)}</div>
+              <div class="ff-call"><a href="${escHtml(callHref)}" target="_blank" rel="noopener" class="card-hs-link">${escHtml(call.title)}</a> · ${escHtml(callDate)}</div>
               ${itemsHtml}
             </div>`;
           }).join('');
@@ -543,7 +545,7 @@
           </div>
         ` : ''}
         <div class="section-divider"></div>
-        <div class="card-section-label">Fireflies actions</div>
+        <div class="card-section-label">Recent calls${calls.length > 5 ? ` <span style="font-weight:400;color:#A19F9E">(5 of ${calls.length})</span>` : ''}</div>
         ${ffHtml}
       `;
     }
