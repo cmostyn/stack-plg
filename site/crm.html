@@ -167,10 +167,16 @@
         return `<td class="crm-notes" title="${escHtml(n)}">${escHtml(truncated)}</td>`;
       },
       local_notes: company => {
-        const hid  = escHtml(String(company.hubspot_id ?? ''));
-        const note = localNotes[String(company.hubspot_id)] ?? '';
+        const hid    = escHtml(String(company.hubspot_id ?? ''));
+        const rawHid = String(company.hubspot_id ?? '');
+        const note   = notesMap.get(rawHid) ?? '';
+        const expanded = expandedRows.has(rawHid);
         const display = escHtml(note.length > 60 ? note.slice(0, 60) + '…' : note);
-        return `<td class="crm-local-notes-cell" data-hubspot-id="${hid}" title="${escHtml(note)}">${display || '<span class="crm-placeholder">Add note…</span>'}</td>`;
+        const chevron = `<span class="notes-chevron${expanded ? ' notes-chevron--open' : ''}" data-hubspot-id="${hid}">▾</span>`;
+        return `<td class="crm-local-notes-cell" data-hubspot-id="${hid}">` +
+          `${chevron}` +
+          `${display || '<span class="crm-placeholder">Add note…</span>'}` +
+          `</td>`;
       },
       health: company => {
         const hid    = String(company.hubspot_id ?? '');
@@ -251,6 +257,8 @@
     let pylonMap            = new Map();  // hubspot_id → pylon account
     let actionsMap          = new Map();  // hubspot_id (string) → action[]
     let healthMap           = new Map();  // hubspot_id (string) → status string
+    let notesMap            = new Map();  // hubspot_id (string) → note body string
+    let expandedRows        = new Set();  // hubspot_ids with expanded sub-rows
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
     let sortKey  = 'name';
@@ -772,6 +780,73 @@
       setTimeout(() => err.remove(), 3000);
     }
 
+    // --- Expand sub-row ---
+
+    const HEALTH_OPTIONS = [
+      { value: '',          label: '— No status —' },
+      { value: 'risk',      label: '🔴 Risk'       },
+      { value: 'fair',      label: '🟠 Fair'       },
+      { value: 'good',      label: '🟡 Good'       },
+      { value: 'excellent', label: '🟢 Excellent'  },
+    ];
+
+    function renderExpandRow(company, colCount) {
+      const hid     = escHtml(String(company.hubspot_id ?? ''));
+      const rawHid  = String(company.hubspot_id ?? '');
+      const note    = notesMap.get(rawHid) ?? '';
+      const status  = healthMap.get(rawHid) ?? '';
+      const actions = actionsMap.get(rawHid) ?? [];
+      const open    = actions.filter(a => !a.done);
+      const done    = actions.filter(a => a.done);
+
+      const healthOpts = HEALTH_OPTIONS.map(o =>
+        `<option value="${o.value}"${o.value === status ? ' selected' : ''}>${escHtml(o.label)}</option>`
+      ).join('');
+
+      const actionRows = [...open, ...done].map(a => {
+        const isDone   = a.done;
+        const priCfg   = { high: { bg:'#FEE2E2',color:'#C43E3E' }, med: { bg:'#FEF3C7',color:'#92400E' }, low: { bg:'#F0FDF4',color:'#15803D' } }[a.priority] ?? {};
+        const priBadge = `<span style="font-size:10px;background:${priCfg.bg};color:${priCfg.color};padding:1px 5px;border-radius:3px;font-weight:600;flex-shrink:0;">${escHtml(a.priority.charAt(0).toUpperCase() + a.priority.slice(1))}</span>`;
+        return `<div class="expand-action-row" data-action-id="${escHtml(a.id)}" data-hubspot-id="${hid}" data-done="${isDone ? '1' : '0'}">
+          <span class="expand-action-check${isDone ? ' expand-action-check--done' : ''}">
+            ${isDone ? '<svg viewBox="0 0 10 10" width="9" height="9" fill="none" stroke="#00AF66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,8 8,2"/></svg>' : ''}
+          </span>
+          <span class="expand-action-name${isDone ? ' expand-action-name--done' : ''}">${escHtml(a.name)}</span>
+          ${priBadge}
+        </div>`;
+      }).join('');
+
+      return `<tr class="expand-sub-row" data-hubspot-id="${hid}">
+        <td colspan="${colCount}" style="padding:0;border-bottom:2px solid #E0DEDC;">
+          <div class="expand-panel">
+
+            <div class="expand-section">
+              <div class="expand-label">Notes</div>
+              <textarea class="expand-notes-ta" data-hubspot-id="${hid}" rows="3">${escHtml(note)}</textarea>
+              <div class="expand-notes-actions">
+                <button class="expand-save-btn" data-hubspot-id="${hid}">Save</button>
+                <button class="expand-cancel-btn" data-hubspot-id="${hid}">Cancel</button>
+              </div>
+            </div>
+
+            <div class="expand-section expand-section--health">
+              <div class="expand-label">Health</div>
+              <select class="expand-health-sel" data-hubspot-id="${hid}">${healthOpts}</select>
+            </div>
+
+            <div class="expand-section expand-section--actions">
+              <div class="expand-label">CS Actions</div>
+              <div class="expand-actions-list" data-hubspot-id="${hid}">
+                ${actionRows || '<div style="font-size:12px;color:#A19F9E;">No actions yet</div>'}
+              </div>
+              <button class="expand-add-action-btn" data-hubspot-id="${hid}">+ Add action</button>
+            </div>
+
+          </div>
+        </td>
+      </tr>`;
+    }
+
     // --- Render ---
 
     function render() {
@@ -792,9 +867,12 @@
       const activeTh = thead.querySelector(`th[data-col="${sortKey}"]`);
       if (activeTh) activeTh.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 
-      tbody.innerHTML = display.map(company =>
-        `<tr>${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`
-      ).join('');
+      tbody.innerHTML = display.map(company => {
+        const hid = String(company.hubspot_id ?? '');
+        const mainRow = `<tr data-hubspot-id="${escHtml(hid)}">${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`;
+        if (!expandedRows.has(hid)) return mainRow;
+        return mainRow + renderExpandRow(company, effectiveOrder.length);
+      }).join('');
 
       applyColWidths();
       applyFrozenStyles();
@@ -815,7 +893,8 @@
       fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
       fetch(`${WORKER_URL}/health`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([hubspot, posthog, fireflies, pylon, actions, healthData]) => {
+      fetch(`${WORKER_URL}/notes`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog, fireflies, pylon, actions, healthData, notesData]) => {
       posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
       pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
 
@@ -846,6 +925,9 @@
 
       // healthMap: hubspot_id (string) → status string
       healthMap = new Map(healthData.map(h => [String(h.hubspot_id), h.status]));
+
+      // notesMap: hubspot_id (string) → note body string
+      notesMap = new Map(notesData.map(n => [String(n.hubspot_id), n.body]));
 
       allRows = hubspot;
       render();
@@ -1162,36 +1244,98 @@
       showLayoutSavedToast();
     });
 
-    // Inline edit for local_notes cells — single click to edit
-    document.querySelector('.crm-table').addEventListener('click', e => {
-      const td = e.target.closest('.crm-local-notes-cell');
-      if (!td || td.querySelector('input')) return;
-      const hid  = td.dataset.hubspotId;
-      const note = localNotes[hid] ?? '';
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = note;
-      input.className = 'crm-local-notes-input';
-      input.style.cssText = 'width:100%;font:inherit;font-size:13px;padding:2px 4px;border:1px solid #00AF66;border-radius:4px;outline:none;background:#fff;box-sizing:border-box;';
-      td.innerHTML = '';
-      td.appendChild(input);
-      input.focus();
-      input.select();
-      let saved = false;
-      const save = () => {
-        if (saved) return;
-        saved = true;
-        const val = input.value.trim();
-        if (val) localNotes[hid] = val;
-        else delete localNotes[hid];
-        saveLocalNotes();
+    // Expandable row: chevron toggle, save/cancel notes, toggle action, add action
+    document.querySelector('.crm-table').addEventListener('click', async e => {
+      // Chevron toggle
+      const chevron = e.target.closest('.notes-chevron');
+      if (chevron) {
+        e.stopPropagation();
+        const hid = String(chevron.dataset.hubspotId ?? '');
+        if (!hid) return;
+        if (expandedRows.has(hid)) {
+          expandedRows.delete(hid);
+        } else {
+          expandedRows.add(hid);
+        }
         render();
-      };
-      input.addEventListener('blur', save);
-      input.addEventListener('keydown', e2 => {
-        if (e2.key === 'Enter') { e2.preventDefault(); save(); }
-        if (e2.key === 'Escape') { saved = true; e2.stopPropagation(); render(); }
-      });
+        return;
+      }
+
+      // Save notes button
+      const saveBtn = e.target.closest('.expand-save-btn');
+      if (saveBtn) {
+        const hid = String(saveBtn.dataset.hubspotId ?? '');
+        const ta  = document.querySelector(`.expand-notes-ta[data-hubspot-id="${CSS.escape(hid)}"]`);
+        if (!ta) return;
+        const body = ta.value;
+        notesMap.set(hid, body);
+        // Save to localStorage as well for resilience
+        localNotes[hid] = body;
+        saveLocalNotes();
+        try {
+          await fetch(`${WORKER_URL}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hubspot_id: hid, notes: body }),
+          });
+        } catch { /* silent */ }
+        render();
+        return;
+      }
+
+      // Cancel notes button
+      const cancelBtn = e.target.closest('.expand-cancel-btn');
+      if (cancelBtn) {
+        expandedRows.delete(String(cancelBtn.dataset.hubspotId ?? ''));
+        render();
+        return;
+      }
+
+      // Toggle action done
+      const actionRow = e.target.closest('.expand-action-row');
+      if (actionRow && !e.target.closest('.expand-add-action-btn')) {
+        const actionId = actionRow.dataset.actionId;
+        const hid      = String(actionRow.dataset.hubspotId ?? '');
+        const isDone   = actionRow.dataset.done === '1';
+        const actions  = actionsMap.get(hid) ?? [];
+        const action   = actions.find(a => a.id === actionId);
+        if (!action) return;
+        await toggleAction(actionId, hid, isDone);
+        render();
+        return;
+      }
+
+      // Add action button
+      const addBtn = e.target.closest('.expand-add-action-btn');
+      if (addBtn) {
+        const hid  = String(addBtn.dataset.hubspotId ?? '');
+        const name = prompt('Action name:');
+        if (!name?.trim()) return;
+        await createAction(hid, name.trim(), 'med');
+        render();
+        return;
+      }
+    });
+
+    // Health select change in expanded row
+    document.querySelector('.crm-table').addEventListener('change', async e => {
+      const sel = e.target.closest('.expand-health-sel');
+      if (!sel) return;
+      const hid    = String(sel.dataset.hubspotId ?? '');
+      const status = sel.value;
+      try {
+        await fetch(`${WORKER_URL}/health`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hubspot_id: hid, status: status || null }),
+        });
+        if (status) {
+          healthMap.set(hid, status);
+        } else {
+          healthMap.delete(hid);
+        }
+        render();
+      } catch { /* silent */ }
     });
   </script>
 
