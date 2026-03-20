@@ -58,18 +58,22 @@ function externalDomains(transcript) {
 
 async function fetchAllTranscripts(fromDate) {
   const transcripts = [];
-  let skip = 0;
+  let cursor = null;
 
   while (true) {
+    // Only pass fromDate on the first request — the cursor encodes the position for subsequent pages
+    const body = cursor
+      ? { variables: { limit: 50 } }
+      : { variables: { fromDate, limit: 50 } };
     const data = await rpc('fireflies_list_transcripts', {
-      body: { variables: { fromDate, limit: 50, skip } },
-      query: {},
+      body,
+      query: cursor ? { next: cursor } : {},
     });
     const page = data?.result?.data ?? data?.data ?? [];
     if (!page.length) break;
     transcripts.push(...page);
-    if (page.length < 50) break;
-    skip += 50;
+    cursor = data?.result?.next ?? data?.next ?? null;
+    if (!cursor) break;
   }
 
   return transcripts;
