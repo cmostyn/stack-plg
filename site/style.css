@@ -1455,7 +1455,7 @@ th:hover .crm-th-menu-btn,
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.crm-local-notes-cell--clickable { cursor: pointer; }
+.crm-local-notes-cell--clickable { cursor: text; }
 .crm-local-notes-cell--clickable:hover { background: var(--so-foreground); }
 
 /* CRM — pin/freeze button */
@@ -1678,6 +1678,14 @@ th:hover .crm-th-menu-btn,
   flex-shrink: 0; line-height: 1;
 }
 .card-open-btn:hover { color: var(--so-primary); }
+.inline-task-btn {
+  background: none; border: 1px solid var(--so-neutral-10); border-radius: 50%;
+  cursor: pointer; color: var(--so-neutral-40); font-size: 13px; font-weight: 600;
+  width: 18px; height: 18px; padding: 0; line-height: 1;
+  flex-shrink: 0; display: none; align-items: center; justify-content: center;
+}
+.inline-task-btn:hover { color: var(--so-primary); border-color: var(--so-primary); }
+.crm-table tr:hover .inline-task-btn { display: flex; }
 
 /* ── CRM table: CS actions column ── */
 .actions-cell    { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }

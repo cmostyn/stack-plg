@@ -55,6 +55,7 @@
       </div>
       <div class="crm-toolbar-right">
         <span id="crm-count" class="crm-count"></span>
+        <button id="crm-show-cols-btn" class="crm-layout-btn" style="display:none">Show columns</button>
         <button id="crm-reset-layout" class="crm-layout-btn crm-layout-btn--reset">Reset layout</button>
       </div>
     </div>
@@ -164,6 +165,7 @@
           <div class="crm-name-inner">
             <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
             <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+            <button class="inline-task-btn" data-hubspot-id="${hid}" aria-label="Add task">+</button>
             <div class="crm-row-actions">${quickLinks}</div>
           </div>
         </td>`;
@@ -1170,6 +1172,14 @@
       if (company) openCard(company);
     });
 
+    // Inline task add: delegated click on + button
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const btn = e.target.closest('.inline-task-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      openInlinePopover(btn);
+    });
+
     // Card close: click on overlay backdrop (outside the modal)
     document.getElementById('card-overlay').addEventListener('click', e => {
       if (e.target === document.getElementById('card-overlay')) closeCard();
@@ -1333,8 +1343,8 @@
       document.addEventListener('keydown', handleCardKeydown);
     });
 
-    // Local notes cell: click → editable popup
-    crmTable.addEventListener('click', e => {
+    // Local notes cell: double-click → editable popup
+    crmTable.addEventListener('dblclick', e => {
       const td = e.target.closest('td.crm-local-notes-cell--clickable');
       if (!td) return;
       const hid = String(td.dataset.hubspotId ?? '');
@@ -1387,6 +1397,14 @@
       document.getElementById('card-close').addEventListener('click', () => {
         overlay.classList.remove('card-overlay--open');
         overlay.innerHTML = '';
+      });
+
+      // Ctrl+Enter to save in notes popup
+      document.getElementById('notes-edit-ta').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          document.getElementById('notes-popup-save').click();
+        }
       });
 
       document.addEventListener('keydown', handleCardKeydown);
