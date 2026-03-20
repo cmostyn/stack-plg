@@ -202,3 +202,4 @@ CLOUDFLARE_API_TOKEN=
   Wait for the check to complete if it hasn't yet (status will be `in_progress`). Do not guess the URL — always fetch it from the check run output.
 - When Charlie says "ship it" → merge to main
 - If something breaks → explain what went wrong before fixing it
+- Always communicate in plain, non-technical language — Charlie is not a developer. No jargon, no code terms in explanations, no assuming technical knowledge. If you need to describe something technical, use an analogy or everyday language instead.
