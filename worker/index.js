@@ -3,14 +3,32 @@ export default {
     const url      = new URL(request.url);
     const pathname = url.pathname;
 
+    const origin         = request.headers.get('Origin') ?? '';
+    const allowedOrigins = [
+      'https://stack-plg.pages.dev',
+      'http://localhost:8788',   // local dev via `wrangler pages dev`
+    ];
+    const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+
     const corsHeaders = {
-      'Access-Control-Allow-Origin':  '*',
+      'Access-Control-Allow-Origin':  allowOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Vary': 'Origin',
     };
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
+    }
+
+    // Auth check — all non-OPTIONS requests must carry the correct Bearer token
+    const authHeader = request.headers.get('Authorization') ?? '';
+    const token      = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    if (!token || token !== env.ACTIONS_API_SECRET) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const json = (data, status = 200) =>
