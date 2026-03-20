@@ -42,6 +42,13 @@
           <button class="crm-pill" data-type="Customer - SLG">SLG</button>
           <button class="crm-pill" data-type="Customer">Cust</button>
         </div>
+        <div class="crm-type-pills crm-strategic-pills" id="crm-strategic-pills">
+          <button class="crm-pill crm-pill--active" data-strategic="">All accounts</button>
+          <button class="crm-pill" data-strategic="Yes - Agentic">Agentic</button>
+          <button class="crm-pill" data-strategic="Yes - Non Agentic">Non-agentic</button>
+          <button class="crm-pill" data-strategic="Managed Service Candidate">Managed svc</button>
+          <button class="crm-pill" data-strategic="No">Non-strategic</button>
+        </div>
       </div>
       <div class="crm-toolbar-right">
         <span id="crm-count" class="crm-count"></span>
@@ -276,6 +283,7 @@
     let selectedRows        = new Set();  // hubspot_ids of checked rows
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
+    let strategicFilter = '';
     let sortKey  = 'name';
     let sortDir  = 'asc';
     let clickCounts = {};
@@ -871,7 +879,8 @@
       const query    = document.getElementById('crm-search').value.trim();
       const filtered = allRows.filter(c =>
         (!query || searchMatch(c, query)) &&
-        (!typeFilter || c.type === typeFilter)
+        (!typeFilter || c.type === typeFilter) &&
+        (!strategicFilter || c.strategic_account === strategicFilter)
       );
       const display    = sortedRows(filtered);
 
@@ -900,7 +909,7 @@
       const total = allRows.length;
       const shown = display.length;
       document.getElementById('crm-count').textContent =
-        (query || typeFilter) ? `${shown} of ${total} customers` : `${total} customers`;
+        (query || typeFilter || strategicFilter) ? `${shown} of ${total} customers` : `${total} customers`;
 
       const bar = document.getElementById('crm-bulk-bar');
       const count = selectedRows.size;
@@ -970,6 +979,16 @@
       if (!pill) return;
       typeFilter = pill.dataset.type;
       document.querySelectorAll('#crm-type-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
+      render();
+    });
+
+    document.getElementById('crm-strategic-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      strategicFilter = pill.dataset.strategic;
+      document.querySelectorAll('#crm-strategic-pills .crm-pill').forEach(p =>
         p.classList.toggle('crm-pill--active', p === pill)
       );
       render();
