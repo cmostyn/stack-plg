@@ -876,7 +876,8 @@
       fetch(`${WORKER_URL}/health`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
       fetch(`${WORKER_URL}/notes`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([hubspot, posthog, fireflies, pylon, actions, healthData, notesData]) => {
-      posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
+      const posthogOrgs = Array.isArray(posthog) ? posthog : (posthog?.orgs ?? []);
+      posthogMap = new Map(posthogOrgs.map(r => [normName(r.org_name), r]));
       pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
 
       // firefliesMap: domain → most-recent call (used by Last call column)

@@ -130,14 +130,17 @@
         </div>
       </div>
 
-      <!-- Tile 3: Conversion placeholder -->
-      <div class="dash-tile dash-tile--placeholder" data-tile-id="conversion" draggable="true">
+      <!-- Tile 3: Weekly Active Users -->
+      <div class="dash-tile" data-tile-id="wau" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Sign Up → API Conversion</span>
-          <span class="dash-tile-badge">Coming soon</span>
+          <span class="dash-tile-title">Weekly Active Users</span>
+          <a class="dash-tile-source"
+             href="https://eu.posthog.com/project/14642/dashboard/562541"
+             target="_blank" rel="noopener" data-source-link>PostHog ↗</a>
         </div>
-        <div class="dash-tile-body dash-tile-placeholder-body">
-          <span class="dash-tile-placeholder-text">No data source connected yet</span>
+        <div class="dash-tile-body">
+          <div class="dash-tile-value" id="val-wau">—</div>
+          <div class="dash-tile-chart" id="chart-wau" data-chart-id="wau"></div>
         </div>
       </div>
 
@@ -487,6 +490,13 @@
       }
       renderSparkline(document.getElementById('chart-signups'), byWeek, '#047B43');
 
+      // Tile 3 — Weekly Active Users (PostHog WAU)
+      if (wauWeekly.length) {
+        const recent = wauWeekly.slice(-4);
+        document.getElementById('val-wau').textContent = recent[recent.length - 1]?.count ?? '—';
+        renderSparkline(document.getElementById('chart-wau'), recent.map(w => w.count), '#00AF66');
+      }
+
       // Pylon tiles
       if (ps) {
         const st    = ps.open_by_state;
@@ -510,12 +520,16 @@
     }
 
     // ── Load data ────────────────────────────────────────────────────────────
+    let wauWeekly = [];
+
     Promise.all([
       fetch('./data/hubspot.json').then(r => r.json()),
       fetch('./data/pylon-summary.json').then(r => r.json()).catch(() => null),
-    ]).then(([companies, summary]) => {
+      fetch('./data/posthog.json').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([companies, summary, posthog]) => {
       allCompanies = companies;
       pylonSummary = summary;
+      wauWeekly = posthog?.wau_weekly ?? [];
       renderTiles();
     }).catch(() => {
       document.getElementById('val-accounts').textContent = '—';
@@ -676,6 +690,30 @@
             itemStyle: { color: '#047B43', borderRadius: [4, 4, 0, 0] } }],
         });
 
+      } else if (chartId === 'wau' && wauWeekly.length) {
+        const labels = wauWeekly.map(w => {
+          const d = new Date(w.week);
+          return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        });
+        expandChart.setOption({
+          animation: true,
+          tooltip: { trigger: 'axis', formatter: p => `w/c ${p[0].name}<br/><b>${p[0].value}</b> active users` },
+          grid: { top: 16, right: 24, bottom: 48, left: 52 },
+          xAxis: { type: 'category', data: labels,
+            axisLabel: { color: '#7A7A7A', fontSize: 11, rotate: 30 },
+            axisLine: { lineStyle: { color: '#E0DEDC' } }, axisTick: { show: false } },
+          yAxis: { type: 'value', name: 'Users', nameTextStyle: { color: '#7A7A7A', fontSize: 11 },
+            minInterval: 1,
+            axisLabel: { color: '#7A7A7A', fontSize: 11 },
+            splitLine: { lineStyle: { color: '#EBE9E7' } }, axisLine: { show: false } },
+          series: [{ type: 'line', data: wauWeekly.map(w => w.count),
+            smooth: 0.4, symbol: 'circle', symbolSize: 5,
+            lineStyle: { color: '#00AF66', width: 2 }, itemStyle: { color: '#00AF66' },
+            areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [{ offset: 0, color: '#00AF6628' }, { offset: 1, color: '#00AF6600' }] } },
+          }],
+        });
+
       } else if (chartId === 'tickets' && ps) {
         const st = ps.open_by_state;
         const total = Object.values(st).reduce((s, v) => s + v, 0);
@@ -756,6 +794,7 @@
     const CHART_TITLES = {
       accounts: 'Total Sign Ups — growth over time',
       signups:  'New Sign Ups — last 30 days by week',
+      wau:      'Weekly Active Users — last 30 days',
       tickets:  'Open Tickets by status',
       frt:      'Avg First Response — business hours, weekly',
     };

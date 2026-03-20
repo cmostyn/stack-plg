@@ -12,7 +12,8 @@ const ACCOUNT_ID   = process.env.STACKONE_POSTHOG_ACCOUNT_ID;
 const OUT_FILE     = path.join(__dirname, '../site/data/posthog.json');
 const HUBSPOT_FILE = path.join(__dirname, '../site/data/hubspot.json');
 
-const INSIGHT_ID = 3589698; // "Click Data 2" — org-level usage metrics
+const INSIGHT_ID     = 3589698; // "Click Data 2" — org-level usage metrics
+const WAU_INSIGHT_ID = 3612603; // "WAU" — daily users#create, aggregated to weekly
 
 // TODO: replace domain join with org_id once product writes org_id into HubSpot at activation
 const INTERNAL_DOMAINS = new Set(['stackone.com']);
@@ -128,8 +129,39 @@ async function main() {
   const matched = output.filter(r => r.customer_type).length;
   console.log(`[posthog] Matched ${matched}/${output.length} orgs to HubSpot companies`);
 
+  // Fetch WAU insight and aggregate into weekly buckets
+  let wauWeekly = [];
+  try {
+    const wauRes = await fetch('https://api.stackone.com/actions/rpc', {
+      method: 'POST',
+      headers: { 'Authorization': AUTH, 'x-account-id': ACCOUNT_ID, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'posthog_get_insight', path: { id: String(WAU_INSIGHT_ID) } }),
+    });
+    if (wauRes.ok) {
+      const wauData = await wauRes.json();
+      const series  = wauData?.result?.data?.result ?? wauData?.data?.result ?? [];
+      const labels  = series[0]?.labels ?? [];
+      const values  = series[0]?.data   ?? [];
+      const byWeek  = {};
+      for (let i = 0; i < labels.length; i++) {
+        const d   = new Date(labels[i].replace(/-/g, ' '));
+        const day = d.getUTCDay();
+        const mon = new Date(d);
+        mon.setUTCDate(d.getUTCDate() + (day === 0 ? -6 : 1 - day));
+        const key = mon.toISOString().slice(0, 10);
+        byWeek[key] = (byWeek[key] || 0) + (values[i] || 0);
+      }
+      wauWeekly = Object.entries(byWeek)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([week, count]) => ({ week, count }));
+      console.log(`[posthog] WAU: ${wauWeekly.length} weeks`);
+    }
+  } catch (e) {
+    console.warn(`[posthog] WAU fetch failed: ${e.message}`);
+  }
+
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
-  fs.writeFileSync(OUT_FILE, JSON.stringify(output, null, 2) + '\n');
+  fs.writeFileSync(OUT_FILE, JSON.stringify({ orgs: output, wau_weekly: wauWeekly }, null, 2) + '\n');
   console.log(`[posthog] Written to ${OUT_FILE}`);
   writeStatus('posthog', 'ok', { records: output.length });
 }
