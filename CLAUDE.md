@@ -177,6 +177,15 @@ CLOUDFLARE_API_TOKEN=
 
 ---
 
+## Task lists
+
+- Only create a task list if the work genuinely needs tracking across multiple steps
+- Mark tasks complete as each one finishes — never leave them open after the work is done
+- Once all tasks are complete, remove the task list entirely — don't leave it showing "0 done, 5 open"
+- If a task list is getting in the way or no longer relevant, delete it immediately
+
+---
+
 ## How to work with Charlie
 
 - One step at a time — pause for confirmation before moving on
