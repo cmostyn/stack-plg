@@ -215,11 +215,12 @@
       health: company => {
         const hid    = String(company.hubspot_id ?? '');
         const status = healthMap.get(hid) ?? null;
-        if (!status) return '<td class="crm-health-cell"></td>';
-        const labels = { risk: 'Risk', fair: 'Fair', good: 'Good', excellent: 'Excellent' };
-        const label  = labels[status];
-        if (!label) return '<td class="crm-health-cell"></td>';
-        return `<td class="crm-health-cell"><span class="health-badge health--${escHtml(status)}"><span class="health-dot"></span>${label}</span></td>`;
+        const cfg = { risk: 'Risk', fair: 'Fair', good: 'Good', excellent: 'Excellent' };
+        const label = status ? cfg[status] : null;
+        const inner = label
+          ? `<span class="health-badge health--${escHtml(status)}"><span class="health-dot"></span>${label}</span>`
+          : `<span class="crm-placeholder">Set health</span>`;
+        return `<td class="crm-health-cell crm-health-cell--clickable" data-hubspot-id="${escHtml(hid)}">${inner}</td>`;
       },
       last_contact: company => {
         const rel = relativeTime(company.last_contact);
@@ -1126,6 +1127,23 @@
         const colToShow = item.dataset.col;
         if (colToShow) { hiddenCols.delete(colToShow); saveHiddenCols(); render(); }
       }
+      if (action === 'set-health') {
+        const hid   = item.dataset.hid;
+        const value = item.dataset.value;
+        if (value) {
+          healthMap.set(hid, value);
+        } else {
+          healthMap.delete(hid);
+        }
+        fetch(`${WORKER_URL}/health`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hubspot_id: hid, status: value || null }),
+        }).catch(() => {});
+        closeColMenu();
+        render();
+        return;
+      }
       closeColMenu();
     });
 
@@ -1301,6 +1319,33 @@
       if (!p?.classList.contains('inline-add-popover--open')) return;
       if (!p.contains(e.target)) closeInlinePopover();
     }, true);
+
+    // --- Health cell click → dropdown ---
+    crmTable.addEventListener('click', e => {
+      const td = e.target.closest('td.crm-health-cell--clickable');
+      if (!td) return;
+      e.stopPropagation();
+      const hid = String(td.dataset.hubspotId ?? '');
+      if (!hid) return;
+
+      const menu = document.getElementById('col-menu');
+      activeMenuCol = `__health__${hid}`;
+      const current = healthMap.get(hid) ?? '';
+      const opts = [
+        { value: 'excellent', label: 'Excellent' },
+        { value: 'good',      label: 'Good' },
+        { value: 'fair',      label: 'Fair' },
+        { value: 'risk',      label: 'Risk' },
+        { value: '',          label: '— Clear health —' },
+      ];
+      menu.innerHTML = opts.map(o =>
+        `<button class="col-menu-item${o.value === current ? ' col-menu-item--active' : ''}" data-action="set-health" data-hid="${escHtml(hid)}" data-value="${escHtml(o.value)}">${escHtml(o.label)}</button>`
+      ).join('');
+      const rect = td.getBoundingClientRect();
+      menu.style.top  = `${rect.bottom + window.scrollY}px`;
+      menu.style.left = `${rect.left  + window.scrollX}px`;
+      menu.classList.add('col-menu--open');
+    });
 
     // --- Notes popup (click) ---
     crmTable.addEventListener('click', e => {
