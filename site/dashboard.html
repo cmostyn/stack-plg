@@ -160,8 +160,14 @@
 
     <!-- ── Useful Links ── -->
     <section class="useful-links">
-      <div class="useful-links-label">Useful links</div>
-      <div class="useful-links-grid">
+      <div class="useful-links-header">
+        <span class="useful-links-label">Useful links</span>
+        <button class="add-link-btn" id="addLinkBtn" aria-label="Add link">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+          Add link
+        </button>
+      </div>
+      <div class="useful-links-grid" id="usefulLinksGrid">
 
         <a class="link-card" href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list" target="_blank" rel="noopener">
           <div class="link-card-icon" style="background:#ECF9F4;">
@@ -259,6 +265,44 @@
     </section>
 
   </main>
+
+  <!-- Add link dialog -->
+  <dialog class="add-link-dialog" id="addLinkDialog">
+    <form class="add-link-form" id="addLinkForm" method="dialog">
+      <div class="add-link-dialog-header">
+        <span class="add-link-dialog-title">Add link</span>
+        <button type="button" class="add-link-dialog-close" id="addLinkClose" aria-label="Close">×</button>
+      </div>
+      <div class="add-link-dialog-body">
+        <label class="add-link-field">
+          <span class="add-link-field-label">Name</span>
+          <input class="add-link-input" id="linkName" type="text" placeholder="e.g. Notion workspace" required maxlength="40">
+        </label>
+        <label class="add-link-field">
+          <span class="add-link-field-label">URL</span>
+          <input class="add-link-input" id="linkUrl" type="url" placeholder="https://" required>
+        </label>
+        <label class="add-link-field">
+          <span class="add-link-field-label">Description <span class="add-link-optional">(optional)</span></span>
+          <input class="add-link-input" id="linkDesc" type="text" placeholder="e.g. Team wiki &amp; docs" maxlength="50">
+        </label>
+        <div class="add-link-field">
+          <span class="add-link-field-label">Colour</span>
+          <div class="add-link-colors" id="addLinkColors">
+            <button type="button" class="add-link-color add-link-color--active" data-bg="#ECF9F4" data-stroke="#047B43" aria-label="Green"></button>
+            <button type="button" class="add-link-color" data-bg="#EFF4FF" data-stroke="#0C58AE" aria-label="Blue"></button>
+            <button type="button" class="add-link-color" data-bg="#F0EEFF" data-stroke="#4D4EBA" aria-label="Purple"></button>
+            <button type="button" class="add-link-color" data-bg="#FFF3EB" data-stroke="#96580A" aria-label="Amber"></button>
+            <button type="button" class="add-link-color" data-bg="#FEF0F0" data-stroke="#C43E3E" aria-label="Red"></button>
+          </div>
+        </div>
+      </div>
+      <div class="add-link-dialog-footer">
+        <button type="button" class="add-link-btn-cancel" id="addLinkCancel">Cancel</button>
+        <button type="submit" class="add-link-btn-save">Add link</button>
+      </div>
+    </form>
+  </dialog>
 
   <!-- Expand dialog -->
   <dialog class="dash-expand" id="dashExpand">
@@ -664,6 +708,102 @@
       Object.values(miniCharts).forEach(c => c.resize());
       if (expandChart) expandChart.resize();
     });
+
+    // ── Custom useful links ───────────────────────────────────────────────────
+    const LINKS_KEY = 'plg_custom_links_v1';
+
+    function loadCustomLinks() {
+      try { return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]'); }
+      catch { return []; }
+    }
+
+    function saveCustomLinks(links) {
+      localStorage.setItem(LINKS_KEY, JSON.stringify(links));
+    }
+
+    function linkIcon(bg, stroke) {
+      return `<div class="link-card-icon" style="background:${bg};">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>`;
+    }
+
+    function renderCustomLinks() {
+      document.querySelectorAll('.link-card--custom').forEach(el => el.remove());
+      const links = loadCustomLinks();
+      const grid = document.getElementById('usefulLinksGrid');
+      const arrow = `<svg class="link-card-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg>`;
+      links.forEach((link, i) => {
+        const a = document.createElement('a');
+        a.className = 'link-card link-card--custom';
+        a.href = link.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.innerHTML = `
+          ${linkIcon(link.bg, link.stroke)}
+          <div class="link-card-text">
+            <div class="link-card-name">${link.name}</div>
+            ${link.desc ? `<div class="link-card-desc">${link.desc}</div>` : ''}
+          </div>
+          ${arrow}
+          <button class="link-card-remove" aria-label="Remove link" data-index="${i}">×</button>`;
+        grid.appendChild(a);
+      });
+
+      document.querySelectorAll('.link-card-remove').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          const links = loadCustomLinks();
+          links.splice(parseInt(btn.dataset.index, 10), 1);
+          saveCustomLinks(links);
+          renderCustomLinks();
+        });
+      });
+    }
+
+    // Colour picker
+    let selectedBg = '#ECF9F4', selectedStroke = '#047B43';
+    document.querySelectorAll('.add-link-color').forEach(btn => {
+      btn.style.background = btn.dataset.bg;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.add-link-color').forEach(b => b.classList.remove('add-link-color--active'));
+        btn.classList.add('add-link-color--active');
+        selectedBg = btn.dataset.bg;
+        selectedStroke = btn.dataset.stroke;
+      });
+    });
+
+    // Open / close
+    const addLinkDialog = document.getElementById('addLinkDialog');
+    document.getElementById('addLinkBtn').addEventListener('click', () => {
+      document.getElementById('addLinkForm').reset();
+      document.querySelectorAll('.add-link-color').forEach(b => b.classList.remove('add-link-color--active'));
+      document.querySelector('.add-link-color').classList.add('add-link-color--active');
+      selectedBg = '#ECF9F4'; selectedStroke = '#047B43';
+      addLinkDialog.showModal();
+    });
+    document.getElementById('addLinkClose').addEventListener('click', () => addLinkDialog.close());
+    document.getElementById('addLinkCancel').addEventListener('click', () => addLinkDialog.close());
+    addLinkDialog.addEventListener('click', e => { if (e.target === addLinkDialog) addLinkDialog.close(); });
+
+    // Save
+    document.getElementById('addLinkForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('linkName').value.trim();
+      const url  = document.getElementById('linkUrl').value.trim();
+      const desc = document.getElementById('linkDesc').value.trim();
+      if (!name || !url) return;
+      const links = loadCustomLinks();
+      links.push({ name, url, desc, bg: selectedBg, stroke: selectedStroke });
+      saveCustomLinks(links);
+      renderCustomLinks();
+      addLinkDialog.close();
+    });
+
+    renderCustomLinks();
   </script>
 </body>
 </html>
