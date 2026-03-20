@@ -1315,37 +1315,38 @@ a:hover {
 .crm-type-pills {
   display: flex;
   align-items: center;
-  background: var(--so-foreground);
-  border: 1px solid var(--so-neutral-10);
-  border-radius: var(--so-radius);
-  padding: 3px;
-  gap: 2px;
+  gap: 4px;
 }
 
 .crm-pill {
-  padding: 4px 11px;
   font-family: var(--so-font-body);
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--so-text-tag);
-  background: transparent;
-  border: none;
-  border-radius: 5px;
+  background: var(--so-foreground);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: 20px;
+  padding: 5px 14px;
   cursor: pointer;
-  transition: background 0.1s, color 0.1s;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  line-height: 1;
   white-space: nowrap;
 }
 
 .crm-pill:hover {
-  background: var(--so-white);
+  background: var(--so-neutral-5);
   color: var(--so-text-body);
 }
 
 .crm-pill--active {
-  background: var(--so-white);
+  background: rgba(0, 175, 102, 0.12);
   color: var(--so-green-dark);
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 175, 102, 0.3);
+  font-weight: 600;
+}
+
+.crm-pill--active:hover {
+  background: rgba(0, 175, 102, 0.18);
 }
 
 /* CRM — letter avatars */
