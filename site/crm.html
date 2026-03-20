@@ -1438,5 +1438,129 @@
     });
   </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script>
+    // ── CRM Animations ────────────────────────────────────────────────────────
+    // All animations are guarded by prefers-reduced-motion.
+    // This block does not modify any existing variables or functions — it only
+    // wraps render and openCard, and adds capture-phase event listeners.
+
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Animation 1 — row stagger entrance ───────────────────────────────────
+      // Wrap render() so that after the tbody is rebuilt we stagger the new rows
+      // in. Capped at the first 20 rows so a large list doesn't animate forever.
+      // Filter/search re-renders are distinguished from the initial data load by
+      // the _crmFirstRender flag — both get the stagger, but the filter pulse
+      // (animation 2) only fires on subsequent renders.
+      var _crmFirstRender = true;
+      var _originalRender = render;
+
+      render = function () {
+        _originalRender.apply(this, arguments);
+
+        var rows = Array.prototype.slice.call(
+          document.querySelectorAll('#crm-tbody tr:not(.expand-sub-row)'),
+          0, 20
+        );
+
+        if (rows.length === 0) return;
+
+        if (!reduced) {
+          // Set initial invisible state so there is no flash before anime runs
+          rows.forEach(function (row) { row.style.opacity = '0'; });
+
+          anime({
+            targets: rows,
+            opacity: [0, 1],
+            translateY: [12, 0],
+            duration: 350,
+            easing: 'cubicBezier(.4, 0, .2, 1)',
+            delay: anime.stagger(40),
+          });
+        } else {
+          rows.forEach(function (row) { row.style.opacity = '1'; });
+        }
+
+        _crmFirstRender = false;
+      };
+
+      // ── Animation 2 — search/filter pulse ────────────────────────────────────
+      // Fires in the capture phase before the existing listeners that call
+      // render(), so the dim starts while the new list is still being built.
+      // Only runs after the initial data load (skip the very first render).
+      function pulseRows() {
+        if (_crmFirstRender) return;
+        if (reduced) return;
+        var rows = document.querySelectorAll('#crm-tbody tr:not(.expand-sub-row)');
+        if (rows.length === 0) return;
+        anime({
+          targets: rows,
+          opacity: [1, 0.3, 1],
+          duration: 250,
+          easing: 'cubicBezier(.4, 0, .2, 1)',
+        });
+      }
+
+      document.getElementById('crm-search').addEventListener('input', pulseRows, true);
+      document.getElementById('crm-type-pills').addEventListener('click', function (e) {
+        if (e.target.closest('.crm-pill')) pulseRows();
+      }, true);
+      document.getElementById('crm-strategic-pills').addEventListener('click', function (e) {
+        if (e.target.closest('.crm-pill')) pulseRows();
+      }, true);
+
+      // ── Animation 3 — modal/card entrance ────────────────────────────────────
+      // Wrap openCard() so the card-modal animates in after the overlay opens.
+      var _originalOpenCard = openCard;
+
+      openCard = function (company) {
+        _originalOpenCard.apply(this, arguments);
+
+        if (!reduced) {
+          var modal = document.getElementById('card-modal');
+          if (!modal) return;
+          anime({
+            targets: modal,
+            opacity: [0, 1],
+            translateY: [8, 0],
+            scale: [0.97, 1],
+            duration: 250,
+            easing: 'cubicBezier(.4, 0, .2, 1)',
+          });
+        }
+      };
+
+      // The notes popup (crm-notes cell click) uses the same overlay but does
+      // not go through openCard. Observe overlay class changes to catch it.
+      var overlay = document.getElementById('card-overlay');
+      if (overlay && !reduced) {
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (m) {
+            if (m.type !== 'attributes' || m.attributeName !== 'class') return;
+            // Only fire when the overlay has just become open and there is a
+            // modal that was NOT already animated (openCard wraps its own case).
+            if (!overlay.classList.contains('card-overlay--open')) return;
+            var modal = document.getElementById('card-modal');
+            // openCard sets openCardId; notes popup does not — use that to
+            // distinguish. openCard has already animated its modal, so only
+            // animate here when openCardId is null (notes popup path).
+            if (!modal || openCardId !== null) return;
+            anime({
+              targets: modal,
+              opacity: [0, 1],
+              translateY: [8, 0],
+              scale: [0.97, 1],
+              duration: 250,
+              easing: 'cubicBezier(.4, 0, .2, 1)',
+            });
+          });
+        });
+        observer.observe(overlay, { attributes: true });
+      }
+    }());
+  </script>
+
 </body>
 </html>
