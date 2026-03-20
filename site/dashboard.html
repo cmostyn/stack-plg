@@ -102,10 +102,10 @@
       <!-- ── Row 1: Growth ── -->
       <div class="dash-section-label">Growth</div>
 
-      <!-- Tile 1: Total sign ups -->
+      <!-- Tile 1: Total Sign Ups -->
       <div class="dash-tile" data-tile-id="accounts" draggable="true">
         <div class="dash-tile-header">
-          <span class="dash-tile-title">Total sign ups</span>
+          <span class="dash-tile-title">Total Sign Ups</span>
           <a class="dash-tile-source"
              href="https://app-eu1.hubspot.com/contacts/146796234/objects/0-2/views/152806180/list?noprefetch="
              target="_blank" rel="noopener" data-source-link>HubSpot ↗</a>
@@ -460,7 +460,7 @@
       const companies = filterCompanies(allCompanies);
       const ps = pylonSummary ? pylonSummary[activeFilter] ?? pylonSummary.all : null;
 
-      // Tile 1 — Total sign ups (weekly cumulative)
+      // Tile 1 — Total Sign Ups (weekly cumulative)
       document.getElementById('val-accounts').textContent = companies.length || '—';
       const byWeekAcc = {};
       for (const c of companies) {
@@ -754,7 +754,7 @@
 
     // ── Chart click handler ───────────────────────────────────────────────────
     const CHART_TITLES = {
-      accounts: 'Total sign ups — growth over time',
+      accounts: 'Total Sign Ups — growth over time',
       signups:  'New Sign Ups — last 30 days by week',
       tickets:  'Open Tickets by status',
       frt:      'Avg First Response — business hours, weekly',
