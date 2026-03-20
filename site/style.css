@@ -1281,6 +1281,29 @@ a:hover {
 }
 
 /* ============================================================
+   Staleness Banner
+   ============================================================ */
+
+.staleness-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 24px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--so-radius);
+  color: #92570A;
+  font-family: var(--so-font-body);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.staleness-banner svg {
+  flex-shrink: 0;
+}
+
+/* ============================================================
    CRM — customer type badges
    ============================================================ */
 
