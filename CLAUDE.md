@@ -85,6 +85,8 @@ HubSpot → PLG account list (type = "Customer - PLG")
 **Product usage**
 PostHog → sessions, feature usage, errors per account
 Use to flag: zero activity this week, error spikes, friction points
+Join method: domain extracted from PostHog user emails → matched against HubSpot company domain (stopgap)
+Intended solution: org_id as the join key — requires product to write org_id into HubSpot at activation. Raise with product team.
 
 **Call context**
 Fireflies API → recent call transcripts for PLG accounts
