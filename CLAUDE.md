@@ -181,5 +181,6 @@ CLOUDFLARE_API_TOKEN=
 - Before any terminal command, explain in plain English what it does
 - After each section: show how to preview locally before committing
 - When Charlie says "looks good" → commit and push to preview branch
+- Before saying the preview is ready, open the Cloudflare preview URL in the browser: `open https://[branch-name].stack-plg.pages.dev` (replace `[branch-name]` with the actual branch name, dots converted to hyphens)
 - When Charlie says "ship it" → merge to main
 - If something breaks → explain what went wrong before fixing it
