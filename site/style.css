@@ -1188,97 +1188,6 @@ a:hover {
   padding: 32px 0;
 }
 
-/* ============================================================
-   Auth Overlay
-   ============================================================ */
-
-#auth-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: var(--so-background);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.auth-card {
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.auth-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--so-font-heading);
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: -0.5px;
-  color: var(--so-text-header);
-  margin-bottom: 4px;
-}
-
-.auth-subtitle {
-  font-family: var(--so-font-tag);
-  font-size: 13px;
-  color: var(--so-text-tag);
-  margin-bottom: 16px;
-}
-
-.auth-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.auth-input {
-  width: 100%;
-  padding: 10px 14px;
-  font-family: var(--so-font-body);
-  font-size: 15px;
-  color: var(--so-text-body);
-  background: var(--so-white);
-  border: 1px solid var(--so-neutral-10);
-  border-radius: var(--so-radius);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.auth-input:focus {
-  border-color: rgba(0, 175, 102, 0.4);
-  box-shadow: 0 0 0 3px rgba(0, 175, 102, 0.1);
-}
-
-.auth-btn {
-  width: 100%;
-  padding: 10px;
-  font-family: var(--so-font-body);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--so-white);
-  background: var(--so-primary);
-  border: none;
-  border-radius: var(--so-radius);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.auth-btn:hover {
-  background: var(--so-green-dark);
-}
-
-.auth-error {
-  font-family: var(--so-font-tag);
-  font-size: 13px;
-  color: var(--so-red-dark);
-  text-align: center;
-  min-height: 18px;
-}
 
 /* ============================================================
    CRM — customer type badges
@@ -1315,37 +1224,38 @@ a:hover {
 .crm-type-pills {
   display: flex;
   align-items: center;
-  background: var(--so-foreground);
-  border: 1px solid var(--so-neutral-10);
-  border-radius: var(--so-radius);
-  padding: 3px;
-  gap: 2px;
+  gap: 4px;
 }
 
 .crm-pill {
-  padding: 4px 11px;
   font-family: var(--so-font-body);
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--so-text-tag);
-  background: transparent;
-  border: none;
-  border-radius: 5px;
+  background: var(--so-foreground);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: 20px;
+  padding: 5px 14px;
   cursor: pointer;
-  transition: background 0.1s, color 0.1s;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  line-height: 1;
   white-space: nowrap;
 }
 
 .crm-pill:hover {
-  background: var(--so-white);
+  background: var(--so-neutral-5);
   color: var(--so-text-body);
 }
 
 .crm-pill--active {
-  background: var(--so-white);
+  background: rgba(0, 175, 102, 0.12);
   color: var(--so-green-dark);
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 175, 102, 0.3);
+  font-weight: 600;
+}
+
+.crm-pill--active:hover {
+  background: rgba(0, 175, 102, 0.18);
 }
 
 /* CRM — letter avatars */
@@ -2615,6 +2525,42 @@ a.dash-tile-source:hover {
   padding: 0;
 }
 .crm-bulk-clear-btn:hover { color: #fff; }
+
+.crm-strategic-wrap { position: relative; }
+
+.crm-pill-chevron { font-size: 10px; margin-left: 3px; }
+
+.crm-strategic-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  padding: 4px;
+  z-index: 50;
+  min-width: 160px;
+}
+.crm-strategic-dropdown--open { display: block; }
+
+.crm-strategic-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 12px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-body);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.crm-strategic-opt:hover { background: var(--so-foreground); }
+.crm-strategic-opt--active { color: var(--so-green-dark); font-weight: 600; }
 
 /* Purpose banner */
 .plg-purpose-banner {

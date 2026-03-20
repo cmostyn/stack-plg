@@ -38,14 +38,19 @@
           <button class="crm-pill crm-pill--active" data-type="">All</button>
           <button class="crm-pill" data-type="Customer - PLG">PLG</button>
           <button class="crm-pill" data-type="Customer - SLG">SLG</button>
-          <button class="crm-pill" data-type="Customer">Cust</button>
+          <button class="crm-pill" data-type="Customer">Customers</button>
         </div>
-        <div class="crm-type-pills crm-strategic-pills" id="crm-strategic-pills">
-          <button class="crm-pill crm-pill--active" data-strategic="">All accounts</button>
-          <button class="crm-pill" data-strategic="Yes - Agentic">Agentic</button>
-          <button class="crm-pill" data-strategic="Yes - Non Agentic">Non-agentic</button>
-          <button class="crm-pill" data-strategic="Managed Service Candidate">Managed svc</button>
-          <button class="crm-pill" data-strategic="No">Non-strategic</button>
+        <div class="crm-strategic-wrap" id="crm-strategic-wrap">
+          <button class="crm-pill" id="crm-strategic-btn">
+            All accounts <span class="crm-pill-chevron">▾</span>
+          </button>
+          <div class="crm-strategic-dropdown" id="crm-strategic-dropdown">
+            <button class="crm-strategic-opt crm-strategic-opt--active" data-strategic="">All accounts</button>
+            <button class="crm-strategic-opt" data-strategic="Yes - Agentic">Agentic</button>
+            <button class="crm-strategic-opt" data-strategic="Yes - Non Agentic">Non-agentic</button>
+            <button class="crm-strategic-opt" data-strategic="Managed Service Candidate">Managed svc</button>
+            <button class="crm-strategic-opt" data-strategic="No">Non-strategic</button>
+          </div>
         </div>
       </div>
       <div class="crm-toolbar-right">
@@ -95,7 +100,7 @@
     const DEFAULT_COL_ORDER = [
       'name', 'health', 'contact', 'notes', 'local_notes', 'last_contact',
       'account', 'integrations', 'clicks', 'api_requests',
-      'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
+      'tickets_total', 'open_tickets', 'last_call',
     ];
 
     // Default widths (px) — sum ~1385px, fills a 1400px container
@@ -112,7 +117,6 @@
       api_requests:   95,
       tickets_total:  95,
       open_tickets:   95,
-      cs_actions:     95,
       last_call:     130,
     };
 
@@ -131,12 +135,11 @@
       local_notes:   () => thHtml('local_notes', 'Notes'),
       last_contact:  () => thHtml('last_contact', 'Last contact'),
       account:       () => thHtml('account', 'Pylon account'),
-      integrations:  () => thHtml('integrations', 'Integrations'),
+      integrations:  () => thHtml('integrations', 'Linked accounts'),
       clicks:        () => thHtml('clicks', 'Clicks'),
       api_requests:  () => thHtml('api_requests', 'API requests'),
       tickets_total: () => thHtml('tickets_total', 'Tickets (30d)'),
       open_tickets:  () => thHtml('open_tickets', 'Open tickets'),
-      cs_actions:    () => thHtml('cs_actions', 'CS actions'),
       last_call:     () => thHtml('last_call', 'Most recent call'),
     };
 
@@ -155,7 +158,6 @@
           href !== '#' ? `<a href="${href}" class="crm-row-action" target="_blank" rel="noopener" title="Open in HubSpot"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M1 6h14"/><path d="M6 2v4"/><path d="M10 2v4"/></svg></a>` : '',
           mailtoHref    ? `<a href="${mailtoHref}" class="crm-row-action" title="Send email"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 4l7 5 7-5"/></svg></a>` : '',
           pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
-          `<button class="crm-row-action add-action-btn" data-hubspot-id="${hid}" title="Add CS action"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg></button>`,
         ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
           <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
@@ -187,7 +189,7 @@
         const n = company.notes;
         if (!n) return PLACEHOLDER_CELL;
         const truncated = n.length > 80 ? n.slice(0, 80) + '…' : n;
-        return `<td class="crm-notes" title="${escHtml(n)}">${escHtml(truncated)}</td>`;
+        return `<td class="crm-notes" data-full-notes="${escHtml(n)}">${escHtml(truncated)}</td>`;
       },
       local_notes: company => {
         const hid    = escHtml(String(company.hubspot_id ?? ''));
@@ -250,14 +252,6 @@
         const count = py.open_tickets_live ?? py.issues_last_30d.open;
         const pylonUrl = escHtml(`https://app.usepylon.com/accounts/${py.pylon_account_id}`);
         return `<td class="crm-num"><a href="${pylonUrl}" target="_blank" rel="noopener">${count}</a></td>`;
-      },
-      cs_actions: company => {
-        const hid = escHtml(String(company.hubspot_id ?? ''));
-        return `<td>
-          <div class="actions-cell">
-            <button class="add-action-btn" data-hubspot-id="${hid}">+ Add</button>
-          </div>
-        </td>`;
       },
       last_call: company => {
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
@@ -515,11 +509,6 @@
             const oa = pa ? (pa.open_tickets_live ?? pa.issues_last_30d.open) : -1;
             const ob = pb ? (pb.open_tickets_live ?? pb.issues_last_30d.open) : -1;
             return dir * (oa - ob);
-          }
-          case 'cs_actions': {
-            const ca = actionsMap.get(String(a.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
-            const cb = actionsMap.get(String(b.hubspot_id ?? ''))?.filter(x => !x.done).length ?? 0;
-            return dir * (ca - cb);
           }
           case 'last_call': {
             const da = a.domain ? (firefliesMap.get(a.domain)?.date ?? '') : '';
@@ -984,13 +973,32 @@
       render();
     });
 
-    document.getElementById('crm-strategic-pills').addEventListener('click', e => {
-      const pill = e.target.closest('.crm-pill');
-      if (!pill) return;
-      strategicFilter = pill.dataset.strategic;
-      document.querySelectorAll('#crm-strategic-pills .crm-pill').forEach(p =>
-        p.classList.toggle('crm-pill--active', p === pill)
+    // Strategic filter dropdown
+    const strategicBtn = document.getElementById('crm-strategic-btn');
+    const strategicDropdown = document.getElementById('crm-strategic-dropdown');
+
+    strategicBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      strategicDropdown.classList.toggle('crm-strategic-dropdown--open');
+    });
+
+    document.addEventListener('click', () => {
+      strategicDropdown.classList.remove('crm-strategic-dropdown--open');
+    });
+
+    strategicDropdown.addEventListener('click', e => {
+      const opt = e.target.closest('.crm-strategic-opt');
+      if (!opt) return;
+      strategicFilter = opt.dataset.strategic;
+      // Update label on trigger button
+      strategicBtn.innerHTML = escHtml(opt.textContent.trim()) + ' <span class="crm-pill-chevron">▾</span>';
+      // Update active state
+      strategicDropdown.querySelectorAll('.crm-strategic-opt').forEach(o =>
+        o.classList.toggle('crm-strategic-opt--active', o === opt)
       );
+      // Mark button as active if not "All accounts"
+      strategicBtn.classList.toggle('crm-pill--active', !!strategicFilter);
+      strategicDropdown.classList.remove('crm-strategic-dropdown--open');
       render();
     });
 
@@ -1001,6 +1009,12 @@
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
       localStorage.removeItem('plg_crm_frozen');
+      strategicFilter = '';
+      strategicBtn.innerHTML = 'All accounts <span class="crm-pill-chevron">▾</span>';
+      strategicBtn.classList.remove('crm-pill--active');
+      strategicDropdown.querySelectorAll('.crm-strategic-opt').forEach((o, i) =>
+        o.classList.toggle('crm-strategic-opt--active', i === 0)
+      );
       render();
     });
 
@@ -1192,14 +1206,7 @@
       document.getElementById('card-action-save')?.click();
     });
 
-    // Inline add: delegated click on + Add button in CS actions column
-    document.querySelector('.crm-table').addEventListener('click', e => {
-      const btn = e.target.closest('.add-action-btn');
-      if (!btn) return;
-      openInlinePopover(btn);
-    });
-
-    // Inline popover: save on button click
+    //Inline popover: save on button click
     document.getElementById('inline-add-popover').addEventListener('click', async e => {
       if (!e.target.closest('.inline-action-save')) return;
       const p        = document.getElementById('inline-add-popover');
@@ -1229,24 +1236,24 @@
     document.addEventListener('click', e => {
       const p = document.getElementById('inline-add-popover');
       if (!p?.classList.contains('inline-add-popover--open')) return;
-      if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
+      if (!p.contains(e.target)) closeInlinePopover();
     }, true);
 
     // --- Notes popup (click) ---
     crmTable.addEventListener('click', e => {
       const td = e.target.closest('td.crm-notes');
       if (!td) return;
-      const fullText = td.title;
+      const fullText = td.dataset.fullNotes ?? '';
       if (!fullText) return;
       const overlay = document.getElementById('card-overlay');
       overlay.innerHTML = `
-        <div class="card-modal" id="card-modal" style="max-width:480px">
+        <div class="card-modal" id="card-modal" style="max-width:560px">
           <div class="card-modal-header">
             <div class="card-modal-company">Notes</div>
             <button class="card-modal-close" id="card-close">×</button>
           </div>
-          <div class="card-modal-body" style="padding:20px 24px">
-            <p style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;margin:0;font-size:14px;color:#4C4B4B">${escHtml(fullText)}</p>
+          <div class="card-modal-body" style="display:block;padding:20px 24px">
+            <p style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;margin:0;font-size:14px;color:var(--so-text-body)">${escHtml(fullText)}</p>
           </div>
         </div>
       `;
@@ -1507,8 +1514,8 @@
       document.getElementById('crm-type-pills').addEventListener('click', function (e) {
         if (e.target.closest('.crm-pill')) pulseRows();
       }, true);
-      document.getElementById('crm-strategic-pills').addEventListener('click', function (e) {
-        if (e.target.closest('.crm-pill')) pulseRows();
+      document.getElementById('crm-strategic-dropdown').addEventListener('click', function (e) {
+        if (e.target.closest('.crm-strategic-opt')) pulseRows();
       }, true);
 
       // ── Animation 3 — modal/card entrance ────────────────────────────────────
