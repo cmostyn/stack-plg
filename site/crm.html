@@ -12,10 +12,10 @@
 
   <header class="site-header">
     <div class="site-header-inner">
-      <a href="http://go/plg-hub" class="site-logo">
+      <span class="site-logo">
         <svg class="site-logo-svg" viewBox="6 2 28 38" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M20 4 C12 4 8 10 8 16 L8 28 C8 34 12 38 18 38 L22 38 C28 38 32 34 32 28 L32 14 C32 10 29 8 26 8 L24 8 C21 8 18 10 18 14 L18 26 C18 28 20 30 22 30 L24 30 C26 30 28 28 28 26 L28 14"/></svg>
         PLG-Hub
-      </a>
+      </span>
       <nav class="site-nav">
         <a href="dashboard.html" class="site-nav-link">Dashboard</a>
         <a href="crm.html" class="site-nav-link site-nav-link--active">Customer List</a>
@@ -79,7 +79,7 @@
 
     // Default widths (px) — sum ~1385px, fills a 1400px container
     const DEFAULT_COL_WIDTHS = {
-      name:          150,
+      name:          300,
       contact:       160,
       notes:         170,
       local_notes:   160,
@@ -123,9 +123,9 @@
         const href       = safeHref(company.hubspot_url);
         const hid        = escHtml(String(company.hubspot_id ?? ''));
         const badge      = typeBadge(company.type);
-        const avatar     = avatarHtml(company.name);
+
         const c          = isContactObj(company.contact) ? company.contact : null;
-        const mailtoHref = c?.email ? `mailto:${c.email}` : null;
+        const mailtoHref = c?.email ? `superhuman://compose?to=${encodeURIComponent(c.email)}` : null;
         const pylonEntry = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
         const pylonHref  = pylonEntry ? escHtml(`https://app.usepylon.com/accounts/${pylonEntry.pylon_account_id}`) : null;
         const quickLinks = [
@@ -134,7 +134,7 @@
           pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
         ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
-          ${avatar}<button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+          <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
           <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
           <div class="crm-row-actions">${quickLinks}</div>
         </td>`;
@@ -152,7 +152,7 @@
           }
         }
         const emailBtn = c.email
-          ? `<a href="mailto:${escHtml(c.email)}" class="crm-email-btn" title="Email ${escHtml(c.name)}" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></a>`
+          ? `<a href="superhuman://compose?to=${encodeURIComponent(c.email)}" class="crm-email-btn" title="Email ${escHtml(c.name)}" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></a>`
           : '';
         const nameEl = contactHref
           ? `<a href="${escHtml(contactHref)}" target="_blank" rel="noopener" class="crm-contact-name-link">${name}</a>`
@@ -280,16 +280,6 @@
       return (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
-    function avatarHtml(name) {
-      const letter = (name ?? '?')[0].toUpperCase();
-      const COLORS = [
-        ['#EFF6FF', '#1D4ED8'], ['#F0FDF4', '#15803D'], ['#FFF7ED', '#C2410C'],
-        ['#FAF5FF', '#7C3AED'], ['#FFF1F2', '#BE123C'], ['#F0FDFA', '#0F766E'],
-      ];
-      const [bg, fg] = COLORS[((name ?? '').charCodeAt(0) || 0) % COLORS.length];
-      return `<span class="crm-avatar" style="background:${bg};color:${fg}">${escHtml(letter)}</span>`;
-    }
-
     function typeBadge(type) {
       if (!type) return '';
       if (type === 'Customer - PLG') return '<span class="crm-type-badge crm-type-badge--plg">PLG</span>';
@@ -323,7 +313,12 @@
     function loadColWidths() {
       try {
         const parsed = JSON.parse(localStorage.getItem('plg_crm_col_widths') ?? 'null');
-        return (parsed && typeof parsed === 'object') ? { ...DEFAULT_COL_WIDTHS, ...parsed } : { ...DEFAULT_COL_WIDTHS };
+        if (parsed && typeof parsed === 'object') {
+          // Migrate: if saved name width is the old default (150), clear it so new default (300) applies
+          if (parsed.name === 150) delete parsed.name;
+          return { ...DEFAULT_COL_WIDTHS, ...parsed };
+        }
+        return { ...DEFAULT_COL_WIDTHS };
       } catch {
         return { ...DEFAULT_COL_WIDTHS };
       }
@@ -331,6 +326,20 @@
 
     function saveColWidths() {
       localStorage.setItem('plg_crm_col_widths', JSON.stringify(colWidths));
+    }
+
+    function showLayoutSavedToast() {
+      let toast = document.getElementById('layout-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'layout-toast';
+        toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#222121;color:#fff;font-size:12px;padding:8px 14px;border-radius:8px;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none';
+        toast.textContent = 'Layout saved';
+        document.body.appendChild(toast);
+      }
+      clearTimeout(toast._timer);
+      toast.style.opacity = '1';
+      toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 1500);
     }
 
     function loadFrozenCols() {
@@ -629,6 +638,12 @@
       p.style.top  = `${rect.bottom + window.scrollY + 4}px`;
       p.style.left = `${rect.left  + window.scrollX}px`;
       p.classList.add('inline-add-popover--open');
+      requestAnimationFrame(() => {
+        const pRect = p.getBoundingClientRect();
+        if (pRect.right > window.innerWidth - 8) {
+          p.style.left = `${window.innerWidth - pRect.width - 8 + window.scrollX}px`;
+        }
+      });
       p.querySelector('.inline-action-name')?.focus();
     }
 
@@ -943,6 +958,7 @@
       if (srcIdx === -1 || tgtIdx === -1) return;
       [colOrder[srcIdx], colOrder[tgtIdx]] = [colOrder[tgtIdx], colOrder[srcIdx]];
       localStorage.setItem('plg_crm_col_order', JSON.stringify(colOrder));
+      showLayoutSavedToast();
       render();
     });
 
@@ -1069,8 +1085,8 @@
       if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
     }, true);
 
-    // --- Notes popup (double-click) ---
-    crmTable.addEventListener('dblclick', e => {
+    // --- Notes popup (click) ---
+    crmTable.addEventListener('click', e => {
       const td = e.target.closest('td.crm-notes');
       if (!td) return;
       const fullText = td.title;
@@ -1083,7 +1099,7 @@
             <button class="card-modal-close" id="card-close">×</button>
           </div>
           <div class="card-modal-body" style="padding:20px 24px">
-            <p style="white-space:pre-wrap;line-height:1.6;margin:0;font-size:14px;color:#4C4B4B">${escHtml(fullText)}</p>
+            <p style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;margin:0;font-size:14px;color:#4C4B4B">${escHtml(fullText)}</p>
           </div>
         </div>
       `;
@@ -1124,6 +1140,7 @@
       );
       resizingCol = null;
       saveColWidths();
+      showLayoutSavedToast();
     });
 
     // Inline edit for local_notes cells — single click to edit
