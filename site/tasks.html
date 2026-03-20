@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <style>
     /* ── Page shell ─────────────────────────────────────────── */
-    .tasks-page { display: flex; flex-direction: column; min-height: 100vh; background: var(--so-background); }
+    .tasks-page { display: flex; flex-direction: column; min-height: 100vh; background: #EEF8F3; }
 
     /* ── Toolbar ────────────────────────────────────────────── */
     .tasks-toolbar {
@@ -19,7 +19,7 @@
       flex-wrap: wrap;
     }
     .tasks-toolbar-left  { display: flex; align-items: center; gap: 4px; }
-    .tasks-toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .tasks-toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     /* Tab pills */
     .tasks-tab {
@@ -77,44 +77,43 @@
     .tasks-tab-count:empty { display: none; }
     .tasks-tab-count--overdue { background: rgba(196,62,62,0.10); color: var(--so-red-dark); }
 
-    /* Priority pills */
-    .priority-pills { display: flex; gap: 4px; }
+    /* Type + Priority pill groups — capsule style matching CRM */
+    .crm-pill-group {
+      display: flex;
+      gap: 2px;
+      background: var(--so-neutral-5);
+      border-radius: 7px;
+      padding: 3px;
+    }
+
+    /* Priority pills — restyled to match CRM capsule */
+    .priority-pills {
+      display: flex;
+      gap: 2px;
+      background: var(--so-neutral-5);
+      border-radius: 7px;
+      padding: 3px;
+    }
     .priority-pill {
       background: none;
-      border: 1px solid var(--so-neutral-10);
-      border-radius: var(--so-radius-xl);
-      padding: 5px 12px;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 10px;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 400;
       color: var(--so-text-tag);
       cursor: pointer;
       font-family: var(--so-font-body);
-      transition: all 0.15s;
+      transition: background 0.1s, color 0.1s;
       white-space: nowrap;
     }
-    .priority-pill:hover { border-color: var(--so-neutral-15); color: var(--so-text-body); }
+    .priority-pill:hover { background: #fff; color: var(--so-text-body); }
     .priority-pill--active {
-      background: var(--so-text-header);
-      border-color: var(--so-text-header);
-      color: #fff;
-    }
-
-    /* Customer select */
-    .tasks-customer-select {
-      height: 34px;
-      padding: 0 10px;
-      border: 1px solid var(--so-neutral-10);
-      border-radius: var(--so-radius);
-      font-family: var(--so-font-body);
-      font-size: 13px;
-      color: var(--so-text-body);
       background: #fff;
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.15s;
+      color: var(--so-green-dark);
+      font-weight: 500;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
-    .tasks-customer-select:hover { border-color: var(--so-neutral-15); }
-    .tasks-customer-select:focus { border-color: var(--so-primary); }
 
     /* New task button */
     .btn-new-task {
@@ -161,6 +160,7 @@
       text-transform: uppercase;
       color: var(--so-neutral-40);
       font-family: var(--so-font-tag);
+      text-align: left;
     }
 
     /* Task rows */
@@ -243,11 +243,51 @@
     .priority-low  { background: rgba(0,175,102,0.10);  color: var(--so-green-dark); }
 
     /* Due date */
-    .task-due { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); }
+    .task-due { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); cursor: pointer; }
     .task-due--overdue { color: var(--so-red-dark); font-weight: 500; }
 
-    /* Client */
-    .task-client { font-size: 13px; font-weight: 500; color: var(--so-text-body); font-family: var(--so-font-body); }
+    /* Inline due date input */
+    .task-due-input {
+      font-size: 13px;
+      border: 1px solid var(--so-primary);
+      border-radius: var(--so-radius);
+      padding: 3px 6px;
+      background: #fff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,175,102,0.10);
+      width: 130px;
+      font-family: var(--so-font-body);
+      color: var(--so-text-body);
+    }
+
+    /* Client — clickable name */
+    .task-client {
+      font-size: 13px; font-weight: 500; color: var(--so-primary);
+      font-family: var(--so-font-body); background: none; border: none;
+      padding: 0; cursor: pointer; text-align: left;
+    }
+    .task-client:hover { text-decoration: underline; }
+
+    /* Inline client select */
+    .task-client-select {
+      font-size: 13px;
+      border: 1px solid var(--so-primary);
+      border-radius: var(--so-radius);
+      padding: 3px 8px;
+      color: var(--so-text-body);
+      background: #fff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,175,102,0.10);
+      width: 150px;
+      font-family: var(--so-font-body);
+    }
+
+    /* No-client assign button */
+    .task-client-assign {
+      font-size: 13px; color: var(--so-neutral-30); font-family: var(--so-font-body);
+      background: none; border: none; padding: 0; cursor: pointer;
+    }
+    .task-client-assign:hover { color: var(--so-text-tag); }
 
     /* Delete */
     .task-delete {
@@ -277,75 +317,48 @@
     }
     .tasks-footer-count { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); }
 
-    /* ── Modal ──────────────────────────────────────────────── */
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.3);
-      z-index: 100;
-      align-items: center; justify-content: center;
-      backdrop-filter: blur(2px);
-    }
-    .modal-overlay--open { display: flex; animation: fadeIn 0.15s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .modal {
-      background: #fff;
-      border: 1px solid var(--so-neutral-10);
-      border-radius: var(--so-radius-lg);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-      width: 100%; max-width: 420px;
-      animation: slideUp 0.18s ease;
-    }
-    @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
-
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 20px 16px;
+    /* ── Inline new-task row ──────────────────────────────────── */
+    .task-row--new {
+      background: #F7FDF9;
+      display: grid;
+      grid-template-columns: 36px 1fr 100px 110px 160px 40px;
+      align-items: center;
+      padding: 12px 20px;
       border-bottom: 1px solid var(--so-neutral-5);
     }
-    .modal-title { font-size: 15px; font-weight: 600; color: var(--so-text-header); font-family: var(--so-font-body); }
-    .modal-close {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: none; border: none; border-radius: var(--so-radius);
-      color: var(--so-text-tag); cursor: pointer; font-size: 18px; line-height: 1;
-      transition: background 0.12s;
+    .task-new-input {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--so-text-header);
+      font-family: var(--so-font-body);
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      padding-right: 12px;
     }
-    .modal-close:hover { background: var(--so-neutral-5); }
-
-    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-
-    .field-label { font-size: 12px; font-weight: 600; color: var(--so-text-body); font-family: var(--so-font-tag); margin-bottom: 6px; display: block; }
-    .field-input, .field-select {
-      width: 100%; padding: 9px 12px;
-      border: 1px solid var(--so-neutral-10); border-radius: var(--so-radius);
-      font-family: var(--so-font-body); font-size: 14px; color: var(--so-text-body);
-      background: #fff; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      box-sizing: border-box;
+    .task-new-input::placeholder { color: var(--so-neutral-30); font-weight: 400; }
+    .task-new-hint {
+      font-size: 11px;
+      color: var(--so-text-tag);
+      padding: 3px 20px 8px 76px;
     }
-    .field-input:focus, .field-select:focus {
-      border-color: rgba(0,175,102,0.5);
-      box-shadow: 0 0 0 3px rgba(0,175,102,0.08);
+    .task-new-hint kbd {
+      display: inline-block;
+      background: var(--so-neutral-5);
+      color: var(--so-text-body);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--so-font-body);
     }
-
-    .modal-footer { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 20px; }
-    .modal-error  { font-size: 12px; color: var(--so-red-dark); min-height: 16px; }
-
-    .btn-cancel {
-      padding: 7px 16px; background: none; border: 1px solid var(--so-neutral-10);
-      border-radius: var(--so-radius); font-family: var(--so-font-body); font-size: 14px;
-      color: var(--so-text-body); cursor: pointer; transition: border-color 0.12s;
+    .task-cell-placeholder {
+      font-size: 12px;
+      color: var(--so-neutral-30);
+      font-style: italic;
+      font-family: var(--so-font-body);
     }
-    .btn-cancel:hover { border-color: var(--so-neutral-15); }
-
-    .btn-save {
-      padding: 7px 20px; background: var(--so-primary); border: none;
-      border-radius: var(--so-radius); font-family: var(--so-font-body); font-size: 14px;
-      font-weight: 500; color: #fff; cursor: pointer; transition: background 0.15s;
-    }
-    .btn-save:hover { background: var(--so-green-dark); }
   </style>
 </head>
 <body class="tasks-page">
@@ -359,7 +372,6 @@
       <nav class="site-nav">
         <a href="dashboard.html" class="site-nav-link">Dashboard</a>
         <a href="crm.html" class="site-nav-link">Customer List</a>
-        <a href="index.html" class="site-nav-link">Customer Support <span class="nav-coming-soon">soon</span></a>
         <a href="tasks.html" class="site-nav-link site-nav-link--active">CS Tasks</a>
         <a href="connectors.html" class="site-nav-link">Connectors</a>
       </nav>
@@ -387,19 +399,37 @@
       </div>
 
       <div class="tasks-toolbar-right">
+
+        <!-- 1. Search -->
+        <div class="crm-search-wrap">
+          <svg class="crm-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5"/>
+          </svg>
+          <input id="tasks-search" class="crm-search" type="search" placeholder="Search tasks or customers…" autocomplete="off">
+        </div>
+
+        <!-- 2. Type pills -->
+        <div class="crm-pill-group" id="type-pills">
+          <button class="crm-pill crm-pill--active" data-type="">All</button>
+          <button class="crm-pill" data-type="Customer - PLG">PLG</button>
+          <button class="crm-pill" data-type="Customer - SLG">SLG</button>
+          <button class="crm-pill" data-type="Customer">Cust</button>
+        </div>
+
+        <!-- 3. Priority pills -->
         <div class="priority-pills" id="priority-pills">
           <button class="priority-pill priority-pill--active" data-priority="">All</button>
           <button class="priority-pill" data-priority="high">High</button>
           <button class="priority-pill" data-priority="med">Med</button>
           <button class="priority-pill" data-priority="low">Low</button>
         </div>
-        <select id="customer-filter" class="tasks-customer-select">
-          <option value="">All customers</option>
-        </select>
+
+        <!-- 4. New task -->
         <button class="btn-new-task" id="new-task-btn">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
           New task
         </button>
+
       </div>
     </div>
 
@@ -422,42 +452,8 @@
 
   </main>
 
-  <!-- New task modal -->
-  <div id="new-task-overlay" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <span class="modal-title">New task</span>
-        <button class="modal-close" id="new-task-close">×</button>
-      </div>
-      <div class="modal-body">
-        <div>
-          <label class="field-label" for="nt-name">Task name</label>
-          <input type="text" id="nt-name" class="field-input" placeholder="What needs to be done?" maxlength="200">
-        </div>
-        <div>
-          <label class="field-label" for="nt-customer">Customer</label>
-          <select id="nt-customer" class="field-select">
-            <option value="">Select customer…</option>
-          </select>
-        </div>
-        <div>
-          <label class="field-label" for="nt-priority">Priority</label>
-          <select id="nt-priority" class="field-select">
-            <option value="high">High</option>
-            <option value="med" selected>Med</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <span class="modal-error" id="nt-error"></span>
-        <div style="display:flex;gap:8px">
-          <button class="btn-cancel" id="nt-cancel">Cancel</button>
-          <button class="btn-save"   id="nt-save">Add task</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Card overlay (populated by openCard) -->
+  <div id="card-overlay" class="card-overlay"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script>
@@ -465,14 +461,46 @@
 
     let allActions     = [];
     let companyMap     = new Map();
+    let typeMap        = new Map();   // hubspot_id → company type string
     let activeTab      = 'upcoming';
     let activePriority = '';
-    let activeCustomer = '';
+    let activeType     = '';
+    let activeSearch   = '';
+
+    // Card modal state
+    let openCardId          = null;
+    let pylonMap            = new Map();
+    let firefliesActionsMap = new Map();
 
     const today = new Date().toISOString().slice(0, 10);
 
     function escHtml(s) {
       return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function safeHref(url) {
+      if (!url) return '#';
+      try {
+        const u = new URL(url, location.href);
+        return (u.protocol === 'https:' || u.protocol === 'http:') ? escHtml(url) : '#';
+      } catch { return '#'; }
+    }
+
+    function isContactObj(c) {
+      return c !== null && typeof c === 'object' && !Array.isArray(c);
+    }
+
+    function relativeTime(iso) {
+      if (!iso) return null;
+      const diff = Date.now() - new Date(iso).getTime();
+      if (isNaN(diff) || diff < 0) return 'Today';
+      const days = Math.floor(diff / 86400000);
+      if (days === 0)  return 'Today';
+      if (days === 1)  return 'Yesterday';
+      if (days < 7)    return `${days} days ago`;
+      if (days < 30)   return `${Math.floor(days / 7)}w ago`;
+      if (days < 365)  return `${Math.floor(days / 30)}mo ago`;
+      return `${Math.floor(days / 365)}y ago`;
     }
 
     function formatDate(iso) {
@@ -483,14 +511,22 @@
 
     function isOverdue(a) { return !a.done && a.due_date && a.due_date < today; }
     function tabFor(a)    { return a.done ? 'completed' : isOverdue(a) ? 'overdue' : 'upcoming'; }
-
     function priorityLabel(p) { return { high: 'High', med: 'Med', low: 'Low' }[p] ?? p; }
 
     function filteredActions() {
+      const q = activeSearch.toLowerCase();
       return allActions.filter(a => {
         if (tabFor(a) !== activeTab) return false;
         if (activePriority && a.priority !== activePriority) return false;
-        if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+        if (activeType) {
+          const t = typeMap.get(String(a.hubspot_id)) ?? '';
+          if (t !== activeType) return false;
+        }
+        if (q) {
+          const name   = (a.name ?? '').toLowerCase();
+          const client = (companyMap.get(String(a.hubspot_id)) ?? '').toLowerCase();
+          if (!name.includes(q) && !client.includes(q)) return false;
+        }
         return true;
       });
     }
@@ -500,7 +536,10 @@
         const n = allActions.filter(a => {
           if (tabFor(a) !== tab) return false;
           if (activePriority && a.priority !== activePriority) return false;
-          if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+          if (activeType) {
+            const t = typeMap.get(String(a.hubspot_id)) ?? '';
+            if (t !== activeType) return false;
+          }
           return true;
         }).length;
         const el = document.getElementById(`count-${tab}`);
@@ -527,19 +566,22 @@
       }
 
       list.innerHTML = rows.map(a => {
-        const client  = escHtml(companyMap.get(String(a.hubspot_id)) ?? '—');
+        const clientName = escHtml(companyMap.get(String(a.hubspot_id)) ?? '—');
         const dueStr  = a.due_date ? formatDate(a.due_date) : '—';
         const overdue = isOverdue(a);
         const tick    = a.done
           ? `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg>`
           : '';
+        const clientCell = a.hubspot_id
+          ? `<button class="task-client" data-open-card="${escHtml(String(a.hubspot_id))}">${clientName}</button>`
+          : `<button class="task-client-assign" data-assign-id="${escHtml(a.id)}">— assign —</button>`;
         return `
           <div class="task-row${a.done ? ' task-row--done' : ''}${overdue ? ' task-row--overdue' : ''}" data-id="${escHtml(a.id)}">
             <button class="task-check${a.done ? ' done' : ''}" data-id="${escHtml(a.id)}" aria-label="${a.done ? 'Mark open' : 'Mark done'}">${tick}</button>
             <div class="task-name-cell"><div class="task-name">${escHtml(a.name)}</div></div>
             <div><span class="priority-badge priority-${escHtml(a.priority)}">${priorityLabel(a.priority)}</span></div>
-            <div class="task-due${overdue ? ' task-due--overdue' : ''}">${escHtml(dueStr)}</div>
-            <div class="task-client">${client}</div>
+            <div class="task-due${overdue ? ' task-due--overdue' : ''}" data-due-id="${escHtml(a.id)}" title="Click to set date">${escHtml(dueStr)}</div>
+            ${clientCell}
             <button class="task-delete" data-id="${escHtml(a.id)}" aria-label="Delete">
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
             </button>
@@ -547,25 +589,206 @@
       }).join('');
     }
 
-    function populateCustomerFilter() {
-      const seen = new Map();
-      for (const a of allActions) {
-        const hid = String(a.hubspot_id);
-        if (!seen.has(hid)) seen.set(hid, companyMap.get(hid) ?? hid);
-      }
-      const sorted = [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+    // ── Card modal ────────────────────────────────────────────
 
-      const sel = document.getElementById('customer-filter');
-      const cur = sel.value;
-      sel.innerHTML = '<option value="">All customers</option>' +
-        sorted.map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === cur ? ' selected':''}>${escHtml(name)}</option>`).join('');
+    function renderCardLeft(company, c, gmailUrl, calls) {
+      const py  = company.hubspot_id ? pylonMap.get(String(company.hubspot_id)) : null;
+      const rel = relativeTime(company.last_contact);
+      const abs = company.last_contact
+        ? new Date(company.last_contact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : null;
 
-      const ntSel = document.getElementById('nt-customer');
-      const ntCur = ntSel.value;
-      ntSel.innerHTML = '<option value="">Select customer…</option>' +
-        [...companyMap.entries()]
-          .sort((a, b) => a[1].localeCompare(b[1]))
-          .map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === ntCur ? ' selected':''}>${escHtml(name)}</option>`).join('');
+      const recentCalls = (calls ?? []).slice(0, 5);
+      const ffHtml = recentCalls.length === 0
+        ? '<p class="ff-empty">No calls on record.</p>'
+        : recentCalls.map(call => {
+            const callDate = new Date(call.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const callHref = call.id ? `https://app.fireflies.ai/view/${call.id}` : 'https://app.fireflies.ai/';
+            const items = call.action_items ?? [];
+            const itemsHtml = items.length === 0
+              ? ''
+              : items.map(item => `<div class="ff-action"><span class="ff-dot"></span>${escHtml(item)}</div>`).join('');
+            return `<div class="ff-item">
+              <div class="ff-call"><a href="${escHtml(callHref)}" target="_blank" rel="noopener" class="card-hs-link">${escHtml(call.title)}</a> · ${escHtml(callDate)}</div>
+              ${itemsHtml}
+            </div>`;
+          }).join('');
+
+      return `
+        <div class="card-section-label">Customer details</div>
+        ${c ? `
+          <div class="field-row">
+            <div class="field-label">Primary contact</div>
+            <div class="field-value">${escHtml(c.name ?? '')}</div>
+            ${gmailUrl
+              ? `<div class="field-email"><a href="${escHtml(gmailUrl)}" target="_blank" rel="noopener">${escHtml(c.email)}</a></div>`
+              : ''}
+          </div>
+        ` : ''}
+        ${rel ? `
+          <div class="field-row">
+            <div class="field-label">Last contact</div>
+            <div class="field-date-rel">${escHtml(rel)}</div>
+            <div class="field-date-abs">${escHtml(abs ?? '')}</div>
+          </div>
+        ` : ''}
+        ${company.notes ? `
+          <div class="field-row">
+            <div class="field-label">Notes</div>
+            <div class="field-notes">${escHtml(company.notes)}</div>
+          </div>
+        ` : ''}
+        ${py ? `
+          <div class="section-divider"></div>
+          <div class="card-section-label">Support</div>
+          <div class="field-row">
+            <div class="field-label">Open tickets</div>
+            <div class="field-value">
+              <a href="${escHtml(`https://app.usepylon.com/accounts/${py.pylon_account_id}`)}" target="_blank" rel="noopener" class="card-hs-link">
+                ${py.open_tickets_live ?? py.issues_last_30d.open} open
+              </a>
+              <span class="field-date-abs"> · ${py.issues_last_30d.total} in last 30d</span>
+            </div>
+          </div>
+        ` : ''}
+        <div class="section-divider"></div>
+        <div class="card-section-label">Recent calls${(calls ?? []).length > 5 ? ` <span style="font-weight:400;color:#A19F9E">(5 of ${(calls ?? []).length})</span>` : ''}</div>
+        ${ffHtml}
+      `;
+    }
+
+    function renderCardRight(actions) {
+      const open = actions.filter(a => !a.done);
+      const done = actions.filter(a =>  a.done);
+      const all  = [...open, ...done];
+
+      const listHtml = all.length === 0
+        ? '<p class="ff-empty">No actions yet.</p>'
+        : all.map(action => `
+            <div class="action-item${action.done ? ' action-item--done' : ''}">
+              <button class="action-check${action.done ? ' done' : ''}"
+                data-action-id="${escHtml(action.id)}"
+                data-hubspot-id="${escHtml(action.hubspot_id)}"
+                title="${action.done ? 'Mark open' : 'Mark done'}">
+                ${action.done ? `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg>` : ''}
+              </button>
+              <div class="action-name${action.done ? ' done' : ''}">${escHtml(action.name)}</div>
+              <span class="priority-badge priority-${escHtml(action.priority)}">${escHtml(action.priority.charAt(0).toUpperCase() + action.priority.slice(1))}</span>
+            </div>
+          `).join('');
+
+      const openCount = open.length;
+      return `
+        <div class="actions-header">
+          <div>
+            <div class="card-section-label" style="margin-bottom:0">CS actions</div>
+            ${openCount > 0 ? `<div class="actions-open-count">${openCount} open</div>` : ''}
+          </div>
+        </div>
+        ${listHtml}
+      `;
+    }
+
+    function openCard(company) {
+      const c        = isContactObj(company.contact) ? company.contact : null;
+      const gmailUrl = c?.email
+        ? `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(c.email)}`
+        : null;
+      const calls    = firefliesActionsMap.get(company.domain) ?? [];
+      const actions  = allActions.filter(a => String(a.hubspot_id) === String(company.hubspot_id ?? ''));
+
+      openCardId = String(company.hubspot_id ?? '');
+
+      const overlay = document.getElementById('card-overlay');
+      overlay.innerHTML = `
+        <div class="card-modal" id="card-modal">
+          <div class="card-modal-header">
+            <div>
+              <div class="card-modal-company">${escHtml(company.name ?? company.hubspot_id)}</div>
+              <div class="card-modal-domain">${escHtml(company.domain ?? '')}${
+                company.hubspot_url
+                  ? ` · <a href="${safeHref(company.hubspot_url)}" target="_blank" rel="noopener" class="card-hs-link">HubSpot ↗</a>`
+                  : ''
+              }</div>
+            </div>
+            <button class="card-modal-close" id="card-close">×</button>
+          </div>
+          <div class="card-modal-body">
+            <div class="card-modal-left">${renderCardLeft(company, c, gmailUrl, calls)}</div>
+            <div class="card-modal-right">${renderCardRight(actions)}</div>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('card-overlay--open');
+      document.addEventListener('keydown', handleCardKeydown);
+    }
+
+    function closeCard() {
+      const overlay = document.getElementById('card-overlay');
+      overlay.classList.remove('card-overlay--open');
+      overlay.innerHTML = '';
+      openCardId = null;
+      document.removeEventListener('keydown', handleCardKeydown);
+    }
+
+    function handleCardKeydown(e) {
+      if (e.key === 'Escape') closeCard();
+    }
+
+    // ── Inline new task row ───────────────────────────────────
+
+    function insertNewTaskRow() {
+      const list = document.getElementById('tasks-list');
+      if (list.querySelector('.task-row--new')) return;
+
+      const row = document.createElement('div');
+      row.className = 'task-row--new';
+      row.innerHTML = `
+        <div></div>
+        <input class="task-new-input" placeholder="Type task name and press Enter…" maxlength="200" autocomplete="off">
+        <div class="task-cell-placeholder">Med</div>
+        <div class="task-cell-placeholder">No date</div>
+        <div class="task-cell-placeholder">No client</div>
+        <div></div>
+      `;
+
+      const hint = document.createElement('div');
+      hint.className = 'task-new-hint';
+      hint.innerHTML = '<kbd>↵ Enter</kbd> to save &nbsp;·&nbsp; <kbd>Esc</kbd> to cancel';
+
+      list.insertBefore(hint, list.firstChild);
+      list.insertBefore(row, hint);
+
+      const input = row.querySelector('.task-new-input');
+      input.focus();
+
+      input.addEventListener('keydown', async e => {
+        if (e.key === 'Escape') {
+          row.remove();
+          hint.remove();
+          return;
+        }
+        if (e.key === 'Enter') {
+          const name = input.value.trim();
+          if (!name) return;
+          input.disabled = true;
+          try {
+            const action = await createAction('', name, 'med');
+            allActions.unshift(action);
+            activeTab = 'upcoming';
+            document.querySelectorAll('.tasks-tab').forEach(t =>
+              t.classList.toggle('tasks-tab--active', t.dataset.tab === 'upcoming')
+            );
+          } catch {
+            input.disabled = false;
+            input.focus();
+            return;
+          }
+          row.remove();
+          hint.remove();
+          render();
+        }
+      });
     }
 
     // ── API ──────────────────────────────────────────────────
@@ -598,7 +821,7 @@
         const res = await fetch(`${WORKER_URL}/actions/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error();
         allActions = allActions.filter(a => a.id !== id);
-        render(); populateCustomerFilter();
+        render();
       } catch { /* silent */ }
     }
 
@@ -615,10 +838,92 @@
     // ── Events ───────────────────────────────────────────────
 
     document.getElementById('tasks-list').addEventListener('click', async e => {
+      // Checkbox
       const check = e.target.closest('.task-check');
       if (check) { await toggleDone(check.dataset.id); return; }
+
+      // Delete
       const del = e.target.closest('.task-delete');
-      if (del)   { await deleteAction(del.dataset.id); }
+      if (del) { await deleteAction(del.dataset.id); return; }
+
+      // Due date inline edit
+      const dueCell = e.target.closest('[data-due-id]');
+      if (dueCell && !dueCell.querySelector('input')) {
+        const id = dueCell.dataset.dueId;
+        const action = allActions.find(a => a.id === id);
+        const currentVal = action?.due_date ?? '';
+        const input = document.createElement('input');
+        input.type = 'date';
+        input.className = 'task-due-input';
+        if (currentVal) input.value = currentVal;
+        dueCell.textContent = '';
+        dueCell.appendChild(input);
+        input.focus();
+
+        async function saveDue() {
+          const newDate = input.value || null;
+          dueCell.textContent = newDate ? formatDate(newDate) : '—';
+          if (action) action.due_date = newDate;
+          if (newDate !== currentVal) {
+            await fetch(`${WORKER_URL}/actions/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ due_date: newDate }),
+            }).catch(() => {});
+          }
+          render();
+        }
+
+        input.addEventListener('change', saveDue);
+        input.addEventListener('keydown', ev => {
+          if (ev.key === 'Escape') { dueCell.textContent = currentVal ? formatDate(currentVal) : '—'; }
+          if (ev.key === 'Enter')  { saveDue(); }
+        });
+        input.addEventListener('blur', saveDue);
+        return;
+      }
+
+      // Client assign (no client yet)
+      const assignBtn = e.target.closest('.task-client-assign');
+      if (assignBtn) {
+        const id = assignBtn.dataset.assignId;
+        const action = allActions.find(a => a.id === id);
+        const sel = document.createElement('select');
+        sel.className = 'task-client-select';
+        sel.innerHTML = '<option value="">Select client…</option>' +
+          [...companyMap.entries()]
+            .sort((a, b) => a[1].localeCompare(b[1]))
+            .map(([hid, name]) => `<option value="${escHtml(hid)}">${escHtml(name)}</option>`)
+            .join('');
+        assignBtn.replaceWith(sel);
+        sel.focus();
+
+        async function saveClient() {
+          const hid = sel.value;
+          if (hid && action) {
+            action.hubspot_id = hid;
+            await fetch(`${WORKER_URL}/actions/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ hubspot_id: hid }),
+            }).catch(() => {});
+          }
+          render();
+        }
+
+        sel.addEventListener('change', saveClient);
+        sel.addEventListener('blur', () => render());
+        return;
+      }
+
+      // Client name → card popup
+      const cardBtn = e.target.closest('[data-open-card]');
+      if (cardBtn) {
+        const hid = cardBtn.dataset.openCard;
+        const company = { hubspot_id: hid, name: companyMap.get(hid) ?? hid, domain: '' };
+        openCard(company);
+        return;
+      }
     });
 
     document.getElementById('tasks-tabs').addEventListener('click', e => {
@@ -637,44 +942,37 @@
       render();
     });
 
-    document.getElementById('customer-filter').addEventListener('change', e => {
-      activeCustomer = e.target.value; render();
+    document.getElementById('type-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      activeType = pill.dataset.type;
+      document.querySelectorAll('#type-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
+      render();
     });
 
-    // ── Modal ────────────────────────────────────────────────
-
-    const overlay = document.getElementById('new-task-overlay');
-    function openModal()  { overlay.classList.add('modal-overlay--open'); document.getElementById('nt-name').focus(); }
-    function closeModal() {
-      overlay.classList.remove('modal-overlay--open');
-      document.getElementById('nt-name').value = '';
-      document.getElementById('nt-error').textContent = '';
-    }
-
-    document.getElementById('new-task-btn').addEventListener('click', openModal);
-    document.getElementById('new-task-close').addEventListener('click', closeModal);
-    document.getElementById('nt-cancel').addEventListener('click', closeModal);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-
-    document.getElementById('nt-save').addEventListener('click', async () => {
-      const name       = document.getElementById('nt-name').value.trim();
-      const hubspot_id = document.getElementById('nt-customer').value;
-      const priority   = document.getElementById('nt-priority').value;
-      const errEl      = document.getElementById('nt-error');
-      if (!name)       { errEl.textContent = 'Enter a task name.';   document.getElementById('nt-name').focus(); return; }
-      if (!hubspot_id) { errEl.textContent = 'Select a customer.';   document.getElementById('nt-customer').focus(); return; }
-      errEl.textContent = '';
-      try {
-        const action = await createAction(hubspot_id, name, priority);
-        allActions.unshift(action);
-        populateCustomerFilter();
-        activeTab = tabFor(action);
-        document.querySelectorAll('.tasks-tab').forEach(t => t.classList.toggle('tasks-tab--active', t.dataset.tab === activeTab));
-        closeModal(); render();
-      } catch { errEl.textContent = "Couldn't save — try again."; }
+    document.getElementById('tasks-search').addEventListener('input', e => {
+      activeSearch = e.target.value.trim();
+      render();
     });
 
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    document.getElementById('new-task-btn').addEventListener('click', () => {
+      activeTab = 'upcoming';
+      document.querySelectorAll('.tasks-tab').forEach(t =>
+        t.classList.toggle('tasks-tab--active', t.dataset.tab === 'upcoming')
+      );
+      render();
+      insertNewTaskRow();
+    });
+
+    // Card overlay — close on backdrop / close button
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('card-overlay')) closeCard();
+    });
+    document.getElementById('card-overlay').addEventListener('click', e => {
+      if (e.target.closest('#card-close')) closeCard();
+    });
 
     // ── Animations ───────────────────────────────────────────
     // Self-contained block. Wraps render() and openModal() — does not modify
@@ -782,14 +1080,14 @@
 
     fetch('./data/hubspot.json').then(r => r.json()).then(companies => {
       companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
-      populateCustomerFilter();
+      typeMap    = new Map(companies.map(c => [String(c.hubspot_id), c.type ?? '']));
     }).catch(() => {});
 
     fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(8000) })
       .then(r => r.json())
       .then(actions => {
         if (!Array.isArray(actions)) throw new Error();
-        allActions = actions; populateCustomerFilter(); render();
+        allActions = actions; render();
       })
       .catch(() => {
         document.getElementById('tasks-list').innerHTML =
