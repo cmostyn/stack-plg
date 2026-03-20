@@ -32,21 +32,20 @@ export default {
       if (request.method === 'POST' && pathname === '/actions') {
         let body;
         try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
-        const { hubspot_id, name, priority, due_date } = body ?? {};
+        const { hubspot_id, name, priority } = body ?? {};
         if (!hubspot_id || !name || !priority) {
           return json({ error: 'Missing required fields: hubspot_id, name, priority' }, 400);
         }
         if (!['high', 'med', 'low'].includes(priority)) {
           return json({ error: 'priority must be high, med, or low' }, 400);
         }
-        const dueDateVal = due_date && /^\d{4}-\d{2}-\d{2}$/.test(due_date) ? due_date : null;
         const id         = crypto.randomUUID();
         const created_at = new Date().toISOString();
         await env.DB
-          .prepare('INSERT INTO cs_actions (id, hubspot_id, name, priority, done, created_at, due_date) VALUES (?, ?, ?, ?, 0, ?, ?)')
-          .bind(id, String(hubspot_id), String(name), priority, created_at, dueDateVal)
+          .prepare('INSERT INTO cs_actions (id, hubspot_id, name, priority, done, created_at) VALUES (?, ?, ?, ?, 0, ?)')
+          .bind(id, String(hubspot_id), String(name), priority, created_at)
           .run();
-        return json({ id, hubspot_id: String(hubspot_id), name: String(name), priority, done: 0, created_at, due_date: dueDateVal }, 201);
+        return json({ id, hubspot_id: String(hubspot_id), name: String(name), priority, done: 0, created_at }, 201);
       }
 
       const idMatch = pathname.match(/^\/actions\/([^/]+)$/);
@@ -69,13 +68,7 @@ export default {
         if ('done' in body) {
           sets.push('done = ?'); vals.push(body.done ? 1 : 0);
         }
-        if ('due_date' in body) {
-          const d = body.due_date;
-          const valid = d === null || (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d));
-          if (!valid) return json({ error: 'due_date must be YYYY-MM-DD or null' }, 400);
-          sets.push('due_date = ?'); vals.push(d ?? null);
-        }
-        if (sets.length === 0) return json({ error: 'No fields to update' }, 400);
+if (sets.length === 0) return json({ error: 'No fields to update' }, 400);
         vals.push(id);
         const updateResult = await env.DB
           .prepare(`UPDATE cs_actions SET ${sets.join(', ')} WHERE id = ?`)
