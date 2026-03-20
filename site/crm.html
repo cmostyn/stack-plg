@@ -71,7 +71,7 @@
     const PLACEHOLDER_CELL = '<td></td>';
 
     const DEFAULT_COL_ORDER = [
-      'name', 'contact', 'notes', 'local_notes', 'last_contact',
+      'name', 'health', 'contact', 'notes', 'local_notes', 'last_contact',
       'account', 'integrations', 'clicks', 'api_requests',
       'tickets_total', 'open_tickets', 'cs_actions', 'last_call',
     ];
@@ -79,6 +79,7 @@
     // Default widths (px) — sum ~1385px, fills a 1400px container
     const DEFAULT_COL_WIDTHS = {
       name:          300,
+      health:         90,
       contact:       160,
       notes:         170,
       local_notes:   160,
@@ -102,6 +103,7 @@
 
     const COL_HEADERS = {
       name:          () => thHtml('name', 'Name'),
+      health:        () => thHtml('health', 'Health'),
       contact:       () => thHtml('contact', 'Primary contact'),
       notes:         () => thHtml('notes', 'HubSpot Notes'),
       local_notes:   () => thHtml('local_notes', 'Notes'),
@@ -170,6 +172,19 @@
         const display = escHtml(note.length > 60 ? note.slice(0, 60) + '…' : note);
         return `<td class="crm-local-notes-cell" data-hubspot-id="${hid}" title="${escHtml(note)}">${display || '<span class="crm-placeholder">Add note…</span>'}</td>`;
       },
+      health: company => {
+        const hid    = String(company.hubspot_id ?? '');
+        const status = healthMap.get(hid) ?? null;
+        if (!status) return '<td class="crm-health-cell"></td>';
+        const cfg = {
+          risk:      { label: 'Risk',      bg: '#FEE2E2', color: '#C43E3E', dot: '#C43E3E' },
+          fair:      { label: 'Fair',      bg: '#FFF7ED', color: '#92400E', dot: '#F59E0B' },
+          good:      { label: 'Good',      bg: '#FEF9C3', color: '#854D0E', dot: '#CA8A04' },
+          excellent: { label: 'Excellent', bg: '#F0FDF4', color: '#15803D', dot: '#00AF66' },
+        }[status] ?? null;
+        if (!cfg) return '<td class="crm-health-cell"></td>';
+        return `<td class="crm-health-cell"><span class="health-badge" style="background:${cfg.bg};color:${cfg.color}"><span class="health-dot" style="background:${cfg.dot}"></span>${cfg.label}</span></td>`;
+      },
       last_contact: company => {
         const rel = relativeTime(company.last_contact);
         if (!rel) return PLACEHOLDER_CELL;
@@ -235,6 +250,7 @@
     let firefliesActionsMap = new Map();  // domain → all calls sorted desc (for card)
     let pylonMap            = new Map();  // hubspot_id → pylon account
     let actionsMap          = new Map();  // hubspot_id (string) → action[]
+    let healthMap           = new Map();  // hubspot_id (string) → status string
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
     let sortKey  = 'name';
@@ -798,7 +814,8 @@
       fetch('./data/fireflies.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([hubspot, posthog, fireflies, pylon, actions]) => {
+      fetch(`${WORKER_URL}/health`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([hubspot, posthog, fireflies, pylon, actions, healthData]) => {
       posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
       pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
 
