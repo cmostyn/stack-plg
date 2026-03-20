@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer List (Preview) — PLG-Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--so-background); }
+
+    /* ── Toolbar ─────────────────────────────────────────────── */
+    .crm2-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .crm2-toolbar-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .crm2-toolbar-right { display: flex; align-items: center; gap: 10px; }
+
+    /* Search */
+    .crm2-search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .crm2-search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--so-neutral-30);
+      pointer-events: none;
+    }
+    .crm2-search {
+      height: 34px;
+      padding: 0 12px 0 32px;
+      border: 1px solid var(--so-neutral-10);
+      border-radius: var(--so-radius);
+      font-family: var(--so-font-body);
+      font-size: 13px;
+      color: var(--so-text-body);
+      background: #fff;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .crm2-search:focus {
+      border-color: rgba(0,175,102,0.5);
+      box-shadow: 0 0 0 3px rgba(0,175,102,0.08);
+    }
+
+    /* Filter pills */
+    .crm2-pills { display: flex; gap: 4px; }
+    .crm2-pill {
+      background: none;
+      border: 1px solid var(--so-neutral-10);
+      border-radius: var(--so-radius-xl);
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--so-text-tag);
+      cursor: pointer;
+      font-family: var(--so-font-body);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .crm2-pill:hover { border-color: var(--so-neutral-15); color: var(--so-text-body); }
+    .crm2-pill--active { background: var(--so-text-header); border-color: var(--so-text-header); color: #fff; }
+
+    /* Count */
+    .crm2-count {
+      font-size: 13px;
+      color: var(--so-text-tag);
+      font-family: var(--so-font-body);
+      white-space: nowrap;
+    }
+
+    /* ── Table card ──────────────────────────────────────────── */
+    .crm2-card {
+      margin: 0 28px 28px;
+      background: #fff;
+      border: 1px solid var(--so-neutral-10);
+      border-radius: var(--so-radius-lg);
+      box-shadow: var(--so-shadow-card);
+      overflow: hidden;
+    }
+
+    .crm2-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--so-font-body);
+      font-size: 13px;
+    }
+
+    /* Header */
+    .crm2-table thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--so-neutral-40);
+      font-family: var(--so-font-tag);
+      background: var(--so-background);
+      border-bottom: 1px solid var(--so-neutral-5);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    .crm2-table thead th:hover { color: var(--so-text-body); }
+
+    /* Rows */
+    .crm2-table tbody tr {
+      border-bottom: 1px solid var(--so-neutral-5);
+      transition: background 0.1s;
+      opacity: 0;
+      animation: rowIn 0.25s ease forwards;
+    }
+    .crm2-table tbody tr:last-child { border-bottom: none; }
+    .crm2-table tbody tr:hover { background: var(--so-neutral-5); }
+    .crm2-table tbody tr:hover .crm2-row-actions { opacity: 1; }
+
+    @keyframes rowIn { to { opacity: 1; } }
+    .crm2-table tbody tr:nth-child(1)  { animation-delay: 0.02s; }
+    .crm2-table tbody tr:nth-child(2)  { animation-delay: 0.05s; }
+    .crm2-table tbody tr:nth-child(3)  { animation-delay: 0.08s; }
+    .crm2-table tbody tr:nth-child(4)  { animation-delay: 0.11s; }
+    .crm2-table tbody tr:nth-child(5)  { animation-delay: 0.14s; }
+    .crm2-table tbody tr:nth-child(6)  { animation-delay: 0.17s; }
+    .crm2-table tbody tr:nth-child(7)  { animation-delay: 0.20s; }
+    .crm2-table tbody tr:nth-child(8)  { animation-delay: 0.23s; }
+    .crm2-table tbody tr:nth-child(9)  { animation-delay: 0.26s; }
+    .crm2-table tbody tr:nth-child(10) { animation-delay: 0.29s; }
+
+    .crm2-table td {
+      padding: 12px 14px;
+      color: var(--so-text-body);
+      vertical-align: middle;
+    }
+
+    /* Name cell */
+    .crm2-name-cell { min-width: 200px; }
+    .crm2-name-wrap { display: flex; align-items: center; gap: 8px; }
+    .crm2-company-name {
+      font-weight: 500;
+      color: var(--so-text-header);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .crm2-company-name:hover { color: var(--so-primary); }
+    .crm2-row-actions {
+      display: flex; gap: 4px; opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .crm2-action-btn {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; border-radius: 6px;
+      color: var(--so-text-tag); cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+    .crm2-action-btn:hover { background: var(--so-neutral-10); color: var(--so-text-header); }
+
+    /* Type badges */
+    .crm2-type-badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 7px;
+      border-radius: var(--so-radius-sm);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--so-font-tag);
+    }
+    .crm2-badge--plg  { background: rgba(0,175,102,0.10);  color: var(--so-green-dark); }
+    .crm2-badge--slg  { background: rgba(62,119,255,0.10); color: #0C58AE; }
+    .crm2-badge--cust { background: var(--so-neutral-5);   color: var(--so-text-tag); }
+
+    /* Health badge */
+    .crm2-health {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px;
+      border-radius: var(--so-radius-xl);
+      font-size: 11px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .crm2-health-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .health--excellent { background: rgba(0,175,102,0.10); color: #047B43; }
+    .health--excellent .crm2-health-dot { background: #00AF66; }
+    .health--good      { background: rgba(202,138,4,0.10);  color: #854D0E; }
+    .health--good      .crm2-health-dot { background: #CA8A04; }
+    .health--fair      { background: rgba(245,158,11,0.10); color: #92400E; }
+    .health--fair      .crm2-health-dot { background: #F59E0B; }
+    .health--risk      { background: rgba(196,62,62,0.10);  color: #C43E3E; }
+    .health--risk      .crm2-health-dot { background: #C43E3E; }
+
+    /* Contact cell */
+    .crm2-contact { display: flex; flex-direction: column; gap: 1px; }
+    .crm2-contact-name  { font-size: 13px; font-weight: 500; color: var(--so-text-header); }
+    .crm2-contact-email { font-size: 11px; color: var(--so-text-tag); }
+
+    /* Numbers */
+    .crm2-num { font-variant-numeric: tabular-nums; color: var(--so-text-body); }
+    .crm2-num--alert { color: var(--so-red-dark); font-weight: 600; }
+
+    /* Date */
+    .crm2-date { color: var(--so-text-tag); white-space: nowrap; }
+    .crm2-date--stale { color: var(--so-red-dark); }
+
+    /* Call link */
+    .crm2-call { display: flex; flex-direction: column; gap: 1px; }
+    .crm2-call a { font-size: 12px; color: var(--so-primary); text-decoration: none; font-weight: 500; }
+    .crm2-call a:hover { text-decoration: underline; }
+    .crm2-call-date { font-size: 11px; color: var(--so-text-tag); }
+
+    /* Notes */
+    .crm2-note { font-size: 12px; color: var(--so-text-tag); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .crm2-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--so-neutral-5);
+      background: var(--so-background);
+    }
+    .crm2-footer-count { font-size: 13px; color: var(--so-text-tag); font-family: var(--so-font-body); }
+
+    /* Preview banner */
+    .preview-banner {
+      margin: 16px 28px 0;
+      padding: 10px 16px;
+      background: rgba(0,175,102,0.08);
+      border: 1px solid rgba(0,175,102,0.2);
+      border-radius: var(--so-radius);
+      font-size: 12px;
+      color: var(--so-green-dark);
+      font-family: var(--so-font-body);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="http://go/plg-hub" class="site-logo">
+        <svg class="site-logo-svg" viewBox="6 2 28 38" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M20 4 C12 4 8 10 8 16 L8 28 C8 34 12 38 18 38 L22 38 C28 38 32 34 32 28 L32 14 C32 10 29 8 26 8 L24 8 C21 8 18 10 18 14 L18 26 C18 28 20 30 22 30 L24 30 C26 30 28 28 28 26 L28 14"/></svg>
+        PLG-Hub
+      </a>
+      <nav class="site-nav">
+        <a href="dashboard.html" class="site-nav-link">Dashboard</a>
+        <a href="crm.html" class="site-nav-link site-nav-link--active">Customer List</a>
+        <a href="tasks.html" class="site-nav-link">CS Tasks</a>
+        <a href="connectors.html" class="site-nav-link">Connectors</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="preview-banner">Design preview only — fake data, no changes to the live page.</div>
+
+  <main>
+
+    <div class="crm2-toolbar">
+      <div class="crm2-toolbar-left">
+        <div class="crm2-search-wrap">
+          <svg class="crm2-search-icon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6.5" cy="6.5" r="4"/><line x1="9.5" y1="9.5" x2="13.5" y2="13.5"/>
+          </svg>
+          <input class="crm2-search" type="search" placeholder="Search customers…">
+        </div>
+        <div class="crm2-pills">
+          <button class="crm2-pill crm2-pill--active">All</button>
+          <button class="crm2-pill">PLG</button>
+          <button class="crm2-pill">SLG</button>
+          <button class="crm2-pill">Cust</button>
+        </div>
+      </div>
+      <div class="crm2-toolbar-right">
+        <span class="crm2-count">Showing 10 of 42 customers</span>
+      </div>
+    </div>
+
+    <div class="crm2-card">
+      <table class="crm2-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Health</th>
+            <th>Primary contact</th>
+            <th>Last contact</th>
+            <th>Open tickets</th>
+            <th>Integrations</th>
+            <th>Most recent call</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Globex Corp</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--excellent"><span class="crm2-health-dot"></span>Excellent</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Sarah Chen</span><span class="crm2-contact-email">s.chen@globex.com</span></div></td>
+            <td class="crm2-date">2 days ago</td>
+            <td class="crm2-num">2</td>
+            <td class="crm2-num">14</td>
+            <td><div class="crm2-call"><a href="#">Q3 Planning Review</a><span class="crm2-call-date">12 Mar</span></div></td>
+            <td><div class="crm2-note">Expanding to APAC in Q2</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Nexus Systems</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--good"><span class="crm2-health-dot"></span>Good</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Marcus Webb</span><span class="crm2-contact-email">m.webb@nexus.io</span></div></td>
+            <td class="crm2-date">1 week ago</td>
+            <td class="crm2-num">5</td>
+            <td class="crm2-num">9</td>
+            <td><div class="crm2-call"><a href="#">Onboarding check-in</a><span class="crm2-call-date">8 Mar</span></div></td>
+            <td><div class="crm2-note">Blocked on SSO setup</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Artisan Goods</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--fair"><span class="crm2-health-dot"></span>Fair</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Priya Patel</span><span class="crm2-contact-email">priya@artisangoods.co</span></div></td>
+            <td class="crm2-date">3 weeks ago</td>
+            <td class="crm2-num crm2-num--alert">11</td>
+            <td class="crm2-num">3</td>
+            <td><div class="crm2-call"><a href="#">Support escalation</a><span class="crm2-call-date">28 Feb</span></div></td>
+            <td><div class="crm2-note">Unhappy with response times</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Central Logistics</a>
+                <span class="crm2-type-badge crm2-badge--slg">SLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--risk"><span class="crm2-health-dot"></span>Risk</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Tom Aldridge</span><span class="crm2-contact-email">t.aldridge@centrallog.com</span></div></td>
+            <td class="crm2-date crm2-date--stale">6 weeks ago</td>
+            <td class="crm2-num crm2-num--alert">18</td>
+            <td class="crm2-num">1</td>
+            <td><div class="crm2-call"><a href="#">—</a></div></td>
+            <td><div class="crm2-note">No activity since Jan</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Pinnacle Retail</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--excellent"><span class="crm2-health-dot"></span>Excellent</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Dana Frost</span><span class="crm2-contact-email">dana@pinnacleretail.com</span></div></td>
+            <td class="crm2-date">Yesterday</td>
+            <td class="crm2-num">0</td>
+            <td class="crm2-num">22</td>
+            <td><div class="crm2-call"><a href="#">Product roadmap sync</a><span class="crm2-call-date">18 Mar</span></div></td>
+            <td><div class="crm2-note">Champion pushing for upsell</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Meridian Health</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--good"><span class="crm2-health-dot"></span>Good</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Jonah Kimura</span><span class="crm2-contact-email">j.kimura@meridianhealth.org</span></div></td>
+            <td class="crm2-date">4 days ago</td>
+            <td class="crm2-num">3</td>
+            <td class="crm2-num">7</td>
+            <td><div class="crm2-call"><a href="#">Quarterly review</a><span class="crm2-call-date">15 Mar</span></div></td>
+            <td><div class="crm2-note">Interested in AI features</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Vantage Labs</a>
+                <span class="crm2-type-badge crm2-badge--cust">Cust</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Elena Reyes</span><span class="crm2-contact-email">elena@vantagelabs.ai</span></div></td>
+            <td class="crm2-date">Today</td>
+            <td class="crm2-num">1</td>
+            <td class="crm2-num">5</td>
+            <td><div class="crm2-call"><a href="#">Integration workshop</a><span class="crm2-call-date">19 Mar</span></div></td>
+            <td><div class="crm2-note">New logo, high potential</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Brightfield Co</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--fair"><span class="crm2-health-dot"></span>Fair</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Oliver Nash</span><span class="crm2-contact-email">o.nash@brightfield.co</span></div></td>
+            <td class="crm2-date">2 weeks ago</td>
+            <td class="crm2-num">7</td>
+            <td class="crm2-num">4</td>
+            <td><div class="crm2-call"><a href="#">Health check call</a><span class="crm2-call-date">5 Mar</span></div></td>
+            <td><div class="crm2-note">Considering downgrade</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Solara Energy</a>
+                <span class="crm2-type-badge crm2-badge--slg">SLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--excellent"><span class="crm2-health-dot"></span>Excellent</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Amara Osei</span><span class="crm2-contact-email">amara@solaraenergy.com</span></div></td>
+            <td class="crm2-date">5 days ago</td>
+            <td class="crm2-num">0</td>
+            <td class="crm2-num">18</td>
+            <td><div class="crm2-call"><a href="#">Renewal discussion</a><span class="crm2-call-date">14 Mar</span></div></td>
+            <td><div class="crm2-note">Ready to sign 2yr deal</div></td>
+          </tr>
+          <tr>
+            <td class="crm2-name-cell">
+              <div class="crm2-name-wrap">
+                <a href="#" class="crm2-company-name">Ferrum Tech</a>
+                <span class="crm2-type-badge crm2-badge--plg">PLG</span>
+                <div class="crm2-row-actions">
+                  <button class="crm2-action-btn" title="HubSpot"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M1 5h12"/></svg></button>
+                  <button class="crm2-action-btn" title="Email"><svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><path d="M1 3.5l6 4.5 6-4.5"/></svg></button>
+                </div>
+              </div>
+            </td>
+            <td><span class="crm2-health health--risk"><span class="crm2-health-dot"></span>Risk</span></td>
+            <td><div class="crm2-contact"><span class="crm2-contact-name">Yuki Tanaka</span><span class="crm2-contact-email">yuki.t@ferrumtech.jp</span></div></td>
+            <td class="crm2-date crm2-date--stale">2 months ago</td>
+            <td class="crm2-num crm2-num--alert">24</td>
+            <td class="crm2-num">2</td>
+            <td><div class="crm2-call"><a href="#">—</a></div></td>
+            <td><div class="crm2-note">Champion left company</div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="crm2-footer">
+        <span class="crm2-footer-count">Showing 10 of 42 customers</span>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
