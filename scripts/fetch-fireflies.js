@@ -7,9 +7,8 @@ const fs   = require('fs');
 const path = require('path');
 const { writeStatus } = require('./write-status');
 
-const API_KEY    = process.env.STACKONE_API_KEY;
-const ACCOUNT_ID = process.env.STACKONE_FIREFLIES_ACCOUNT_ID;
-const OUT_FILE   = path.join(__dirname, '../site/data/fireflies.json');
+const API_KEY  = process.env.FIREFLIES_API_KEY;
+const OUT_FILE = path.join(__dirname, '../site/data/fireflies.json');
 
 // Domains that belong to StackOne or are personal/generic — not customer companies
 const INTERNAL_DOMAINS = new Set(['stackone.com']);
@@ -20,25 +19,24 @@ const GENERIC_DOMAINS  = new Set([
   'fireflies.ai',
 ]);
 
-if (!API_KEY || !ACCOUNT_ID) {
-  console.error('[fireflies] Missing STACKONE_API_KEY or STACKONE_FIREFLIES_ACCOUNT_ID');
+if (!API_KEY) {
+  console.error('[fireflies] Missing FIREFLIES_API_KEY');
   process.exit(1);
 }
 
-const AUTH = 'Basic ' + Buffer.from(API_KEY + ':').toString('base64');
-
-async function rpc(action, params = {}) {
-  const res = await fetch('https://api.stackone.com/actions/rpc', {
+async function gql(query, variables = {}) {
+  const res = await fetch('https://api.fireflies.ai/graphql', {
     method: 'POST',
     headers: {
-      'Authorization': AUTH,
-      'x-account-id': ACCOUNT_ID,
+      'Authorization': `Bearer ${API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, ...params }),
+    body: JSON.stringify({ query, variables }),
   });
-  if (!res.ok) throw new Error(`RPC ${action} failed: ${res.status} ${await res.text()}`);
-  return res.json();
+  if (!res.ok) throw new Error(`Fireflies GraphQL failed: ${res.status} ${await res.text()}`);
+  const json = await res.json();
+  if (json.errors?.length) throw new Error(json.errors.map(e => e.message).join('; '));
+  return json.data;
 }
 
 function externalDomains(transcript) {
@@ -53,23 +51,29 @@ function externalDomains(transcript) {
   return [...domains];
 }
 
-async function fetchAllTranscripts() {
+const LIST_QUERY = `
+  query Transcripts($fromDate: String, $skip: Int, $limit: Int) {
+    transcripts(fromDate: $fromDate, skip: $skip, limit: $limit) {
+      id
+      title
+      date
+      participants
+      summary { action_items }
+    }
+  }
+`;
+
+async function fetchAllTranscripts(fromDate) {
   const transcripts = [];
   const PAGE_SIZE   = 50;
   let   skip        = 0;
 
   while (true) {
-    // No fromDate — fetch all transcripts ever recorded
-    // Skip: 0 triggers different API behaviour so omit it on the first page
-    const variables = skip === 0
-      ? { limit: PAGE_SIZE }
-      : { limit: PAGE_SIZE, skip };
-    const data = await rpc('fireflies_list_transcripts', {
-      body: { variables },
-      query: {},
-    });
-    const page = data?.result?.data ?? data?.data ?? [];
+    const data = await gql(LIST_QUERY, { fromDate, limit: PAGE_SIZE, skip: skip || undefined });
+    const page = data?.transcripts ?? [];
     if (!page.length) break;
+    // Normalise date to ISO string
+    for (const t of page) t.dateString = new Date(t.date).toISOString();
     transcripts.push(...page);
     console.log(`[fireflies] Fetched ${transcripts.length} transcripts so far...`);
     if (page.length < PAGE_SIZE) break;
@@ -80,9 +84,11 @@ async function fetchAllTranscripts() {
 }
 
 async function main() {
-  console.log('[fireflies] Fetching all transcripts...');
+  // Fetch all transcripts from the last year
+  const fromDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+  console.log(`[fireflies] Fetching transcripts from ${fromDate}...`);
 
-  const transcripts = await fetchAllTranscripts();
+  const transcripts = await fetchAllTranscripts(fromDate);
   console.log(`[fireflies] Found ${transcripts.length} total transcripts`);
 
   // Only keep transcripts that have external participants
@@ -101,23 +107,6 @@ async function main() {
 
   console.log(`[fireflies] ${latestByDomain.size} unique external domains found`);
 
-  // Fetch action items for the most-recent transcript per domain
-  const toFetchDetail = new Set([...latestByDomain.values()].map(t => t.id));
-  console.log(`[fireflies] Fetching action items for ${toFetchDetail.size} transcripts...`);
-
-  const detailCache = new Map();
-  for (const t of externalTranscripts) {
-    if (!toFetchDetail.has(t.id) || detailCache.has(t.id)) continue;
-    try {
-      const detail = await rpc('fireflies_get_transcript', { path: { id: t.id } });
-      const raw = detail?.data?.summary?.action_items ?? '';
-      detailCache.set(t.id, raw.split('\n').map(s => s.trim()).filter(Boolean));
-    } catch (e) {
-      console.warn(`[fireflies] Could not fetch detail for ${t.id}: ${e.message}`);
-      detailCache.set(t.id, []);
-    }
-  }
-
   const output = [];
   for (const t of externalTranscripts) {
     const domains = externalDomains(t);
@@ -127,7 +116,9 @@ async function main() {
         id:           t.id,
         title:        t.title,
         date:         t.dateString,
-        action_items: detailCache.get(t.id) ?? [],
+        action_items: t.summary?.action_items
+          ? t.summary.action_items.split('\n').map(s => s.trim()).filter(Boolean)
+          : [],
       });
     }
   }
