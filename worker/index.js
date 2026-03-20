@@ -144,12 +144,11 @@ if (sets.length === 0) return json({ error: 'No fields to update' }, 400);
         const stmt = env.DB.prepare(
           'INSERT INTO health (hubspot_id, status, updated_at) VALUES (?, ?, ?) ON CONFLICT(hubspot_id) DO UPDATE SET status = excluded.status, updated_at = excluded.updated_at'
         );
+        const validUpdates = updates.filter(u => u.hubspot_id && validStatuses.includes(u.status));
         await env.DB.batch(
-          updates
-            .filter(u => u.hubspot_id && validStatuses.includes(u.status))
-            .map(u => stmt.bind(String(u.hubspot_id), u.status, updated_at))
+          validUpdates.map(u => stmt.bind(String(u.hubspot_id), u.status, updated_at))
         );
-        return json({ updated: updates.length });
+        return json({ updated: validUpdates.length });
       }
 
       // GET /notes
