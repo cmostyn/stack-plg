@@ -125,7 +125,7 @@
       const pinned = frozenCols.has(col);
       const cls = ['crm-th--clickable', pinned ? 'crm-th--frozen' : ''].filter(Boolean).join(' ');
       return `<th data-col="${col}" draggable="${!pinned}" class="${cls}">` +
-        `${label}<div class="crm-resize-handle"></div></th>`;
+        `${label}<button class="crm-th-menu-btn" data-col="${col}" aria-label="Column options">⋮</button><div class="crm-resize-handle"></div></th>`;
     }
 
     const COL_HEADERS = {
@@ -1023,10 +1023,6 @@
 
       const frozen = frozenCols.has(col);
       m.innerHTML = `
-        <button class="col-menu-item" data-action="sort-asc">Sort A → Z ↑</button>
-        <button class="col-menu-item" data-action="sort-desc">Sort Z → A ↓</button>
-        ${sortKey === col ? `<button class="col-menu-item" data-action="sort-clear">Clear sort</button>` : ''}
-        <div class="col-menu-divider"></div>
         <button class="col-menu-item" data-action="freeze">${frozen ? 'Unfreeze column' : 'Freeze column'}</button>
         <div class="col-menu-divider"></div>
         <button class="col-menu-item" data-action="hide">Hide column</button>
@@ -1103,9 +1099,24 @@
 
     crmTable.addEventListener('click', e => {
       if (e.target.closest('.crm-resize-handle')) return;
+      // ⋮ button → open col-menu (freeze/hide)
+      const menuBtn = e.target.closest('.crm-th-menu-btn');
+      if (menuBtn) {
+        const th = menuBtn.closest('th[data-col]');
+        if (th) showColMenu(th, th.dataset.col);
+        return;
+      }
+      // Header click → sort toggle
       const th = e.target.closest('th[data-col]');
       if (!th) return;
-      showColMenu(th, th.dataset.col);
+      const col = th.dataset.col;
+      if (sortKey === col) {
+        if (sortDir === 'asc') { sortDir = 'desc'; }
+        else { sortKey = 'name'; sortDir = 'asc'; }
+      } else {
+        sortKey = col; sortDir = 'asc';
+      }
+      render();
     });
 
     // --- Drag-to-reorder ---
