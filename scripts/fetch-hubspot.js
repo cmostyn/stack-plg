@@ -17,7 +17,7 @@ if (!API_KEY || !ACCOUNT_ID) {
 }
 
 const AUTH = 'Basic ' + Buffer.from(API_KEY + ':').toString('base64');
-const PROPERTIES = ['name', 'domain', 'type', 'org_id', 'notes', 'tier', 'welcome_email_sent', 'createdate'];
+const PROPERTIES = ['name', 'domain', 'type', 'org_id', 'notes', 'tier', 'welcome_email_sent', 'createdate', 'strategic_account'];
 
 async function rpc(action, body, pathParams) {
   const payload = { action, body };
@@ -152,6 +152,7 @@ async function main() {
     welcome_email_sent: c.properties.welcome_email_sent === 'true',
     type:               c.properties.type ?? null,
     createdate:         c.properties.createdate ?? null,
+    strategic_account:  c.properties.strategic_account ?? null,
     hubspot_url:        c.url ?? null,
     updated_at:         c.updatedAt ?? null,
     contact:            null,
