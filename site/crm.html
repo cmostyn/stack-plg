@@ -292,6 +292,7 @@
     let colOrder   = loadColOrder();
     let colWidths  = loadColWidths();
     let frozenCols = loadFrozenCols();
+    let hiddenCols = loadHiddenCols();
 
     // Local notes: per-company freetext stored in localStorage
     let localNotes = (() => {
@@ -405,10 +406,22 @@
       localStorage.setItem('plg_crm_frozen', JSON.stringify([...frozenCols]));
     }
 
+    function loadHiddenCols() {
+      try {
+        const raw = localStorage.getItem('plg_crm_hidden');
+        const parsed = JSON.parse(raw ?? '[]');
+        return new Set(Array.isArray(parsed) ? parsed.filter(c => DEFAULT_COL_ORDER.includes(c)) : []);
+      } catch { return new Set(); }
+    }
+
+    function saveHiddenCols() {
+      localStorage.setItem('plg_crm_hidden', JSON.stringify([...hiddenCols]));
+    }
+
     // Frozen columns first, then the rest in colOrder sequence
     function getEffectiveOrder() {
-      const frozen = colOrder.filter(c => frozenCols.has(c));
-      const rest   = colOrder.filter(c => !frozenCols.has(c));
+      const frozen = colOrder.filter(c => frozenCols.has(c) && !hiddenCols.has(c));
+      const rest   = colOrder.filter(c => !frozenCols.has(c) && !hiddenCols.has(c));
       return [...frozen, ...rest];
     }
 
@@ -907,6 +920,8 @@
       const shown = display.length;
       const countText = (query || typeFilter || strategicFilter) ? `Showing ${shown} of ${total} customers` : `${total} customers`;
       document.getElementById('crm-count').textContent = countText;
+      const showColsBtn = document.getElementById('crm-show-cols-btn');
+      if (showColsBtn) showColsBtn.style.display = hiddenCols.size > 0 ? '' : 'none';
       const footerEl = document.getElementById('crm-footer-count');
       if (footerEl) footerEl.textContent = countText;
 
@@ -1016,9 +1031,13 @@
       colOrder   = [...DEFAULT_COL_ORDER];
       colWidths  = { ...DEFAULT_COL_WIDTHS };
       frozenCols = new Set(['name']);
+      hiddenCols = new Set();
       localStorage.removeItem('plg_crm_col_order');
       localStorage.removeItem('plg_crm_col_widths');
       localStorage.removeItem('plg_crm_frozen');
+      localStorage.removeItem('plg_crm_hidden');
+      const showColsBtn = document.getElementById('crm-show-cols-btn');
+      if (showColsBtn) showColsBtn.style.display = 'none';
       strategicFilter = '';
       strategicBtn.innerHTML = 'All accounts <span class="crm-pill-chevron">▾</span>';
       strategicBtn.classList.remove('crm-pill--active');
@@ -1026,6 +1045,29 @@
         o.classList.toggle('crm-strategic-opt--active', i === 0)
       );
       render();
+    });
+
+    // --- Show hidden columns button ---
+    document.getElementById('crm-show-cols-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      const menu = document.getElementById('col-menu');
+      if (activeMenuCol) { closeColMenu(); return; }
+      activeMenuCol = '__show__';
+      const hidden = [...hiddenCols];
+      const colLabels = {
+        name: 'Name', health: 'Health', contact: 'Primary contact',
+        notes: 'HubSpot notes', local_notes: 'Notes', last_contact: 'Last contact',
+        account: 'Pylon account', integrations: 'Linked accounts', clicks: 'Clicks',
+        api_requests: 'API requests', tickets_total: 'Tickets', open_tickets: 'Open tickets',
+        last_call: 'Last call',
+      };
+      menu.innerHTML = hidden.map(col =>
+        `<button class="col-menu-item" data-action="show-col" data-col="${escHtml(col)}">Show: ${escHtml(colLabels[col] ?? col)}</button>`
+      ).join('');
+      const rect = e.target.getBoundingClientRect();
+      menu.style.top  = `${rect.bottom + window.scrollY + 4}px`;
+      menu.style.left = `${rect.left + window.scrollX}px`;
+      menu.classList.add('col-menu--open');
     });
 
     // --- Column header dropdown menu ---
@@ -1051,6 +1093,8 @@
         ${sortKey === col ? `<button class="col-menu-item" data-action="sort-clear">Clear sort</button>` : ''}
         <div class="col-menu-divider"></div>
         <button class="col-menu-item" data-action="freeze">${frozen ? 'Unfreeze column' : 'Freeze column'}</button>
+        <div class="col-menu-divider"></div>
+        <button class="col-menu-item" data-action="hide">Hide column</button>
       `;
       m.dataset.col = col;
 
@@ -1072,6 +1116,15 @@
         if (frozenCols.has(col)) { frozenCols.delete(col); } else { frozenCols.add(col); }
         saveFrozenCols();
         render();
+      }
+      if (action === 'hide') {
+        hiddenCols.add(col);
+        saveHiddenCols();
+        render();
+      }
+      if (action === 'show-col') {
+        const colToShow = item.dataset.col;
+        if (colToShow) { hiddenCols.delete(colToShow); saveHiddenCols(); render(); }
       }
       closeColMenu();
     });
