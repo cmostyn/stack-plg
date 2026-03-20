@@ -122,6 +122,36 @@ async function fetchContacts(contactIds) {
   return result;
 }
 
+async function fetchTypeHistory(companies) {
+  // Returns Map<companyId, ISOString> — when the company was assigned its current type
+  const result = new Map();
+  const CHUNK  = 10;
+
+  for (let i = 0; i < companies.length; i += CHUNK) {
+    const chunk = companies.slice(i, i + CHUNK);
+    await Promise.all(chunk.map(async c => {
+      try {
+        const data = await rpc(
+          'hubspot_get_company',
+          { propertiesWithHistory: 'type' },
+          { company_id: c.hubspot_id },
+        );
+        const history = data?.result?.propertiesWithHistory?.type
+          ?? data?.propertiesWithHistory?.type ?? [];
+        // Most recent entry where value matches the company's current type
+        const entry = history
+          .filter(h => h.value === c.type)
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        if (entry) result.set(c.hubspot_id, entry.timestamp);
+      } catch (e) {
+        console.warn(`[hubspot] type history unavailable for ${c.hubspot_id}: ${e.message}`);
+      }
+    }));
+  }
+
+  return result;
+}
+
 function pickPrimaryContact(contactIds, contactMap) {
   const contacts = contactIds.map(id => contactMap.get(id)).filter(Boolean);
   if (contacts.length === 0) return null;
@@ -152,10 +182,18 @@ async function main() {
     welcome_email_sent: c.properties.welcome_email_sent === 'true',
     type:               c.properties.type ?? null,
     createdate:         c.properties.createdate ?? null,
+    type_assigned_date: null,
     hubspot_url:        c.url ?? null,
     updated_at:         c.updatedAt ?? null,
     contact:            null,
   }));
+
+  console.log(`[hubspot] Fetching type history for ${companies.length} companies...`);
+  const typeHistoryMap = await fetchTypeHistory(companies);
+  for (const company of companies) {
+    company.type_assigned_date = typeHistoryMap.get(company.hubspot_id) ?? null;
+  }
+  console.log(`[hubspot] Got type history for ${typeHistoryMap.size} companies`);
 
   console.log('[hubspot] Fetching contact associations...');
   const assocMap = await fetchContactIdsForCompanies(companies);

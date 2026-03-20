@@ -367,12 +367,15 @@
       renderSparkline(document.getElementById('chart-accounts'), growthSeries.slice(-12), '#047B43');
 
       // Tile 2 — New Sign Ups Last 30 days
+      // Uses type_assigned_date (when the HubSpot workflow tagged them as this customer type)
+      // falling back to createdate if history is unavailable.
       const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
-      const recent = companies.filter(c => c.createdate && new Date(c.createdate).getTime() >= cutoff);
+      const signupDate = c => c.type_assigned_date || c.createdate;
+      const recent = companies.filter(c => signupDate(c) && new Date(signupDate(c)).getTime() >= cutoff);
       document.getElementById('val-signups').textContent = recent.length || '0';
       const byWeek = [0, 0, 0, 0];
       for (const c of recent) {
-        const daysAgo = (Date.now() - new Date(c.createdate).getTime()) / 86400000;
+        const daysAgo = (Date.now() - new Date(signupDate(c)).getTime()) / 86400000;
         byWeek[3 - Math.min(3, Math.floor(daysAgo / 7))]++;
       }
       renderSparkline(document.getElementById('chart-signups'), byWeek, '#047B43');
