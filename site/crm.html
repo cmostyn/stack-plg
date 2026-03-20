@@ -61,6 +61,20 @@
 
   </main>
 
+  <div id="crm-bulk-bar" class="crm-bulk-bar" style="display:none">
+    <span class="crm-bulk-count" id="crm-bulk-count">0 rows selected</span>
+    <span style="color:#A19F9E;font-size:12px;">Bulk update health:</span>
+    <select id="crm-bulk-health" class="crm-bulk-health-sel">
+      <option value="risk">🔴 Risk</option>
+      <option value="fair">🟠 Fair</option>
+      <option value="good">🟡 Good</option>
+      <option value="excellent">🟢 Excellent</option>
+      <option value="">— Clear health —</option>
+    </select>
+    <button id="crm-bulk-apply" class="crm-bulk-apply-btn">Apply</button>
+    <button id="crm-bulk-clear" class="crm-bulk-clear-btn" style="margin-left:auto;">Clear selection</button>
+  </div>
+
   <div id="card-overlay" class="card-overlay"></div>
   <div id="inline-add-popover" class="inline-add-popover"></div>
   <div id="col-menu" class="col-menu"></div>
@@ -259,6 +273,7 @@
     let healthMap           = new Map();  // hubspot_id (string) → status string
     let notesMap            = new Map();  // hubspot_id (string) → note body string
     let expandedRows        = new Set();  // hubspot_ids with expanded sub-rows
+    let selectedRows        = new Set();  // hubspot_ids of checked rows
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
     let sortKey  = 'name';
@@ -391,7 +406,7 @@
       const cg = document.getElementById('crm-colgroup');
       if (!cg) return;
       const order = getEffectiveOrder();
-      cg.innerHTML = order.map(col =>
+      cg.innerHTML = `<col style="width:36px">` + order.map(col =>
         `<col data-col="${col}" style="width:${colWidths[col] ?? DEFAULT_COL_WIDTHS[col]}px">`
       ).join('');
     }
@@ -817,7 +832,7 @@
       }).join('');
 
       return `<tr class="expand-sub-row" data-hubspot-id="${hid}">
-        <td colspan="${colCount}" style="padding:0;border-bottom:2px solid #E0DEDC;">
+        <td colspan="${colCount + 1}" style="padding:0;border-bottom:2px solid #E0DEDC;">
           <div class="expand-panel">
 
             <div class="expand-section">
@@ -861,7 +876,10 @@
       const display    = sortedRows(filtered);
 
       const effectiveOrder = getEffectiveOrder();
-      thead.innerHTML = `<tr>${effectiveOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
+      const allHids = display.map(c => String(c.hubspot_id ?? ''));
+      const allSelected = allHids.length > 0 && allHids.every(h => selectedRows.has(h));
+      const selectAllCb = `<th class="crm-th--checkbox" style="width:36px;flex-shrink:0"><input type="checkbox" class="crm-select-all" ${allSelected ? 'checked' : ''} style="accent-color:#00AF66;width:14px;height:14px;"></th>`;
+      thead.innerHTML = `<tr>${selectAllCb}${effectiveOrder.map(col => COL_HEADERS[col]()).join('')}</tr>`;
 
       thead.querySelectorAll('th[data-col]').forEach(th => th.removeAttribute('aria-sort'));
       const activeTh = thead.querySelector(`th[data-col="${sortKey}"]`);
@@ -869,7 +887,9 @@
 
       tbody.innerHTML = display.map(company => {
         const hid = String(company.hubspot_id ?? '');
-        const mainRow = `<tr data-hubspot-id="${escHtml(hid)}">${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`;
+        const checked = selectedRows.has(hid);
+        const rowCb   = `<td class="crm-td--checkbox" style="width:36px;text-align:center;"><input type="checkbox" class="crm-row-cb" data-hubspot-id="${escHtml(hid)}" ${checked ? 'checked' : ''} style="accent-color:#00AF66;width:14px;height:14px;"></td>`;
+        const mainRow = `<tr data-hubspot-id="${escHtml(hid)}"${checked ? ' class="crm-row--selected"' : ''}>${rowCb}${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`;
         if (!expandedRows.has(hid)) return mainRow;
         return mainRow + renderExpandRow(company, effectiveOrder.length);
       }).join('');
@@ -881,6 +901,13 @@
       const shown = display.length;
       document.getElementById('crm-count').textContent =
         (query || typeFilter) ? `${shown} of ${total} customers` : `${total} customers`;
+
+      const bar = document.getElementById('crm-bulk-bar');
+      const count = selectedRows.size;
+      bar.style.display = count > 0 ? 'flex' : 'none';
+      if (count > 0) {
+        document.getElementById('crm-bulk-count').textContent = `${count} row${count === 1 ? '' : 's'} selected`;
+      }
     }
 
 
@@ -1315,6 +1342,59 @@
         render();
         return;
       }
+    });
+
+    // Row checkbox: delegate click on table
+    document.querySelector('.crm-table').addEventListener('click', e => {
+      const cb = e.target.closest('.crm-row-cb');
+      if (cb) {
+        const hid = String(cb.dataset.hubspotId ?? '');
+        if (cb.checked) { selectedRows.add(hid); } else { selectedRows.delete(hid); }
+        render();
+        return;
+      }
+      const selectAll = e.target.closest('.crm-select-all');
+      if (selectAll) {
+        const rows = document.querySelectorAll('.crm-row-cb');
+        if (selectAll.checked) {
+          rows.forEach(r => selectedRows.add(String(r.dataset.hubspotId ?? '')));
+        } else {
+          rows.forEach(r => selectedRows.delete(String(r.dataset.hubspotId ?? '')));
+        }
+        render();
+        return;
+      }
+    });
+
+    // Bulk apply
+    document.getElementById('crm-bulk-apply').addEventListener('click', async () => {
+      const status = document.getElementById('crm-bulk-health').value;
+      const hids = [...selectedRows];
+      if (hids.length === 0) return;
+      try {
+        if (status) {
+          await fetch(`${WORKER_URL}/health/bulk`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updates: hids.map(h => ({ hubspot_id: h, status })) }),
+          });
+          hids.forEach(h => healthMap.set(h, status));
+        } else {
+          // Clear health: delete one by one
+          await Promise.all(hids.map(h =>
+            fetch(`${WORKER_URL}/health/${encodeURIComponent(h)}`, { method: 'DELETE' }).catch(() => {})
+          ));
+          hids.forEach(h => healthMap.delete(h));
+        }
+        selectedRows.clear();
+        render();
+      } catch { /* silent */ }
+    });
+
+    // Bulk clear selection
+    document.getElementById('crm-bulk-clear').addEventListener('click', () => {
+      selectedRows.clear();
+      render();
     });
 
     // Health select change in expanded row

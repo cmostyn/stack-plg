@@ -2350,3 +2350,53 @@ a.dash-tile-source:hover {
   cursor: pointer;
 }
 .expand-add-action-btn:hover { background: #F0FDF4; }
+
+/* Multi-select */
+.crm-row--selected td { background: #F0FDF4 !important; }
+.crm-th--checkbox, .crm-td--checkbox { padding: 8px; vertical-align: middle; }
+
+/* Bulk action bar */
+.crm-bulk-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222121;
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+.crm-bulk-count { color: #fff; font-size: 13px; font-weight: 500; }
+.crm-bulk-health-sel {
+  border: 1px solid #444;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+.crm-bulk-apply-btn {
+  font-size: 12px;
+  background: #00AF66;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.crm-bulk-apply-btn:hover { background: #047B43; }
+.crm-bulk-clear-btn {
+  font-size: 12px;
+  background: none;
+  color: #A19F9E;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.crm-bulk-clear-btn:hover { color: #fff; }
