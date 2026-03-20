@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS cs_actions (
   name        TEXT NOT NULL,
   priority    TEXT NOT NULL CHECK(priority IN ('high', 'med', 'low')),
   done        INTEGER NOT NULL DEFAULT 0,
-  created_at  TEXT NOT NULL
+  created_at  TEXT NOT NULL,
+  due_date    TEXT             -- ISO date YYYY-MM-DD, nullable
 );
