@@ -195,21 +195,10 @@
         return `<td class="crm-notes" data-full-notes="${escHtml(n)}">${escHtml(truncated)}</td>`;
       },
       local_notes: company => {
-        const hid    = escHtml(String(company.hubspot_id ?? ''));
         const rawHid = String(company.hubspot_id ?? '');
         const note   = notesMap.get(rawHid) ?? '';
-
-        if (editingRows.has(rawHid)) {
-          return `<td class="crm-local-notes-cell crm-local-notes-cell--editing" data-hubspot-id="${hid}">` +
-            `<input class="crm-inline-note-input" data-hubspot-id="${hid}" value="${escHtml(note)}" autocomplete="off">` +
-            `</td>`;
-        }
-
-        const expanded = expandedRows.has(rawHid);
         const display = escHtml(note.length > 60 ? note.slice(0, 60) + '…' : note);
-        const chevron = `<span class="notes-chevron${expanded ? ' notes-chevron--open' : ''}" data-hubspot-id="${hid}">▾</span>`;
-        return `<td class="crm-local-notes-cell" data-hubspot-id="${hid}">` +
-          `${chevron}` +
+        return `<td class="crm-local-notes-cell crm-local-notes-cell--clickable" data-hubspot-id="${escHtml(rawHid)}">` +
           `${display || '<span class="crm-placeholder">Add note…</span>'}` +
           `</td>`;
       },
@@ -282,8 +271,6 @@
     let actionsMap          = new Map();  // hubspot_id (string) → action[]
     let healthMap           = new Map();  // hubspot_id (string) → status string
     let notesMap            = new Map();  // hubspot_id (string) → note body string
-    let expandedRows        = new Set();  // hubspot_ids with expanded sub-rows
-    let editingRows         = new Set();  // hids currently in inline note edit
     let selectedRows        = new Set();  // hubspot_ids of checked rows
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
@@ -825,63 +812,6 @@
       { value: 'excellent', label: '🟢 Excellent'  },
     ];
 
-    function renderExpandRow(company, colCount) {
-      const hid     = escHtml(String(company.hubspot_id ?? ''));
-      const rawHid  = String(company.hubspot_id ?? '');
-      const note    = notesMap.get(rawHid) ?? '';
-      const status  = healthMap.get(rawHid) ?? '';
-      const actions = actionsMap.get(rawHid) ?? [];
-      const open    = actions.filter(a => !a.done);
-      const done    = actions.filter(a => a.done);
-
-      const healthOpts = HEALTH_OPTIONS.map(o =>
-        `<option value="${o.value}"${o.value === status ? ' selected' : ''}>${escHtml(o.label)}</option>`
-      ).join('');
-
-      const actionRows = [...open, ...done].map(a => {
-        const isDone   = a.done;
-        const priCfg   = { high: { bg:'#FEE2E2',color:'#C43E3E' }, med: { bg:'#FEF3C7',color:'#92400E' }, low: { bg:'#F0FDF4',color:'#15803D' } }[a.priority] ?? {};
-        const priBadge = `<span style="font-size:10px;background:${priCfg.bg};color:${priCfg.color};padding:1px 5px;border-radius:3px;font-weight:600;flex-shrink:0;">${escHtml(a.priority.charAt(0).toUpperCase() + a.priority.slice(1))}</span>`;
-        return `<div class="expand-action-row" data-action-id="${escHtml(a.id)}" data-hubspot-id="${hid}" data-done="${isDone ? '1' : '0'}">
-          <span class="expand-action-check${isDone ? ' expand-action-check--done' : ''}">
-            ${isDone ? '<svg viewBox="0 0 10 10" width="9" height="9" fill="none" stroke="#00AF66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,5 4,8 8,2"/></svg>' : ''}
-          </span>
-          <span class="expand-action-name${isDone ? ' expand-action-name--done' : ''}">${escHtml(a.name)}</span>
-          ${priBadge}
-        </div>`;
-      }).join('');
-
-      return `<tr class="expand-sub-row" data-hubspot-id="${hid}">
-        <td colspan="${colCount + 1}" style="padding:0;border-bottom:2px solid #E0DEDC;">
-          <div class="expand-panel">
-
-            <div class="expand-section">
-              <div class="expand-label">Notes</div>
-              <textarea class="expand-notes-ta" data-hubspot-id="${hid}" rows="3">${escHtml(note)}</textarea>
-              <div class="expand-notes-actions">
-                <button class="expand-save-btn" data-hubspot-id="${hid}">Save</button>
-                <button class="expand-cancel-btn" data-hubspot-id="${hid}">Cancel</button>
-              </div>
-            </div>
-
-            <div class="expand-section expand-section--health">
-              <div class="expand-label">Health</div>
-              <select class="expand-health-sel" data-hubspot-id="${hid}">${healthOpts}</select>
-            </div>
-
-            <div class="expand-section expand-section--actions">
-              <div class="expand-label">CS Actions</div>
-              <div class="expand-actions-list" data-hubspot-id="${hid}">
-                ${actionRows || '<div style="font-size:12px;color:#A19F9E;">No actions yet</div>'}
-              </div>
-              <button class="expand-add-action-btn" data-hubspot-id="${hid}">+ Add action</button>
-            </div>
-
-          </div>
-        </td>
-      </tr>`;
-    }
-
     // --- Render ---
 
     function render() {
@@ -911,8 +841,7 @@
         const checked = selectedRows.has(hid);
         const rowCb   = `<td class="crm-td--checkbox" style="width:36px;text-align:center;"><input type="checkbox" class="crm-row-cb" data-hubspot-id="${escHtml(hid)}" ${checked ? 'checked' : ''} style="accent-color:#00AF66;width:14px;height:14px;"></td>`;
         const mainRow = `<tr data-hubspot-id="${escHtml(hid)}"${checked ? ' class="crm-row--selected"' : ''}>${rowCb}${effectiveOrder.map(col => CELLS[col](company)).join('')}</tr>`;
-        if (!expandedRows.has(hid)) return mainRow;
-        return mainRow + renderExpandRow(company, effectiveOrder.length);
+        return mainRow;
       }).join('');
 
       applyColWidths();
@@ -1392,6 +1321,65 @@
       document.addEventListener('keydown', handleCardKeydown);
     });
 
+    // Local notes cell: click → editable popup
+    crmTable.addEventListener('click', e => {
+      const td = e.target.closest('td.crm-local-notes-cell--clickable');
+      if (!td) return;
+      const hid = String(td.dataset.hubspotId ?? '');
+      if (!hid) return;
+      const currentNote = notesMap.get(hid) ?? '';
+      const company = allRows.find(r => String(r.hubspot_id ?? '') === hid);
+      const companyName = company ? escHtml(company.name ?? '') : 'Notes';
+
+      const overlay = document.getElementById('card-overlay');
+      overlay.innerHTML = `
+        <div class="card-modal" id="card-modal" style="max-width:560px">
+          <div class="card-modal-header">
+            <div class="card-modal-company">${companyName}</div>
+            <button class="card-modal-close" id="card-close">×</button>
+          </div>
+          <div class="card-modal-body" style="display:block;padding:20px 24px">
+            <textarea id="notes-edit-ta" style="width:100%;min-height:180px;font-family:var(--so-font-body);font-size:14px;color:var(--so-text-body);border:1px solid var(--so-neutral-10);border-radius:8px;padding:10px 12px;resize:vertical;outline:none;line-height:1.6;box-sizing:border-box;" placeholder="Add a note…">${escHtml(currentNote)}</textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;padding:0 24px 20px">
+            <button id="notes-popup-cancel" style="font-family:var(--so-font-body);font-size:13px;font-weight:500;color:var(--so-text-tag);background:var(--so-foreground);border:1px solid var(--so-neutral-10);border-radius:20px;padding:6px 16px;cursor:pointer;">Cancel</button>
+            <button id="notes-popup-save" data-hid="${escHtml(hid)}" style="font-family:var(--so-font-body);font-size:13px;font-weight:600;color:#fff;background:var(--so-primary);border:none;border-radius:20px;padding:6px 16px;cursor:pointer;">Save</button>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('card-overlay--open');
+
+      document.getElementById('notes-popup-save').addEventListener('click', async function () {
+        const body = document.getElementById('notes-edit-ta').value;
+        const saveHid = this.dataset.hid;
+        notesMap.set(saveHid, body);
+        localNotes[saveHid] = body;
+        saveLocalNotes();
+        overlay.classList.remove('card-overlay--open');
+        overlay.innerHTML = '';
+        try {
+          await fetch(`${WORKER_URL}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hubspot_id: saveHid, notes: body }),
+          });
+        } catch { /* silent */ }
+        render();
+      });
+
+      document.getElementById('notes-popup-cancel').addEventListener('click', () => {
+        overlay.classList.remove('card-overlay--open');
+        overlay.innerHTML = '';
+      });
+
+      document.getElementById('card-close').addEventListener('click', () => {
+        overlay.classList.remove('card-overlay--open');
+        overlay.innerHTML = '';
+      });
+
+      document.addEventListener('keydown', handleCardKeydown);
+    });
+
     // --- Column resize ---
     let resizingCol = null;
     let resizeStartX = 0;
@@ -1426,121 +1414,6 @@
       resizingCol = null;
       saveColWidths();
       showLayoutSavedToast();
-    });
-
-    // Expandable row: chevron toggle, save/cancel notes, toggle action, add action
-    document.querySelector('.crm-table').addEventListener('click', async e => {
-      // Chevron toggle
-      const chevron = e.target.closest('.notes-chevron');
-      if (chevron) {
-        e.stopPropagation();
-        const hid = String(chevron.dataset.hubspotId ?? '');
-        if (!hid) return;
-        if (expandedRows.has(hid)) {
-          expandedRows.delete(hid);
-        } else {
-          expandedRows.add(hid);
-        }
-        render();
-        return;
-      }
-
-      // Click on notes cell body (not chevron) → inline edit
-      const notesTd = e.target.closest('td.crm-local-notes-cell');
-      if (notesTd && !e.target.closest('.notes-chevron')) {
-        const hid = String(notesTd.dataset.hubspotId ?? '');
-        if (!hid || editingRows.has(hid)) return;
-        editingRows.add(hid);
-        render();
-        // Focus the input that was just rendered
-        const input = document.querySelector(`.crm-inline-note-input[data-hubspot-id="${CSS.escape(hid)}"]`);
-        if (input) { input.focus(); input.select(); }
-        return;
-      }
-
-      // Save notes button
-      const saveBtn = e.target.closest('.expand-save-btn');
-      if (saveBtn) {
-        const hid = String(saveBtn.dataset.hubspotId ?? '');
-        const ta  = document.querySelector(`.expand-notes-ta[data-hubspot-id="${CSS.escape(hid)}"]`);
-        if (!ta) return;
-        const body = ta.value;
-        notesMap.set(hid, body);
-        // Save to localStorage as well for resilience
-        localNotes[hid] = body;
-        saveLocalNotes();
-        try {
-          await fetch(`${WORKER_URL}/notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hubspot_id: hid, notes: body }),
-          });
-        } catch { /* silent */ }
-        render();
-        return;
-      }
-
-      // Cancel notes button
-      const cancelBtn = e.target.closest('.expand-cancel-btn');
-      if (cancelBtn) {
-        expandedRows.delete(String(cancelBtn.dataset.hubspotId ?? ''));
-        render();
-        return;
-      }
-
-      // Toggle action done
-      const actionRow = e.target.closest('.expand-action-row');
-      if (actionRow && !e.target.closest('.expand-add-action-btn')) {
-        const actionId = actionRow.dataset.actionId;
-        const hid      = String(actionRow.dataset.hubspotId ?? '');
-        const isDone   = actionRow.dataset.done === '1';
-        const actions  = actionsMap.get(hid) ?? [];
-        const action   = actions.find(a => a.id === actionId);
-        if (!action) return;
-        await toggleAction(actionId, hid, isDone);
-        render();
-        return;
-      }
-
-      // Add action button
-      const addBtn = e.target.closest('.expand-add-action-btn');
-      if (addBtn) {
-        const hid  = String(addBtn.dataset.hubspotId ?? '');
-        const name = prompt('Action name:');
-        if (!name?.trim()) return;
-        await createAction(hid, name.trim(), 'med');
-        render();
-        return;
-      }
-    });
-
-    // Inline note input: Enter to save, Escape to cancel
-    crmTable.addEventListener('keydown', async e => {
-      const input = e.target.closest('.crm-inline-note-input');
-      if (!input) return;
-      const hid = String(input.dataset.hubspotId ?? '');
-
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const body = input.value;
-        notesMap.set(hid, body);
-        localNotes[hid] = body;
-        saveLocalNotes();
-        editingRows.delete(hid);
-        try {
-          await fetch(`${WORKER_URL}/notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hubspot_id: hid, notes: body }),
-          });
-        } catch { /* silent */ }
-        render();
-      }
-
-      if (e.key === 'Escape') {
-        editingRows.delete(hid);
-        render();
-      }
     });
 
     // Row checkbox: delegate click on table
@@ -1596,26 +1469,6 @@
       render();
     });
 
-    // Health select change in expanded row
-    document.querySelector('.crm-table').addEventListener('change', async e => {
-      const sel = e.target.closest('.expand-health-sel');
-      if (!sel) return;
-      const hid    = String(sel.dataset.hubspotId ?? '');
-      const status = sel.value;
-      try {
-        await fetch(`${WORKER_URL}/health`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hubspot_id: hid, status: status || null }),
-        });
-        if (status) {
-          healthMap.set(hid, status);
-        } else {
-          healthMap.delete(hid);
-        }
-        render();
-      } catch { /* silent */ }
-    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
