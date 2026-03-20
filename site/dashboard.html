@@ -312,6 +312,7 @@
     <div id="expandBody"></div>
   </dialog>
 
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script>
     // ── State ────────────────────────────────────────────────────────────────
@@ -806,6 +807,117 @@
     });
 
     renderCustomLinks();
+  </script>
+
+  <script>
+    // ── Animations ────────────────────────────────────────────────────────────
+    // All animations are guarded by prefers-reduced-motion.
+    // This block does not modify any existing variables or functions — it only
+    // wraps renderTiles and adds new event listeners.
+
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Helper: animate a number counting up ────────────────────────────────
+      // Reads the current numeric text of an element, counts from 0 to that
+      // value, then restores the original text when finished.
+      function countUp(id, duration) {
+        if (reduced) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+        var target = parseInt(el.textContent, 10);
+        if (isNaN(target) || target <= 0) return;
+        var obj = { val: 0 };
+        anime({
+          targets: obj,
+          val: target,
+          duration: duration,
+          easing: 'easeOutExpo',
+          update: function () {
+            el.textContent = Math.round(obj.val);
+          },
+          complete: function () {
+            el.textContent = target;
+          },
+        });
+      }
+
+      // ── Animation 1 + 2: stagger tiles and count up numbers after data load ─
+      // Wrap the existing renderTiles function so that after it sets values we
+      // can (a) stagger the real tiles in and (b) count up the three numbers.
+      var _originalRenderTiles = renderTiles;
+      renderTiles = function () {
+        _originalRenderTiles.apply(this, arguments);
+
+        // Animation 1 — tile stagger entrance
+        if (!reduced) {
+          var tiles = document.querySelectorAll('.dash-tile:not(:has(.dash-tile-badge))');
+          anime({
+            targets: tiles,
+            opacity: [0, 1],
+            translateY: [16, 0],
+            duration: 400,
+            easing: 'cubicBezier(.4, 0, .2, 1)',
+            delay: anime.stagger(80),
+          });
+        } else {
+          // Ensure tiles are visible without animation
+          document.querySelectorAll('.dash-tile:not(:has(.dash-tile-badge))').forEach(function (el) {
+            el.style.opacity = '1';
+          });
+        }
+
+        // Animation 2 — number counters
+        countUp('val-accounts', 600);
+        countUp('val-signups',  500);
+        countUp('val-action',   500);
+        // val-frt is a formatted string (e.g. "2.1h") — skip
+      };
+
+      // ── Animation 3 — filter pill value pulse ───────────────────────────────
+      // Fires in the capture phase so it runs before the existing click
+      // listener that calls renderTiles.
+      document.querySelector('.dash-filters').addEventListener('click', function (e) {
+        var pill = e.target.closest('.dash-filter-pill');
+        if (!pill) return;
+        if (!reduced) {
+          anime({
+            targets: document.querySelectorAll('.dash-tile-value'),
+            opacity: [1, 0.3, 1],
+            duration: 350,
+            easing: 'cubicBezier(.4, 0, .2, 1)',
+          });
+        }
+      }, true /* capture */);
+
+      // ── Animation 4 — link card scroll entrance ──────────────────────────────
+      var linksSection = document.querySelector('.useful-links');
+      if (linksSection) {
+        if (!reduced) {
+          // Set initial state so cards are invisible before the observer fires
+          document.querySelectorAll('.link-card').forEach(function (el) {
+            el.style.opacity = '0';
+          });
+
+          var linkObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              anime({
+                targets: entry.target.querySelectorAll('.link-card'),
+                opacity: [0, 1],
+                translateY: [12, 0],
+                duration: 350,
+                easing: 'cubicBezier(.4, 0, .2, 1)',
+                delay: anime.stagger(60),
+              });
+              linkObserver.unobserve(entry.target);
+            });
+          }, { threshold: 0.15 });
+
+          linkObserver.observe(linksSection);
+        }
+      }
+    }());
   </script>
 </body>
 </html>
