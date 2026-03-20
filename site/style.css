@@ -1524,6 +1524,19 @@ a:hover {
 .crm-local-notes-cell:hover {
   background: rgba(0, 175, 102, 0.04);
 }
+.crm-local-notes-cell--editing { padding: 4px 8px; }
+.crm-inline-note-input {
+  width: 100%;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-body);
+  border: 1px solid rgba(0, 175, 102, 0.4);
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 175, 102, 0.1);
+  background: var(--so-white);
+}
 
 /* CRM — pin/freeze button */
 .crm-pin-btn {
