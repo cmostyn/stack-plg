@@ -619,7 +619,8 @@ a:hover {
 }
 
 .crm-table-wrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: calc(100vh - 180px);
   border: 1px solid var(--so-neutral-10);
   border-radius: var(--so-radius-lg);
   box-shadow: var(--so-shadow-card);
