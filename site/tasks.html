@@ -382,15 +382,9 @@
 
     <div class="tasks-toolbar">
       <div class="tasks-toolbar-left" id="tasks-tabs">
-        <button class="tasks-tab tasks-tab--active" data-tab="upcoming">
-          <span class="tab-dot tab-dot--upcoming"></span>
-          Upcoming
-          <span class="tasks-tab-count" id="count-upcoming"></span>
-        </button>
-        <button class="tasks-tab" data-tab="overdue">
-          <span class="tab-dot tab-dot--overdue"></span>
-          Overdue
-          <span class="tasks-tab-count tasks-tab-count--overdue" id="count-overdue"></span>
+        <button class="tasks-tab tasks-tab--active" data-tab="todo">
+          To do
+          <span class="tasks-tab-count" id="count-todo"></span>
         </button>
         <button class="tasks-tab" data-tab="completed">
           Completed
@@ -416,7 +410,17 @@
           <button class="crm-pill" data-type="Customer">Cust</button>
         </div>
 
-        <!-- 3. Priority pills -->
+        <!-- 3. Account filter -->
+        <div class="crm-strategic-wrap tasks-account-wrap" id="tasks-account-wrap">
+          <button class="crm-pill" id="tasks-account-btn">
+            All accounts <span class="crm-pill-chevron">▾</span>
+          </button>
+          <div class="crm-strategic-dropdown" id="tasks-account-dropdown" style="max-height:260px;overflow-y:auto">
+            <button class="crm-strategic-opt crm-strategic-opt--active" data-account="">All accounts</button>
+          </div>
+        </div>
+
+        <!-- 4. Priority pills -->
         <div class="priority-pills" id="priority-pills">
           <button class="priority-pill priority-pill--active" data-priority="">All</button>
           <button class="priority-pill" data-priority="high">High</button>
@@ -462,10 +466,11 @@
     let allActions     = [];
     let companyMap     = new Map();
     let typeMap        = new Map();   // hubspot_id → company type string
-    let activeTab      = 'upcoming';
+    let activeTab      = 'todo';
     let activePriority = '';
     let activeType     = '';
     let activeSearch   = '';
+    let activeAccount  = '';
 
     // Card modal state
     let openCardId          = null;
@@ -510,7 +515,7 @@
     }
 
     function isOverdue(a) { return !a.done && a.due_date && a.due_date < today; }
-    function tabFor(a)    { return a.done ? 'completed' : isOverdue(a) ? 'overdue' : 'upcoming'; }
+    function tabFor(a)    { return a.done ? 'completed' : 'todo'; }
     function priorityLabel(p) { return { high: 'High', med: 'Med', low: 'Low' }[p] ?? p; }
 
     function filteredActions() {
@@ -522,6 +527,7 @@
           const t = typeMap.get(String(a.hubspot_id)) ?? '';
           if (t !== activeType) return false;
         }
+        if (activeAccount && String(a.hubspot_id) !== activeAccount) return false;
         if (q) {
           const name   = (a.name ?? '').toLowerCase();
           const client = (companyMap.get(String(a.hubspot_id)) ?? '').toLowerCase();
@@ -532,7 +538,7 @@
     }
 
     function updateCounts() {
-      ['upcoming', 'overdue', 'completed'].forEach(tab => {
+      ['todo', 'completed'].forEach(tab => {
         const n = allActions.filter(a => {
           if (tabFor(a) !== tab) return false;
           if (activePriority && a.priority !== activePriority) return false;
@@ -540,6 +546,7 @@
             const t = typeMap.get(String(a.hubspot_id)) ?? '';
             if (t !== activeType) return false;
           }
+          if (activeAccount && String(a.hubspot_id) !== activeAccount) return false;
           return true;
         }).length;
         const el = document.getElementById(`count-${tab}`);
@@ -560,8 +567,9 @@
       }
 
       if (rows.length === 0) {
+        const tabLabel = activeTab === 'todo' ? 'to-do' : activeTab;
         const tag = activePriority ? ` · ${priorityLabel(activePriority)} priority` : '';
-        list.innerHTML = `<div class="tasks-empty">No ${activeTab} tasks${tag}</div>`;
+        list.innerHTML = `<div class="tasks-empty">No ${tabLabel} tasks${tag}</div>`;
         return;
       }
 
@@ -775,9 +783,9 @@
           try {
             const action = await createAction('', name, 'med');
             allActions.unshift(action);
-            activeTab = 'upcoming';
+            activeTab = 'todo';
             document.querySelectorAll('.tasks-tab').forEach(t =>
-              t.classList.toggle('tasks-tab--active', t.dataset.tab === 'upcoming')
+              t.classList.toggle('tasks-tab--active', t.dataset.tab === 'todo')
             );
           } catch {
             input.disabled = false;
@@ -957,10 +965,33 @@
       render();
     });
 
+    // Account dropdown toggle
+    document.getElementById('tasks-account-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('tasks-account-dropdown').classList.toggle('crm-strategic-dropdown--open');
+    });
+    document.getElementById('tasks-account-dropdown').addEventListener('click', e => {
+      const opt = e.target.closest('.crm-strategic-opt');
+      if (!opt) return;
+      activeAccount = opt.dataset.account;
+      document.querySelectorAll('#tasks-account-dropdown .crm-strategic-opt').forEach(o =>
+        o.classList.toggle('crm-strategic-opt--active', o === opt)
+      );
+      const btn = document.getElementById('tasks-account-btn');
+      btn.innerHTML = escHtml(opt.textContent) + ' <span class="crm-pill-chevron">▾</span>';
+      document.getElementById('tasks-account-dropdown').classList.remove('crm-strategic-dropdown--open');
+      render();
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#tasks-account-wrap')) {
+        document.getElementById('tasks-account-dropdown')?.classList.remove('crm-strategic-dropdown--open');
+      }
+    });
+
     document.getElementById('new-task-btn').addEventListener('click', () => {
-      activeTab = 'upcoming';
+      activeTab = 'todo';
       document.querySelectorAll('.tasks-tab').forEach(t =>
-        t.classList.toggle('tasks-tab--active', t.dataset.tab === 'upcoming')
+        t.classList.toggle('tasks-tab--active', t.dataset.tab === 'todo')
       );
       render();
       insertNewTaskRow();
@@ -1051,29 +1082,8 @@
         if (e.target.closest('.priority-pill')) pulseRows();
       }, true);
 
-      document.getElementById('customer-filter').addEventListener('change', pulseRows, true);
-
-      // ── Animation 3 — modal entrance ─────────────────────────────────────
-      // Wrap openModal() so the .modal panel animates in after the overlay
-      // becomes visible. Matches the crm.html pattern exactly.
-      var _originalOpenModal = openModal;
-
-      openModal = function () {
-        _originalOpenModal.apply(this, arguments);
-
-        if (!reduced) {
-          var modal = document.querySelector('#new-task-overlay .modal');
-          if (!modal) return;
-          anime({
-            targets:    modal,
-            opacity:    [0, 1],
-            translateY: [8, 0],
-            scale:      [0.97, 1],
-            duration:   250,
-            easing:     'cubicBezier(.4, 0, .2, 1)',
-          });
-        }
-      };
+      var _cfEl = document.getElementById('tasks-account-dropdown');
+      if (_cfEl) _cfEl.addEventListener('change', pulseRows, true);
     }());
 
     // ── Load ─────────────────────────────────────────────────
@@ -1081,6 +1091,18 @@
     fetch('./data/hubspot.json').then(r => r.json()).then(companies => {
       companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
       typeMap    = new Map(companies.map(c => [String(c.hubspot_id), c.type ?? '']));
+      // Populate account dropdown
+      const dropdown = document.getElementById('tasks-account-dropdown');
+      if (dropdown) {
+        const sorted = [...companies].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+        sorted.forEach(c => {
+          const btn = document.createElement('button');
+          btn.className = 'crm-strategic-opt';
+          btn.dataset.account = String(c.hubspot_id);
+          btn.textContent = c.name ?? String(c.hubspot_id);
+          dropdown.appendChild(btn);
+        });
+      }
     }).catch(() => {});
 
     fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(8000) })
