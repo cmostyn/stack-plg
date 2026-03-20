@@ -1451,19 +1451,20 @@ a:hover {
 .crm-contact-cell {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 .crm-contact-name-link {
-  color: var(--so-text-body);
+  color: var(--so-green-dark);
   text-decoration: none;
   font-size: 13px;
-  flex: 1;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .crm-contact-name-link:hover {
-  color: var(--so-green-dark);
+  color: var(--so-primary);
   text-decoration: underline;
 }
 .crm-email-btn {
@@ -1712,7 +1713,8 @@ a:hover {
 .card-action-cancel:hover { color: var(--so-text-header); }
 
 /* ── CRM table: name cell open button ── */
-.crm-name-cell   { display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 180px; }
+.crm-name-cell   { min-width: 180px; overflow: hidden; }
+.crm-name-inner  { display: flex; align-items: center; gap: 6px; overflow: hidden; }
 .crm-name-cell a { font-weight: 500; color: var(--so-text-header); font-size: 13px; text-decoration: none; }
 .crm-name-cell a:hover { color: var(--so-primary); }
 .card-open-btn   {

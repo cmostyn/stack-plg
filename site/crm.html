@@ -160,9 +160,11 @@
           pylonHref     ? `<a href="${pylonHref}" class="crm-row-action" target="_blank" rel="noopener" title="Open in Pylon"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6 6h3.5a1.5 1.5 0 010 3H6v3"/></svg></a>` : '',
         ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
-          <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
-          <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
-          <div class="crm-row-actions">${quickLinks}</div>
+          <div class="crm-name-inner">
+            <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
+            <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
+            <div class="crm-row-actions">${quickLinks}</div>
+          </div>
         </td>`;
       },
       contact: company => {
@@ -182,7 +184,7 @@
           : '';
         const nameEl = contactHref
           ? `<a href="${escHtml(contactHref)}" target="_blank" rel="noopener" class="crm-contact-name-link">${name}</a>`
-          : name;
+          : `<span class="crm-contact-name-link">${name}</span>`;
         return `<td><div class="crm-contact-cell">${nameEl}${emailBtn}</div></td>`;
       },
       notes: company => {
