@@ -52,7 +52,7 @@ function externalDomains(transcript) {
 }
 
 const LIST_QUERY = `
-  query Transcripts($fromDate: String, $skip: Int, $limit: Int) {
+  query Transcripts($fromDate: DateTime, $skip: Int, $limit: Int) {
     transcripts(fromDate: $fromDate, skip: $skip, limit: $limit) {
       id
       title
