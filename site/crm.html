@@ -844,6 +844,9 @@
         actionsMap.get(action.hubspot_id).push(action);
       }
 
+      // healthMap: hubspot_id (string) → status string
+      healthMap = new Map(healthData.map(h => [String(h.hubspot_id), h.status]));
+
       allRows = hubspot;
       render();
     }).catch(() => {
