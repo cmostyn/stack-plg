@@ -197,6 +197,13 @@
         const hid    = escHtml(String(company.hubspot_id ?? ''));
         const rawHid = String(company.hubspot_id ?? '');
         const note   = notesMap.get(rawHid) ?? '';
+
+        if (editingRows.has(rawHid)) {
+          return `<td class="crm-local-notes-cell crm-local-notes-cell--editing" data-hubspot-id="${hid}">` +
+            `<input class="crm-inline-note-input" data-hubspot-id="${hid}" value="${escHtml(note)}" autocomplete="off">` +
+            `</td>`;
+        }
+
         const expanded = expandedRows.has(rawHid);
         const display = escHtml(note.length > 60 ? note.slice(0, 60) + '…' : note);
         const chevron = `<span class="notes-chevron${expanded ? ' notes-chevron--open' : ''}" data-hubspot-id="${hid}">▾</span>`;
@@ -274,6 +281,7 @@
     let healthMap           = new Map();  // hubspot_id (string) → status string
     let notesMap            = new Map();  // hubspot_id (string) → note body string
     let expandedRows        = new Set();  // hubspot_ids with expanded sub-rows
+    let editingRows         = new Set();  // hids currently in inline note edit
     let selectedRows        = new Set();  // hubspot_ids of checked rows
     let openCardId          = null;       // hubspot_id of the open card, or null
     let typeFilter = '';
@@ -1316,6 +1324,19 @@
         return;
       }
 
+      // Click on notes cell body (not chevron) → inline edit
+      const notesTd = e.target.closest('td.crm-local-notes-cell');
+      if (notesTd && !e.target.closest('.notes-chevron')) {
+        const hid = String(notesTd.dataset.hubspotId ?? '');
+        if (!hid || editingRows.has(hid)) return;
+        editingRows.add(hid);
+        render();
+        // Focus the input that was just rendered
+        const input = document.querySelector(`.crm-inline-note-input[data-hubspot-id="${CSS.escape(hid)}"]`);
+        if (input) { input.focus(); input.select(); }
+        return;
+      }
+
       // Save notes button
       const saveBtn = e.target.closest('.expand-save-btn');
       if (saveBtn) {
@@ -1369,6 +1390,35 @@
         await createAction(hid, name.trim(), 'med');
         render();
         return;
+      }
+    });
+
+    // Inline note input: Enter to save, Escape to cancel
+    crmTable.addEventListener('keydown', async e => {
+      const input = e.target.closest('.crm-inline-note-input');
+      if (!input) return;
+      const hid = String(input.dataset.hubspotId ?? '');
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const body = input.value;
+        notesMap.set(hid, body);
+        localNotes[hid] = body;
+        saveLocalNotes();
+        editingRows.delete(hid);
+        try {
+          await fetch(`${WORKER_URL}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hubspot_id: hid, notes: body }),
+          });
+        } catch { /* silent */ }
+        render();
+      }
+
+      if (e.key === 'Escape') {
+        editingRows.delete(hid);
+        render();
       }
     });
 
