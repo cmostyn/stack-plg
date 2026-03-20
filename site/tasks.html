@@ -28,26 +28,25 @@
     <!-- Toolbar -->
     <div class="tasks-toolbar">
       <div class="tasks-toolbar-left">
-        <!-- Tab pills -->
-        <div class="tasks-tabs" id="tasks-tabs">
-          <button class="tasks-tab tasks-tab--active" data-tab="upcoming">Upcoming <span class="tasks-tab-count" id="count-upcoming"></span></button>
-          <button class="tasks-tab" data-tab="overdue">Overdue <span class="tasks-tab-count tasks-tab-count--overdue" id="count-overdue"></span></button>
-          <button class="tasks-tab" data-tab="completed">Completed <span class="tasks-tab-count" id="count-completed"></span></button>
+        <div class="crm-search-wrap">
+          <svg class="crm-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6.5" cy="6.5" r="4"/>
+            <line x1="9.5" y1="9.5" x2="13.5" y2="13.5"/>
+          </svg>
+          <input id="tasks-search" class="crm-search" type="search" placeholder="Search tasks…" autocomplete="off">
+        </div>
+        <div class="crm-type-pills" id="tasks-type-pills">
+          <button class="crm-pill crm-pill--active" data-type="">All</button>
+          <button class="crm-pill" data-type="Customer - PLG">PLG</button>
+          <button class="crm-pill" data-type="Customer - SLG">SLG</button>
+          <button class="crm-pill" data-type="Customer">Cust</button>
         </div>
       </div>
       <div class="tasks-toolbar-right">
-        <!-- Priority filter -->
-        <div class="crm-type-pills" id="priority-pills">
-          <button class="crm-pill crm-pill--active" data-priority="">All</button>
-          <button class="crm-pill" data-priority="high">High</button>
-          <button class="crm-pill" data-priority="med">Med</button>
-          <button class="crm-pill" data-priority="low">Low</button>
+        <div class="tasks-tabs" id="tasks-tabs">
+          <button class="tasks-tab tasks-tab--active" data-tab="outstanding">Outstanding <span class="tasks-tab-count" id="count-outstanding"></span></button>
+          <button class="tasks-tab" data-tab="completed">Completed <span class="tasks-tab-count" id="count-completed"></span></button>
         </div>
-        <!-- Customer filter -->
-        <select id="customer-filter" class="tasks-customer-filter">
-          <option value="">All customers</option>
-        </select>
-        <!-- New task button -->
         <button class="crm-layout-btn crm-layout-btn--save" id="new-task-btn">+ New task</button>
       </div>
     </div>
@@ -101,9 +100,11 @@
 
     let allActions  = [];
     let companyMap  = new Map(); // hubspot_id → name
-    let activeTab   = 'upcoming';
-    let activePriority = '';
+    let activeTab   = 'outstanding';
     let activeCustomer = '';
+    let activeType = '';
+    let searchQuery = '';
+    let companyTypeMap = new Map();
 
     const today = new Date().toISOString().slice(0, 10);
 
@@ -123,8 +124,7 @@
 
     function tabFor(action) {
       if (action.done) return 'completed';
-      if (isOverdue(action)) return 'overdue';
-      return 'upcoming';
+      return 'outstanding';
     }
 
     function priorityLabel(p) {
@@ -138,19 +138,27 @@
     function filteredActions() {
       return allActions.filter(a => {
         if (tabFor(a) !== activeTab) return false;
-        if (activePriority && a.priority !== activePriority) return false;
-        if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+        if (activeType) {
+          const t = companyTypeMap.get(String(a.hubspot_id));
+          if (t !== activeType) return false;
+        }
+        if (searchQuery) {
+          const name = companyMap.get(String(a.hubspot_id)) ?? '';
+          const q = searchQuery.toLowerCase();
+          if (!a.name.toLowerCase().includes(q) && !name.toLowerCase().includes(q)) return false;
+        }
         return true;
       });
     }
 
     function updateCounts() {
-      const tabs = ['upcoming', 'overdue', 'completed'];
-      tabs.forEach(tab => {
+      ['outstanding', 'completed'].forEach(tab => {
         const count = allActions.filter(a => {
           if (tabFor(a) !== tab) return false;
-          if (activePriority && a.priority !== activePriority) return false;
-          if (activeCustomer && String(a.hubspot_id) !== activeCustomer) return false;
+          if (activeType) {
+            const t = companyTypeMap.get(String(a.hubspot_id));
+            if (t !== activeType) return false;
+          }
           return true;
         }).length;
         const el = document.getElementById(`count-${tab}`);
@@ -164,7 +172,7 @@
       updateCounts();
 
       if (rows.length === 0) {
-        list.innerHTML = `<div class="ff-empty" style="padding:40px;text-align:center">No ${activeTab} tasks${activePriority ? ` · ${priorityLabel(activePriority)} priority` : ''}${activeCustomer ? ` · ${escHtml(companyMap.get(activeCustomer) ?? '')}` : ''}</div>`;
+        list.innerHTML = `<div class="ff-empty" style="padding:40px;text-align:center">No ${activeTab} tasks</div>`;
         return;
       }
 
@@ -190,20 +198,9 @@
     }
 
     function populateCustomerFilter() {
-      // Collect all customers that have at least one action
-      const seen = new Map();
-      for (const a of allActions) {
-        const hid  = String(a.hubspot_id);
-        if (!seen.has(hid)) seen.set(hid, companyMap.get(hid) ?? hid);
-      }
-      const sorted = [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+      // Customer filter select removed; handled by inline typeahead (added in next task)
 
-      const sel = document.getElementById('customer-filter');
-      const current = sel.value;
-      sel.innerHTML = '<option value="">All customers</option>' +
-        sorted.map(([hid, name]) => `<option value="${escHtml(hid)}"${hid === current ? ' selected' : ''}>${escHtml(name)}</option>`).join('');
-
-      // Also populate new task modal
+      // Populate new task modal
       const ntSel = document.getElementById('nt-customer');
       const ntCurrent = ntSel.value;
       ntSel.innerHTML = '<option value="">Select customer…</option>' +
@@ -271,18 +268,18 @@
       render();
     });
 
-    document.getElementById('priority-pills').addEventListener('click', e => {
-      const pill = e.target.closest('.crm-pill');
-      if (!pill) return;
-      activePriority = pill.dataset.priority;
-      document.querySelectorAll('#priority-pills .crm-pill').forEach(p =>
-        p.classList.toggle('crm-pill--active', p === pill)
-      );
+    document.getElementById('tasks-search').addEventListener('input', e => {
+      searchQuery = e.target.value.trim();
       render();
     });
 
-    document.getElementById('customer-filter').addEventListener('change', e => {
-      activeCustomer = e.target.value;
+    document.getElementById('tasks-type-pills').addEventListener('click', e => {
+      const pill = e.target.closest('.crm-pill');
+      if (!pill) return;
+      activeType = pill.dataset.type;
+      document.querySelectorAll('#tasks-type-pills .crm-pill').forEach(p =>
+        p.classList.toggle('crm-pill--active', p === pill)
+      );
       render();
     });
 
@@ -338,6 +335,7 @@
     // Load companies independently so the customer dropdown always works
     fetch('./data/hubspot.json').then(r => r.json()).then(companies => {
       companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
+      companyTypeMap = new Map(companies.map(c => [String(c.hubspot_id), c.type ?? '']));
       populateCustomerFilter();
     }).catch(() => {});
 
