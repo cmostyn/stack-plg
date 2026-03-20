@@ -585,7 +585,6 @@
             <option value="med" selected>Med</option>
             <option value="low">Low</option>
           </select>
-          <input type="date" id="card-action-due" class="card-action-select" title="Due date (optional)">
           <button class="card-action-save" id="card-action-save">Add</button>
           <button class="card-action-cancel" id="card-action-cancel">Cancel</button>
         </div>
@@ -621,7 +620,6 @@
           <option value="med" selected>Med</option>
           <option value="low">Low</option>
         </select>
-        <input type="date" class="inline-action-due card-action-select" title="Due date (optional)">
         <button class="inline-action-save">Add</button>
       `;
       p.dataset.hubspotId = hid;
@@ -680,12 +678,12 @@
 
     // --- Action CRUD ---
 
-    async function createAction(hubspot_id, name, priority, due_date = null) {
+    async function createAction(hubspot_id, name, priority) {
       try {
         const res = await fetch(`${WORKER_URL}/actions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hubspot_id: String(hubspot_id), name, priority, ...(due_date ? { due_date } : {}) }),
+          body: JSON.stringify({ hubspot_id: String(hubspot_id), name, priority }),
         });
         if (!res.ok) throw new Error(await res.text());
         const action = await res.json();
@@ -984,9 +982,8 @@
       if (e.target.closest('#card-action-save')) {
         const name     = document.getElementById('card-action-name')?.value.trim();
         const priority = document.getElementById('card-action-priority')?.value;
-        const due_date = document.getElementById('card-action-due')?.value || null;
         if (!name) { document.getElementById('card-action-name')?.focus(); return; }
-        const action = await createAction(openCardId, name, priority, due_date);
+        const action = await createAction(openCardId, name, priority);
         if (!action) { showCardError("Couldn't save — try again"); return; }
         rerenderCardActions();
         render();
@@ -1043,9 +1040,8 @@
       const hid      = p.dataset.hubspotId;
       const name     = p.querySelector('.inline-action-name')?.value.trim();
       const priority = p.querySelector('.inline-action-priority')?.value;
-      const due_date = p.querySelector('.inline-action-due')?.value || null;
       if (!name) { p.querySelector('.inline-action-name')?.focus(); return; }
-      const action = await createAction(hid, name, priority, due_date);
+      const action = await createAction(hid, name, priority);
       if (!action) return;
       closeInlinePopover();
       render();
