@@ -13,6 +13,13 @@ const OUT_FILE   = path.join(__dirname, '../site/data/fireflies.json');
 
 const STACKONE_DOMAINS = new Set(['stackone.com']);
 
+// Generic personal/provider domains that won't match a HubSpot company
+const GENERIC_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk',
+  'hotmail.com', 'outlook.com', 'live.com', 'icloud.com',
+  'me.com', 'mac.com', 'protonmail.com', 'proton.me',
+]);
+
 if (!API_KEY || !ACCOUNT_ID) {
   console.error('[fireflies] Missing STACKONE_API_KEY or STACKONE_FIREFLIES_ACCOUNT_ID');
   process.exit(1);
@@ -42,31 +49,34 @@ function externalDomains(transcript) {
   const domains = new Set();
   for (const email of emails) {
     const domain = email.split('@')[1];
-    if (domain && !STACKONE_DOMAINS.has(domain)) domains.add(domain);
+    if (domain && !STACKONE_DOMAINS.has(domain) && !GENERIC_DOMAINS.has(domain)) {
+      domains.add(domain);
+    }
   }
   return [...domains];
 }
 
 async function fetchAllTranscripts(fromDate) {
   const transcripts = [];
-  let cursor = undefined;
+  let skip = 0;
 
   while (true) {
     const data = await rpc('fireflies_list_transcripts', {
-      body: { variables: { fromDate, limit: 50 } },
-      query: cursor ? { next: cursor } : {},
+      body: { variables: { fromDate, limit: 50, skip } },
+      query: {},
     });
     const page = data?.result?.data ?? data?.data ?? [];
+    if (!page.length) break;
     transcripts.push(...page);
-    cursor = data?.result?.next ?? data?.next ?? null;
-    if (!cursor) break;
+    if (page.length < 50) break;
+    skip += 50;
   }
 
   return transcripts;
 }
 
 async function main() {
-  const fromDate = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
+  const fromDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
   console.log(`[fireflies] Fetching transcripts from ${fromDate}...`);
 
   const transcripts = await fetchAllTranscripts(fromDate);
