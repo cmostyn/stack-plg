@@ -38,31 +38,51 @@
     </div>
     <script>
       (function() {
-        const STORAGE_KEY  = 'plg_purpose_text';
-        const TITLE_KEY    = 'plg_purpose_title';
+        const WORKER_URL   = 'https://stack-plg-actions.charlie-9e7.workers.dev';
         const OPEN_KEY     = 'plg_purpose_open';
         const toggle   = document.getElementById('purpose-toggle');
         const body     = document.getElementById('purpose-body');
         const editable = document.getElementById('purpose-text');
         const titleEl  = document.getElementById('purpose-title');
 
-        // Restore saved title
-        const savedTitle = localStorage.getItem(TITLE_KEY);
-        if (savedTitle !== null) titleEl.textContent = savedTitle;
-
-        // Restore saved body text
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved !== null) editable.textContent = saved;
-
-        // Restore open state
+        // Restore open state immediately from localStorage
         if (localStorage.getItem(OPEN_KEY) === '1') {
           body.removeAttribute('hidden');
           toggle.setAttribute('aria-expanded', 'true');
           toggle.classList.add('plg-purpose-toggle--open');
         }
 
+        // Load saved title + text from server; fall back to localStorage
+        fetch(WORKER_URL + '/settings')
+          .then(r => r.json())
+          .then(s => {
+            if (s.purpose_title) titleEl.textContent = s.purpose_title;
+            if (s.purpose_text)  editable.textContent = s.purpose_text;
+          })
+          .catch(() => {
+            const t = localStorage.getItem('plg_purpose_title');
+            const v = localStorage.getItem('plg_purpose_text');
+            if (t) titleEl.textContent = t;
+            if (v) editable.textContent = v;
+          });
+
+        // Debounced save to server + localStorage
+        function debounce(fn, ms) {
+          let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+        }
+        function saveSetting(key, value) {
+          localStorage.setItem(key === 'purpose_title' ? 'plg_purpose_title' : 'plg_purpose_text', value);
+          fetch(WORKER_URL + '/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, value }),
+          }).catch(() => {});
+        }
+
+        titleEl.addEventListener('input', debounce(() => saveSetting('purpose_title', titleEl.textContent), 600));
+        editable.addEventListener('input', debounce(() => saveSetting('purpose_text', editable.textContent), 600));
+
         toggle.addEventListener('click', e => {
-          // Don't toggle if user clicked directly on the editable title
           if (e.target === titleEl) return;
           const open = body.hasAttribute('hidden');
           if (open) {
@@ -77,14 +97,6 @@
             toggle.classList.remove('plg-purpose-toggle--open');
             localStorage.removeItem(OPEN_KEY);
           }
-        });
-
-        titleEl.addEventListener('input', () => {
-          localStorage.setItem(TITLE_KEY, titleEl.textContent);
-        });
-
-        editable.addEventListener('input', () => {
-          localStorage.setItem(STORAGE_KEY, editable.textContent);
         });
       })();
     </script>
