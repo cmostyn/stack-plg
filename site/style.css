@@ -188,6 +188,7 @@ a:hover {
 
 .page-main--crm {
   max-width: none;
+  padding: 0;
 }
 
 .page-heading {
@@ -547,8 +548,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 20px 28px 16px;
   gap: 12px;
-  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
@@ -608,6 +609,15 @@ a:hover {
   white-space: nowrap;
 }
 
+.crm-card {
+  margin: 0 28px 28px;
+  background: var(--so-white);
+  border: 1px solid var(--so-neutral-10);
+  border-radius: var(--so-radius-lg);
+  box-shadow: var(--so-shadow-card);
+  overflow: hidden;
+}
+
 .crm-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--so-neutral-10);
@@ -628,13 +638,15 @@ a:hover {
 }
 
 .crm-table th {
-  font-family: var(--so-font-body);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--so-text-tag);
+  font-family: var(--so-font-tag);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--so-neutral-40);
   text-align: left;
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--so-neutral-10);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--so-neutral-5);
   border-right: 1px dotted var(--so-neutral-10);
   white-space: nowrap;
   user-select: none;
@@ -642,7 +654,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 4;
-  background: var(--so-foreground);
+  background: var(--so-background);
 }
 
 .crm-table th:last-child {
@@ -660,7 +672,7 @@ a:hover {
   font-family: var(--so-font-body);
   font-size: 13px;
   color: var(--so-text-body);
-  padding: 9px 14px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--so-neutral-5);
   border-right: 1px dotted var(--so-neutral-10);
   vertical-align: middle;
@@ -757,10 +769,10 @@ a:hover {
 
 /* CRM — most recent call link */
 .crm-call-link {
-  color: var(--so-green-dark);
+  color: var(--so-primary);
   text-decoration: none;
-  font-size: 13px;
-  display: block;
+  font-size: 12px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -804,7 +816,7 @@ a:hover {
 /* CRM — date cell */
 .crm-date {
   font-size: 13px;
-  color: var(--so-text-body);
+  color: var(--so-text-tag);
   white-space: nowrap;
 }
 
@@ -825,6 +837,21 @@ a:hover {
 }
 .crm-table tbody tr {
   animation: crmRowIn 0.12s ease;
+}
+
+.crm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--so-neutral-5);
+  background: var(--so-background);
+}
+
+.crm-footer-count {
+  font-size: 13px;
+  color: var(--so-text-tag);
+  font-family: var(--so-font-body);
 }
 
 /* ============================================================
@@ -1258,32 +1285,30 @@ a:hover {
    ============================================================ */
 
 .crm-type-badge {
-  display: inline-block;
-  padding: 1px 5px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
   border-radius: var(--so-radius-sm);
   font-family: var(--so-font-tag);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  vertical-align: middle;
-  margin-left: 5px;
-  position: relative;
-  top: -1px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .crm-type-badge--plg {
-  background: rgba(12, 88, 174, 0.1);
-  color: var(--so-blue-dark);
+  background: rgba(0, 175, 102, 0.10);
+  color: var(--so-green-dark);
 }
 
 .crm-type-badge--slg {
-  background: rgba(150, 88, 10, 0.12);
-  color: var(--so-orange-dark);
+  background: rgba(62, 119, 255, 0.10);
+  color: #0C58AE;
 }
 
 .crm-type-badge--cust {
-  background: var(--so-foreground);
-  color: var(--so-neutral-40);
+  background: var(--so-neutral-5);
+  color: var(--so-text-tag);
 }
 
 /* CRM — type filter pills */
@@ -1686,7 +1711,9 @@ a:hover {
 .card-action-cancel:hover { color: var(--so-text-header); }
 
 /* ── CRM table: name cell open button ── */
-.crm-name-cell   { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+.crm-name-cell   { display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 180px; }
+.crm-name-cell a { font-weight: 500; color: var(--so-text-header); font-size: 13px; text-decoration: none; }
+.crm-name-cell a:hover { color: var(--so-primary); }
 .card-open-btn   {
   background: none; border: none; cursor: pointer;
   color: var(--so-green-dark); font-size: 14px; padding: 2px;
@@ -2393,16 +2420,25 @@ a.dash-tile-source:hover {
   gap: 5px;
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 10px;
+  padding: 3px 9px;
+  border-radius: var(--so-radius-xl);
   white-space: nowrap;
 }
 .health-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
+  display: inline-block;
 }
+.health--excellent { background: rgba(0, 175, 102, 0.10); color: #047B43; }
+.health--excellent .health-dot { background: #00AF66; }
+.health--good      { background: rgba(202, 138, 4, 0.10); color: #854D0E; }
+.health--good      .health-dot { background: #CA8A04; }
+.health--fair      { background: rgba(245, 158, 11, 0.10); color: #92400E; }
+.health--fair      .health-dot { background: #F59E0B; }
+.health--risk      { background: rgba(196, 62, 62, 0.10); color: #C43E3E; }
+.health--risk      .health-dot { background: #C43E3E; }
 
 /* Expandable row */
 .notes-chevron {
