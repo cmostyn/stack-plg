@@ -23,7 +23,7 @@ export default {
       // GET /actions
       if (request.method === 'GET' && pathname === '/actions') {
         const { results } = await env.DB
-          .prepare('SELECT id, hubspot_id, name, priority, done, created_at, due_date FROM cs_actions ORDER BY created_at DESC')
+          .prepare('SELECT * FROM cs_actions ORDER BY created_at DESC')
           .all();
         return json(results);
       }
@@ -83,7 +83,7 @@ export default {
           .run();
         if (updateResult.meta.changes === 0) return json({ error: 'Not found' }, 404);
         const { results } = await env.DB
-          .prepare('SELECT id, hubspot_id, name, priority, done, created_at, due_date FROM cs_actions WHERE id = ?')
+          .prepare('SELECT * FROM cs_actions WHERE id = ?')
           .bind(id)
           .all();
         return json(results[0]);

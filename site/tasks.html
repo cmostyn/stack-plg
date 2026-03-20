@@ -80,19 +80,13 @@
             <option value="">Select customer…</option>
           </select>
         </div>
-        <div style="display:flex;gap:12px">
-          <div style="flex:1">
-            <div class="field-label" style="margin-bottom:6px">Priority</div>
-            <select id="nt-priority" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
-              <option value="high">High</option>
-              <option value="med" selected>Med</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-          <div style="flex:1">
-            <div class="field-label" style="margin-bottom:6px">Due date</div>
-            <input type="date" id="nt-due" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
-          </div>
+        <div>
+          <div class="field-label" style="margin-bottom:6px">Priority</div>
+          <select id="nt-priority" class="card-action-select" style="width:100%;font-size:14px;padding:8px 10px">
+            <option value="high">High</option>
+            <option value="med" selected>Med</option>
+            <option value="low">Low</option>
+          </select>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
           <button class="card-action-cancel" id="nt-cancel">Cancel</button>
@@ -247,9 +241,8 @@
       } catch { /* silent */ }
     }
 
-    async function createAction(hubspot_id, name, priority, due_date) {
+    async function createAction(hubspot_id, name, priority) {
       const body = { hubspot_id: String(hubspot_id), name, priority };
-      if (due_date) body.due_date = due_date;
       const res = await fetch(`${WORKER_URL}/actions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -302,7 +295,6 @@
     function closeNewTask() {
       document.getElementById('new-task-overlay').classList.remove('card-overlay--open');
       document.getElementById('nt-name').value = '';
-      document.getElementById('nt-due').value = '';
       document.getElementById('nt-error').textContent = '';
     }
 
@@ -317,7 +309,6 @@
       const name      = document.getElementById('nt-name').value.trim();
       const hubspot_id = document.getElementById('nt-customer').value;
       const priority  = document.getElementById('nt-priority').value;
-      const due_date  = document.getElementById('nt-due').value || null;
       const errEl     = document.getElementById('nt-error');
 
       if (!name)        { errEl.textContent = 'Enter a task name.'; document.getElementById('nt-name').focus(); return; }
@@ -325,7 +316,7 @@
       errEl.textContent = '';
 
       try {
-        const action = await createAction(hubspot_id, name, priority, due_date);
+        const action = await createAction(hubspot_id, name, priority);
         allActions.unshift(action);
         populateCustomerFilter();
         // Switch to the right tab
@@ -345,18 +336,25 @@
     });
 
     // --- Load ---
-    Promise.all([
-      fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(8000) }).then(r => r.json()),
-      fetch('./data/hubspot.json').then(r => r.json()),
-    ]).then(([actions, companies]) => {
-      allActions = actions;
+    // Load companies independently so the customer dropdown always works
+    fetch('./data/hubspot.json').then(r => r.json()).then(companies => {
       companyMap = new Map(companies.map(c => [String(c.hubspot_id), c.name ?? String(c.hubspot_id)]));
       populateCustomerFilter();
-      render();
-    }).catch(() => {
-      document.getElementById('tasks-list').innerHTML =
-        '<p class="crm-error">Tasks couldn\'t be loaded. Try refreshing.</p>';
-    });
+    }).catch(() => {});
+
+    // Load actions separately
+    fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(8000) })
+      .then(r => r.json())
+      .then(actions => {
+        if (!Array.isArray(actions)) throw new Error('bad response');
+        allActions = actions;
+        populateCustomerFilter();
+        render();
+      })
+      .catch(() => {
+        document.getElementById('tasks-list').innerHTML =
+          '<p class="crm-error">Tasks couldn\'t be loaded. Try refreshing.</p>';
+      });
   </script>
 </body>
 </html>
