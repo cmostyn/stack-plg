@@ -376,7 +376,7 @@
         if (!ff) return PLACEHOLDER_CELL;
         const dateStr = new Date(ff.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const href = ff.id ? escHtml(`https://app.fireflies.ai/view/${ff.id}`) : 'https://app.fireflies.ai/';
-        return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link">${escHtml(ff.title)}</a><div class="crm-contact-email">${escHtml(dateStr)}</div></td>`;
+        return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link" title="${escHtml(dateStr)}">${escHtml(ff.title)}</a></td>`;
       },
     };
 
