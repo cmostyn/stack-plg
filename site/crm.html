@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer List — PLG-Hub</title>
   <link rel="stylesheet" href="style.css">
+<<<<<<< HEAD
 
+=======
+>>>>>>> feat/security-fixes
 </head>
 <body>
 
@@ -67,7 +70,8 @@
 
   <script>
     // --- Constants ---
-    const WORKER_URL = 'https://stack-plg-actions.charlie-9e7.workers.dev';
+    const WORKER_URL   = 'https://stack-plg-actions.charlie-9e7.workers.dev';
+    const WORKER_TOKEN = '184677b3cad98c1cda7dc2d29bf3de6d385a158ece65576b313c5ada43c60bb1';
     const PLACEHOLDER_CELL = '<td></td>';
 
     const DEFAULT_COL_ORDER = [
@@ -223,7 +227,7 @@
         const ff = company.domain ? firefliesMap.get(company.domain) : null;
         if (!ff) return PLACEHOLDER_CELL;
         const dateStr = new Date(ff.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        const href = ff.id ? escHtml(`https://app.fireflies.ai/view/call--${ff.id}`) : 'https://app.fireflies.ai/';
+        const href = ff.id ? escHtml(`https://app.fireflies.ai/view/call::${ff.id}`) : 'https://app.fireflies.ai/';
         return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link">${escHtml(ff.title)}</a><div class="crm-contact-email">${escHtml(dateStr)}</div></td>`;
       },
     };
@@ -682,7 +686,7 @@
       try {
         const res = await fetch(`${WORKER_URL}/actions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WORKER_TOKEN}` },
           body: JSON.stringify({ hubspot_id: String(hubspot_id), name, priority }),
         });
         if (!res.ok) throw new Error(await res.text());
@@ -700,7 +704,7 @@
       try {
         const res = await fetch(`${WORKER_URL}/actions/${encodeURIComponent(id)}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WORKER_TOKEN}` },
           body: JSON.stringify({ done: currentDone ? 0 : 1 }),
         });
         if (!res.ok) throw new Error(await res.text());
@@ -718,6 +722,7 @@
       try {
         const res = await fetch(`${WORKER_URL}/actions/${encodeURIComponent(id)}`, {
           method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${WORKER_TOKEN}` },
         });
         if (!res.ok && res.status !== 204) throw new Error(await res.text());
         const list = actionsMap.get(String(hubspot_id)) ?? [];
@@ -780,7 +785,7 @@
       fetch('./data/posthog.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/fireflies.json').then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('./data/pylon.json').then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch(`${WORKER_URL}/actions`, { signal: AbortSignal.timeout(5000), headers: { 'Authorization': `Bearer ${WORKER_TOKEN}` } }).then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([hubspot, posthog, fireflies, pylon, actions]) => {
       posthogMap = new Map(posthog.map(r => [normName(r.org_name), r]));
       pylonMap   = new Map(pylon.map(r => [String(r.hubspot_id), r]));
@@ -1065,6 +1070,28 @@
       if (!p?.classList.contains('inline-add-popover--open')) return;
       if (!p.contains(e.target) && !e.target.closest('.add-action-btn')) closeInlinePopover();
     }, true);
+
+    // --- Notes popup (double-click) ---
+    crmTable.addEventListener('dblclick', e => {
+      const td = e.target.closest('td.crm-notes');
+      if (!td) return;
+      const fullText = td.title;
+      if (!fullText) return;
+      const overlay = document.getElementById('card-overlay');
+      overlay.innerHTML = `
+        <div class="card-modal" id="card-modal" style="max-width:480px">
+          <div class="card-modal-header">
+            <div class="card-modal-company">Notes</div>
+            <button class="card-modal-close" id="card-close">×</button>
+          </div>
+          <div class="card-modal-body" style="padding:20px 24px">
+            <p style="white-space:pre-wrap;line-height:1.6;margin:0;font-size:14px;color:#4C4B4B">${escHtml(fullText)}</p>
+          </div>
+        </div>
+      `;
+      overlay.classList.add('card-overlay--open');
+      document.addEventListener('keydown', handleCardKeydown);
+    });
 
     // --- Column resize ---
     let resizingCol = null;
