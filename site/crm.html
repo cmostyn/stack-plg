@@ -189,7 +189,7 @@
         const n = company.notes;
         if (!n) return PLACEHOLDER_CELL;
         const truncated = n.length > 80 ? n.slice(0, 80) + '…' : n;
-        return `<td class="crm-notes" title="${escHtml(n)}">${escHtml(truncated)}</td>`;
+        return `<td class="crm-notes" data-full-notes="${escHtml(n)}">${escHtml(truncated)}</td>`;
       },
       local_notes: company => {
         const hid    = escHtml(String(company.hubspot_id ?? ''));
@@ -1243,17 +1243,17 @@
     crmTable.addEventListener('click', e => {
       const td = e.target.closest('td.crm-notes');
       if (!td) return;
-      const fullText = td.title;
+      const fullText = td.dataset.fullNotes ?? '';
       if (!fullText) return;
       const overlay = document.getElementById('card-overlay');
       overlay.innerHTML = `
-        <div class="card-modal" id="card-modal" style="max-width:480px">
+        <div class="card-modal" id="card-modal" style="max-width:560px">
           <div class="card-modal-header">
             <div class="card-modal-company">Notes</div>
             <button class="card-modal-close" id="card-close">×</button>
           </div>
-          <div class="card-modal-body" style="padding:20px 24px">
-            <p style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;margin:0;font-size:14px;color:#4C4B4B">${escHtml(fullText)}</p>
+          <div class="card-modal-body" style="display:block;padding:20px 24px">
+            <p style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;margin:0;font-size:14px;color:var(--so-text-body)">${escHtml(fullText)}</p>
           </div>
         </div>
       `;
