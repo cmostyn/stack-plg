@@ -159,8 +159,8 @@
         ].filter(Boolean).join('');
         return `<td class="crm-name-cell">
           <div class="crm-name-inner">
-            <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
             <a href="${href}" target="_blank" rel="noopener">${escHtml(display)}</a>${badge}
+            <button class="card-open-btn" data-hubspot-id="${hid}" aria-label="Open card">⊞</button>
             <div class="crm-row-actions">${quickLinks}</div>
           </div>
         </td>`;
