@@ -678,6 +678,16 @@ a:hover {
   border-right: 1px dotted var(--so-neutral-10);
   vertical-align: middle;
   transition: background 0.12s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.crm-table td > a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .crm-table td:last-child {
