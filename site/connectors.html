@@ -24,7 +24,7 @@
   </header>
 
   <main class="page-main">
-    <div class="staleness-banner" id="staleness-banner" hidden>
+    <div class="staleness-banner" id="staleness-banner">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-3a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-2.5A.75.75 0 0 1 8 5Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" fill="currentColor"/></svg>
       <span id="staleness-message"></span>
     </div>
@@ -162,7 +162,7 @@
       const verb = stale.length === 1 ? `${names} hasn't` : `${names} haven't`;
       document.getElementById('staleness-message').textContent =
         `Data may be out of date — ${verb} refreshed in over 26 hours.`;
-      document.getElementById('staleness-banner').removeAttribute('hidden');
+      document.getElementById('staleness-banner').classList.add('staleness-banner--visible');
     }
 
     async function init() {
