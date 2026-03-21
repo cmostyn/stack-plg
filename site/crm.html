@@ -486,6 +486,12 @@
       return [...rows].sort((a, b) => {
         const dir = sortDir === 'asc' ? 1 : -1;
         switch (sortKey) {
+          case 'health': {
+            const HEALTH_ORDER = { risk: 0, fair: 1, good: 2, excellent: 3 };
+            const ha = HEALTH_ORDER[healthMap.get(String(a.hubspot_id ?? ''))] ?? 4;
+            const hb = HEALTH_ORDER[healthMap.get(String(b.hubspot_id ?? ''))] ?? 4;
+            return dir * (ha - hb);
+          }
           case 'contact':
             return dir * contactSortValue(a).localeCompare(contactSortValue(b));
           case 'notes': {
