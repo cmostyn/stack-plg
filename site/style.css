@@ -1045,13 +1045,6 @@ th:hover .crm-th-menu-btn,
   align-items: start;
 }
 
-@media (max-width: 1099px) {
-  .dash-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 599px) {
-  .dash-grid { grid-template-columns: 1fr; }
-}
 
 .dash-tile {
   background: var(--so-white);
