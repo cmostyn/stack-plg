@@ -1042,6 +1042,7 @@ th:hover .crm-th-menu-btn,
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+  align-items: start;
 }
 
 @media (max-width: 1099px) {
@@ -1060,7 +1061,8 @@ th:hover .crm-th-menu-btn,
   padding: 20px;
   display: flex;
   flex-direction: column;
-  min-height: 180px;
+  height: 220px;
+  overflow: hidden;
   transition: border-color 0.15s;
   position: relative;
 }
