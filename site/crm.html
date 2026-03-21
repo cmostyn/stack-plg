@@ -260,7 +260,7 @@
         if (!ff) return PLACEHOLDER_CELL;
         const dateStr = new Date(ff.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const href = ff.id ? escHtml(`https://app.fireflies.ai/view/${ff.id}`) : 'https://app.fireflies.ai/';
-        return `<td><a href="${href}" target="_blank" rel="noopener" class="crm-call-link" title="${escHtml(dateStr)}">${escHtml(ff.title)}</a></td>`;
+        return `<td class="crm-call-cell"><a href="${href}" target="_blank" rel="noopener" class="crm-call-link" title="${escHtml(ff.title)}">${escHtml(ff.title)}</a></td>`;
       },
     };
 
@@ -1343,71 +1343,51 @@
       document.addEventListener('keydown', handleCardKeydown);
     });
 
-    // Local notes cell: double-click → editable popup
-    crmTable.addEventListener('dblclick', e => {
+    // Local notes cell: single-click → inline edit
+    crmTable.addEventListener('click', e => {
       const td = e.target.closest('td.crm-local-notes-cell--clickable');
       if (!td) return;
+      if (td.classList.contains('crm-local-notes-cell--editing')) return;
       const hid = String(td.dataset.hubspotId ?? '');
       if (!hid) return;
       const currentNote = notesMap.get(hid) ?? '';
-      const company = allRows.find(r => String(r.hubspot_id ?? '') === hid);
-      const companyName = company ? escHtml(company.name ?? '') : 'Notes';
 
-      const overlay = document.getElementById('card-overlay');
-      overlay.innerHTML = `
-        <div class="card-modal" id="card-modal" style="max-width:560px">
-          <div class="card-modal-header">
-            <div class="card-modal-company">${companyName}</div>
-            <button class="card-modal-close" id="card-close">×</button>
-          </div>
-          <div class="card-modal-body" style="display:block;padding:20px 24px">
-            <textarea id="notes-edit-ta" style="width:100%;min-height:180px;font-family:var(--so-font-body);font-size:14px;color:var(--so-text-body);border:1px solid var(--so-neutral-10);border-radius:8px;padding:10px 12px;resize:vertical;outline:none;line-height:1.6;box-sizing:border-box;" placeholder="Add a note…">${escHtml(currentNote)}</textarea>
-          </div>
-          <div style="display:flex;justify-content:flex-end;gap:8px;padding:0 24px 20px">
-            <button id="notes-popup-cancel" style="font-family:var(--so-font-body);font-size:13px;font-weight:500;color:var(--so-text-tag);background:var(--so-foreground);border:1px solid var(--so-neutral-10);border-radius:20px;padding:6px 16px;cursor:pointer;">Cancel</button>
-            <button id="notes-popup-save" data-hid="${escHtml(hid)}" style="font-family:var(--so-font-body);font-size:13px;font-weight:600;color:#fff;background:var(--so-primary);border:none;border-radius:20px;padding:6px 16px;cursor:pointer;">Save</button>
-          </div>
-        </div>
-      `;
-      overlay.classList.add('card-overlay--open');
+      td.classList.add('crm-local-notes-cell--editing');
+      td.innerHTML = '';
+      const ta = document.createElement('textarea');
+      ta.className = 'crm-note-inline-input';
+      ta.value = currentNote;
+      ta.placeholder = 'Add a note…';
+      ta.rows = 1;
+      td.appendChild(ta);
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = ta.value.length;
 
-      document.getElementById('notes-popup-save').addEventListener('click', async function () {
-        const body = document.getElementById('notes-edit-ta').value;
-        const saveHid = this.dataset.hid;
-        notesMap.set(saveHid, body);
-        localNotes[saveHid] = body;
+      async function saveNote() {
+        const body = ta.value;
+        notesMap.set(hid, body);
+        localNotes[hid] = body;
         saveLocalNotes();
-        overlay.classList.remove('card-overlay--open');
-        overlay.innerHTML = '';
         try {
           await fetch(`${WORKER_URL}/notes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hubspot_id: saveHid, notes: body }),
+            body: JSON.stringify({ hubspot_id: hid, notes: body }),
           });
         } catch { /* silent */ }
         render();
-      });
+      }
 
-      document.getElementById('notes-popup-cancel').addEventListener('click', () => {
-        overlay.classList.remove('card-overlay--open');
-        overlay.innerHTML = '';
-      });
-
-      document.getElementById('card-close').addEventListener('click', () => {
-        overlay.classList.remove('card-overlay--open');
-        overlay.innerHTML = '';
-      });
-
-      // Ctrl+Enter to save in notes popup
-      document.getElementById('notes-edit-ta').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          document.getElementById('notes-popup-save').click();
+      ta.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter' && !ev.shiftKey) {
+          ev.preventDefault();
+          saveNote();
+        } else if (ev.key === 'Escape') {
+          render();
         }
       });
 
-      document.addEventListener('keydown', handleCardKeydown);
+      ta.addEventListener('blur', () => saveNote());
     });
 
     // --- Column resize ---

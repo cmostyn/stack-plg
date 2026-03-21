@@ -794,6 +794,7 @@ th:hover .crm-th-menu-btn,
 
 /* CRM — most recent call link */
 .crm-call-link {
+  display: block;
   color: var(--so-primary);
   text-decoration: none;
   font-size: 12px;
@@ -801,9 +802,14 @@ th:hover .crm-th-menu-btn,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 .crm-call-link:hover {
   text-decoration: underline;
+}
+.crm-call-cell {
+  max-width: 0;
+  overflow: hidden;
 }
 
 /* CRM — drag-to-reorder */
@@ -1408,7 +1414,7 @@ th:hover .crm-th-menu-btn,
 .crm-contact-cell {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
 }
 .crm-contact-name-link {
@@ -1457,6 +1463,23 @@ th:hover .crm-th-menu-btn,
 }
 .crm-local-notes-cell--clickable { cursor: text; }
 .crm-local-notes-cell--clickable:hover { background: var(--so-foreground); }
+.crm-local-notes-cell--editing { padding: 0 !important; background: #fff !important; }
+.crm-note-inline-input {
+  width: 100%;
+  height: 100%;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-family: var(--so-font-body);
+  font-size: 13px;
+  color: var(--so-text-body);
+  border: 2px solid var(--so-primary);
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+  resize: none;
+  background: #fff;
+  overflow: hidden;
+}
 
 /* CRM — pin/freeze button */
 .crm-pin-btn {
@@ -2398,8 +2421,8 @@ a.dash-tile-source:hover {
 }
 .health--excellent { background: rgba(0, 175, 102, 0.10); color: #047B43; }
 .health--excellent .health-dot { background: #00AF66; }
-.health--good      { background: rgba(202, 138, 4, 0.10); color: #854D0E; }
-.health--good      .health-dot { background: #CA8A04; }
+.health--good      { background: rgba(0, 175, 102, 0.08); color: #00AF66; }
+.health--good      .health-dot { background: #00AF66; }
 .health--fair      { background: rgba(245, 158, 11, 0.10); color: #92400E; }
 .health--fair      .health-dot { background: #F59E0B; }
 .health--risk      { background: rgba(196, 62, 62, 0.10); color: #C43E3E; }
