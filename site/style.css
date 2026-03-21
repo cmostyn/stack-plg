@@ -2567,7 +2567,14 @@ a.dash-tile-source:hover {
 
 /* Multi-select */
 .crm-row--selected td { background: #F0FDF4 !important; }
-.crm-th--checkbox, .crm-td--checkbox { padding: 8px; vertical-align: middle; }
+.crm-th--checkbox, .crm-td--checkbox {
+  padding: 8px;
+  vertical-align: middle;
+  text-align: center;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
 
 /* Bulk action bar */
 .crm-bulk-bar {
