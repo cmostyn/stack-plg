@@ -1486,7 +1486,6 @@ th:hover .crm-th-menu-btn,
 
 /* CRM — frozen column indicator */
 .crm-th--frozen {
-  background: var(--so-foreground) !important;
   border-right: 2px solid var(--so-neutral-20) !important;
 }
 .crm-td--frozen {
